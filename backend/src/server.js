@@ -40,11 +40,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-//api user
+//api
 const userRoute = require("./routers/userRouters.js");
+const capacityRouters = require("./routers/capacityRouters.js");
+const colorRouters = require("./routers/colorRouters.js");
 
+
+//router
 app.use("/", userRoute);
-//
+app.use("/capacity", capacityRouters);
+app.use("/color", colorRouters);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId

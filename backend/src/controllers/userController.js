@@ -1,4 +1,4 @@
-const pool = require("../config/database"); // Đảm bảo `pool` được import từ tệp kết nối cơ sở dữ liệu của bạn
+const pool = require("../config/database");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
 const fs = require("fs");
@@ -679,7 +679,7 @@ const updatePasswordUser = async (req, res) => {
 
     // Cập nhật vào database
     const result = await pool.query(
-        "UPDATE NGUOI_DUNG SET MAT_KHAU = ? WHERE EMAIL = ?",
+        "UPDATE NGUOIDUNG SET password = ? WHERE email = ?",
         [hashedPassword, email]
     );
 
