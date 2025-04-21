@@ -43,13 +43,13 @@ app.use(bodyParser.json());
 //api
 const userRoute = require("./routers/userRouters.js");
 const capacityRouters = require("./routers/capacityRouters.js");
-const colorRouters = require("./routers/colorRouters.js");
+const brandRouters = require("./routers/brandRouters.js");
 
 
 //router
 app.use("/", userRoute);
 app.use("/capacity", capacityRouters);
-app.use("/color", colorRouters);
+app.use("/brand", brandRouters);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
