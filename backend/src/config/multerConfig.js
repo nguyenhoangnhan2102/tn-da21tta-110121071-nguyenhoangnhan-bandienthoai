@@ -30,9 +30,10 @@ const imageFilter = function (req, file, cb) {
 const upload = multer({
   storage: storage,
   limits: {
-    fieldSize: 100 * 1024 * 1024, // Cho phép mỗi trường dữ liệu tối đa 100MB
+    fileSize: 100 * 1024 * 1024, // Cho phép mỗi trường dữ liệu tối đa 100MB
   },
   fileFilter: imageFilter,
-});
+});  // 'hinhanh' là tên field trong form, cho phép upload tối đa 5 file
+
 
 module.exports = upload;
