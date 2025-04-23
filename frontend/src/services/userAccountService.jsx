@@ -1,19 +1,45 @@
 import { toast } from "react-toastify";
 import axiosInstance from "../authentication/axiosInstance";
 import Cookies from "js-cookie";
-import axios from "axios";
-const apiUrl = process.env.REACT_APP_URL_SERVER;
 
-// Login User
+const apiUrl = process.env.REACT_APP_API_URL;
+const apiUser = apiUrl + '/users';
+
+export const getAllUser = async () => {
+  try {
+    const response = await axiosInstance.get(`${apiUser}`);
+    return response.data;
+  } catch (error) {
+    console.error("Error!!!");
+  }
+}
+
+export const getUserProfile = async () => {
+  try {
+    const response = await axiosInstance.post(`${apiUser}/profile`);
+    if (response.data.EC === 200) {
+      return response.data.DT; // Trả về thông tin người dùng
+    } else {
+      toast.error(response.data.EM); // Hiển thị thông báo lỗi
+      return null;
+    }
+  } catch (error) {
+    toast.error("Xảy ra lỗi khi lấy thông tin người dùng");
+    console.error("Error in getUserProfile:", error.message);
+    return null;
+  }
+};
+
+
 export const login = async (account) => {
   try {
-    const response = await axiosInstance.post(`${apiUrl}/users/login`, {
+    const response = await axiosInstance.post(`${apiUser}/login`, {
       account,
     });
-
+    console.log("response", response);
     if (response.data.EC === 200) {
       Cookies.set("accessToken", response.data.DT.accessToken, {
-        expires: 7,
+        expires: 1,
         path: "",
       });
       return response.data;
@@ -25,90 +51,22 @@ export const login = async (account) => {
   }
 };
 
-// Get List of Users
-export const getAllUsers = async () => {
-  try {
-    const response = await axiosInstance.get(`${apiUrl}/users`);
-    if (response.data.EC === 200) {
-      return response.data.DT; // Returns the list of users
-    }
-    return [];
-  } catch (error) {
-    console.error("Error fetching the list of users:", error);
-    return [];
-  }
-};
-
-// Create New User
-export const createUser = async (newUser) => {
-  try {
-    const response = await axiosInstance.post(`${apiUrl}/users`, newUser);
-    if (response.data.EC === 201) {
-      return true; // User created successfully
-    }
-    return false;
-  } catch (error) {
-    console.error("Error creating new user:", error);
-    return false;
-  }
-};
-
-// Update User
-export const updateUserById = async (id, updatedUser) => {
-  try {
-    const response = await axiosInstance.put(
-      `${apiUrl}/users/update/${id}`,
-      updatedUser
-    );
-    if (response.data.EC === 200) {
-      return true; // User updated successfully
-    }
-    return false;
-  } catch (error) {
-    console.error("Error updating user:", error);
-    return false;
-  }
-};
-
-// Delete User
-export const deleteUserById = async (userId) => {
-  try {
-    const response = await axiosInstance.delete(
-      `${apiUrl}/users/delete/${userId}`
-    );
-    if (response.data.EC === 200) {
-      return true; // User deleted successfully
-    }
-    return false;
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    return false;
-  }
-};
 export const verifyAdmin = async (accessToken) => {
   if (!accessToken) {
+    console.log("No access token found");
     return false;
   }
-
   try {
-    const response = await axios.post(
-      `${process.env.REACT_APP_URL_SERVER}/verify-admin`,
-      {
-        token: accessToken,
-      }
-    );
-
-    // Kết quả phản hồi từ backend
+    const response = await axiosInstance.post(`${apiUrl}/verify-admin`, {
+      token: accessToken,
+    });
 
     if (response.data.DT.isAdmin) {
-      // console.log("User is admin");
       return true;
     } else {
-      // console.log("User is not admin");
       return false;
     }
   } catch (error) {
-    console.error("Error verifying admin:", error);
     return false;
   }
 };
