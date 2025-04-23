@@ -1,0 +1,33 @@
+.form-login {
+    width: 100%;
+    max-width: 400px;
+    // width: 28%;
+}
+
+.form-register {
+    width: 100%;
+    max-width: 400px;
+    // width: 28%;
+}
+
+.form-button {
+    color: black;
+    text-decoration: none;
+}
+
+.button-login {
+    border: none;
+    color: blue;
+    text-decoration: none;
+}
+
+.button-register {
+    border: none;
+    color: white;
+    text-decoration: none;
+    background-color: #F96F3A;
+}
+
+.button-register:hover {
+    background-color: #F96F3A;
+}
