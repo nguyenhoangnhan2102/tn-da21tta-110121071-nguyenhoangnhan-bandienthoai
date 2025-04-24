@@ -1,102 +1,81 @@
 import React, { useState } from 'react';
-import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 import { TextField } from '@mui/material';
 import { GoogleLogin } from '@react-oauth/google';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { jwtDecode } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { login } from "../redux/authSlice";
+import axiosInstance from '../authentication/axiosInstance';
 import "../style/Form.scss";
+
+const apiUrl = process.env.REACT_APP_URL_SERVER;
+const userUrl = apiUrl + "/user";
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
-    const handleGoogleLoginSuccess = (response) => {
-        console.log('Google login success', response);
-        // Xử lý logic login với Google ở đây
-    };
-
-    const handleGoogleLoginFailure = (response) => {
-        console.log('Google login failed', response);
-    };
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // Logic đăng nhập tại đây
-        console.log('Đăng nhập:', { email, password });
+        try {
+            const res = await axiosInstance.post(`${userUrl}/login`, {
+                email,
+                password
+            });
+            const { accessToken, userInfo } = res.data.DT;
+            // Dùng Redux để lưu token và user
+            dispatch(login({ accessToken, userInfo }));
+            console.log("Logged in as:", userInfo);
+            navigate("/");
+        } catch (err) {
+            const msg = err.response?.data?.EM || "Lỗi đăng nhập";
+            setErrorMessage(msg);
+        }
     };
+
+    const handleGoogleLoginSuccess = async (response) => {
+        const decoded = jwtDecode(response.credential);
+        try {
+            const res = await axiosInstance.post(`${userUrl}/login/google`, {
+                email: decoded.email,
+                hoten: decoded.name
+            });
+
+            const { accessToken, userInfo } = res.data.DT;
+
+            dispatch(login({ accessToken, userInfo }));
+
+            console.log("Google login:", userInfo);
+            navigate("/");
+        } catch (err) {
+            console.error("Lỗi Google login", err);
+            setErrorMessage("Google đăng nhập thất bại");
+        }
+    };
+
 
     return (
-        // <Container className="mt-5">
-        //     <Row className="justify-content-center">
-        //         <Col md={6}>
-        //             <h3 className="text-center">Đăng Nhập</h3>
-        //             <Form onSubmit={handleSubmit}>
-        //                 <Form.Group controlId="formEmail">
-        //                     <TextField
-        //                         label="Email"
-        //                         variant="outlined"
-        //                         fullWidth
-        //                         required
-        //                         value={email}
-        //                         onChange={(e) => setEmail(e.target.value)}
-        //                         className="mb-3"
-        //                     />
-        //                 </Form.Group>
-        //                 <Form.Group controlId="formPassword">
-        //                     <TextField
-        //                         label="Mật khẩu"
-        //                         type="password"
-        //                         variant="outlined"
-        //                         fullWidth
-        //                         required
-        //                         value={password}
-        //                         onChange={(e) => setPassword(e.target.value)}
-        //                         className="mb-3"
-        //                     />
-        //                 </Form.Group>
-        //                 <Button variant="primary" type="submit" className="w-100 mb-3">
-        //                     Đăng Nhập
-        //                 </Button>
-        //             </Form>
-
-        //             <div className="text-center">
-        //                 <GoogleLogin
-        //                     clientId="YOUR_GOOGLE_CLIENT_ID"
-        //                     buttonText="Đăng nhập với Google"
-        //                     onSuccess={handleGoogleLoginSuccess}
-        //                     onFailure={handleGoogleLoginFailure}
-        //                     cookiePolicy="single_host_origin"
-        //                 />
-        //             </div>
-        //         </Col>
-        //     </Row>
-        // </Container>
         <div className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
-            <div className='d-lg-block d-none'>
-                <img src="/login.png" alt="login.png" />
-            </div>
-            <form className="form-login p-4 m-4 border rounded bg-light" /*onSubmit={handleSubmit}*/>
+            <form className="form-login p-4 m-4 border rounded bg-light" onSubmit={handleSubmit}>
                 <h2 className="mb-4 text-center">ĐĂNG NHẬP</h2>
                 <div className="text-center d-flex justify-content-center">
                     <GoogleLogin
-                        clientId="YOUR_GOOGLE_CLIENT_ID"
-                        buttonText="Đăng nhập với Google"
                         onSuccess={handleGoogleLoginSuccess}
-                        onFailure={handleGoogleLoginFailure}
-                        cookiePolicy="single_host_origin"
+                        onError={() => setErrorMessage("Google login failed")}
                     />
                 </div>
-                <div className="d-flex justify-content-center mt-2 fs-6">
-                    Hoặc đăng nhập bằng:
-                </div>
+                <div className="d-flex justify-content-center mt-2 fs-6">Hoặc đăng nhập bằng:</div>
                 {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
                 <TextField
                     fullWidth
                     margin="normal"
                     label="Tên đăng nhập"
                     name="email"
-                // value={formData.email}
-                // onChange={handleChange}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                 />
                 <TextField
                     fullWidth
@@ -104,26 +83,19 @@ const Login = () => {
                     label="Mật khẩu"
                     name="password"
                     type="password"
-                // value={formData.password}
-                // onChange={handleChange}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                 />
                 <div className="d-flex justify-content-between align-items-center form-button mt-2">
-                    <button
-                        type="submit"
-                        className="btn btn-primary"
-                        style={{ backgroundColor: '#F96F3A', border: 'none' }}
-                    >
+                    <button type="submit" className="btn btn-primary" style={{ backgroundColor: '#F96F3A', border: 'none' }}>
                         ĐĂNG NHẬP
                     </button>
-                    <Link
-                        to={`/register`}
-                        variant="link"
-                        style={{ color: 'blue', textDecoration: 'none' }}
-                    >
-                        Chưa có tài khoản?
-                    </Link>
+                    <Link to={`/register`}>Chưa có tài khoản?</Link>
                 </div>
             </form>
+            <div className='d-lg-block d-none'>
+                <img src="/login.png" alt="login" />
+            </div>
         </div>
     );
 };

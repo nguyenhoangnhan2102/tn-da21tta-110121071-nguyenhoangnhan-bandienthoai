@@ -48,7 +48,7 @@ const colorRouters = require("./routers/colorRouters");
 const productRouters = require("./routers/productRouters");
 
 //router
-app.use("/", userRoute);
+app.use("/user", userRoute);
 app.use("/capacity", capacityRouters);
 app.use("/brand", brandRouters);
 app.use("/color", colorRouters);

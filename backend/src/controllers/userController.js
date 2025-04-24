@@ -57,18 +57,16 @@ const registerUser = async (req, res) => {
         password,
         email,
         role = "0", // Giả sử mặc định là "user" nếu không có thông tin
-        hoten,
-        sodienthoai,
-        diachi = null, // Nếu không có địa chỉ thì gán là null
+        hoten
     } = req.body;
 
     // Mã hóa mật khẩu trước khi lưu vào database
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Kiểm tra xem có thiếu thông tin cần thiết không
-    if (!email || !hashedPassword || !hoten || !sodienthoai) {
+    if (!email || !hashedPassword || !hoten) {
         return res.status(400).json({
-            EM: "Missing required fields",
+            EM: "Vui lòng nhập đủ thông tin",
             EC: 0,
             DT: [],
         });
@@ -92,16 +90,14 @@ const registerUser = async (req, res) => {
         // Thực hiện đăng ký người dùng mới
         const [result] = await pool.query(
             `INSERT INTO NGUOIDUNG 
-                (email, password, hoten, sodienthoai, diachi, role, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())
+                (email, password, hoten, role, created_at, updated_at)
+                VALUES (?, ?, ?, ?, NOW(), NOW())
             `,
             [
                 email,
                 hashedPassword,
                 hoten,
-                sodienthoai,
-                diachi,
-                role,
+                role
             ]
         );
 
@@ -115,9 +111,9 @@ const registerUser = async (req, res) => {
             },
         });
     } catch (error) {
-        console.error("Error in register:", error);
+        console.error("Lỗi đăng ký:", error);
         return res.status(500).json({
-            EM: `Error: ${error.message}`,
+            EM: `Lỗi: ${error.message}`,
             EC: -1,
             DT: [],
         });
@@ -573,6 +569,7 @@ const sendOtp = async (req, res) => {
     // Lưu OTP
     otpStorage.set(email, { otp, expiresAt });
     console.log("to email: ", email);
+    console.log("to email: ", otp);
     // Gửi email
     const transporter = nodemailer.createTransport({
         service: "gmail",
@@ -583,13 +580,13 @@ const sendOtp = async (req, res) => {
     });
 
     const mailOptions = {
-        from: "nhnhan2102@gmail.com@gmail.com",
+        from: "nhnhan2102@gmail.com",
         to: email,
         subject: "PHONESHOP - Your OTP Code",
         html: `
       <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #333; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
         <div style="text-align: center; padding: 10px 0;">
-          <h1 style="color: #007BFF; margin-bottom: 5px;">PhucShoe2</h1>
+          <h1 style="color: #007BFF; margin-bottom: 5px;">PHONESHOP</h1>
           <p style="font-size: 16px; color: #555;">Your Trusted Shoe Store</p>
         </div>
         <div style="padding: 20px; background-color: #f9f9f9; border-radius: 8px;">
