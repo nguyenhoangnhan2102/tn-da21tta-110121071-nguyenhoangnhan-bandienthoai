@@ -5,11 +5,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { login } from "../redux/authSlice";
-import axiosInstance from '../authentication/axiosInstance';
 import "../style/Form.scss";
-
-const apiUrl = process.env.REACT_APP_URL_SERVER;
-const userUrl = apiUrl + "/user";
+import userService from '../services/userAccountService';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -21,15 +18,15 @@ const Login = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const res = await axiosInstance.post(`${userUrl}/login`, {
-                email,
-                password
-            });
-            const { accessToken, userInfo } = res.data.DT;
-            // Dùng Redux để lưu token và user
+            const { accessToken, userInfo } = await userService.login(email, password);
             dispatch(login({ accessToken, userInfo }));
-            console.log("Logged in as:", userInfo);
-            navigate("/");
+
+            const isAdmin = await userService.verifyAdmin(accessToken);
+            if (isAdmin) {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             const msg = err.response?.data?.EM || "Lỗi đăng nhập";
             setErrorMessage(msg);
@@ -39,23 +36,20 @@ const Login = () => {
     const handleGoogleLoginSuccess = async (response) => {
         const decoded = jwtDecode(response.credential);
         try {
-            const res = await axiosInstance.post(`${userUrl}/login/google`, {
-                email: decoded.email,
-                hoten: decoded.name
-            });
-
-            const { accessToken, userInfo } = res.data.DT;
-
+            const { accessToken, userInfo } = await userService.loginGoogleUser(decoded.email, decoded.name);
             dispatch(login({ accessToken, userInfo }));
 
-            console.log("Google login:", userInfo);
-            navigate("/");
+            const isAdmin = await userService.verifyAdmin(accessToken);
+            if (isAdmin) {
+                navigate("/admin");
+            } else {
+                navigate("/");
+            }
         } catch (err) {
             console.error("Lỗi Google login", err);
             setErrorMessage("Google đăng nhập thất bại");
         }
     };
-
 
     return (
         <div className="d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>

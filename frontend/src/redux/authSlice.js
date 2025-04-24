@@ -21,6 +21,7 @@ const authSlice = createSlice({
       state.userInfo = action.payload.userInfo;
       Cookies.set("accessToken", action.payload.accessToken, { expires: 7 });
     },
+
     logout: (state) => {
       state.isAuthenticated = false;
       state.accessToken = null;

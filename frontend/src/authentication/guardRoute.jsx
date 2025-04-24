@@ -1,7 +1,8 @@
 import { Navigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { verifyAdmin } from "../services/userAccountService";
+import userService from "../services/userAccountService";
+
 
 const GuardRoute = ({ element: Element, ...rest }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -12,7 +13,7 @@ const GuardRoute = ({ element: Element, ...rest }) => {
       const accessToken = Cookies.get("accessToken");
       if (accessToken) {
         try {
-          const isAdmin = await verifyAdmin(accessToken);
+          const isAdmin = await userService.verifyAdmin(accessToken);
           setIsAuthenticated(isAdmin);
         } catch (error) {
           console.error("Error verifying admin:", error);

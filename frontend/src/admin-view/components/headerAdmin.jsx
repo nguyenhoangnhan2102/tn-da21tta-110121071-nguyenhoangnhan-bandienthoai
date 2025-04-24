@@ -24,6 +24,7 @@ import { useDispatch } from "react-redux";
 import { logout } from "../../redux/authSlice"; // Action từ Redux slice
 import Cookies from "js-cookie";
 import axios from "axios";
+import userService from "../../services/userAccountService";
 const HeaderAdmin = () => {
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,7 +56,7 @@ const HeaderAdmin = () => {
   const handleLogout = async () => {
     try {
       // Gọi API để clear session trên backend
-      await axios.post(`${api}/logout`);
+      await userService.logout();
 
       // Clear cookies và Redux state
       Cookies.remove("accessToken");
