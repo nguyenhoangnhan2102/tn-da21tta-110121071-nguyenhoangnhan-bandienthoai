@@ -65,39 +65,33 @@ const Register = () => {
         <div className="container d-flex align-items-center justify-content-center" style={{ height: '100vh' }}>
             <form className="form-register p-4 border rounded bg-light" /*onSubmit={handleSubmit}*/>
                 <h2 className="mb-4 text-center">ĐĂNG KÝ</h2>
-                <div className="mb-1">
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Tên đăng nhập"
-                        type="text"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="mb-1">
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Mật khẩu"
-                        type="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                    />
-                </div>
-                <div className="mb-3">
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Nhập lại mật khẩu"
-                        type="password"
-                        value={rePassword}
-                        onChange={(e) => setRePassword(e.target.value)}
-                    />
-                </div>
-                <div className='d-flex justify-content-between align-items-center gap-4 form-button' >
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Email"
+                    type="text"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                />
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Mật khẩu"
+                    type="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                />
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Nhập lại mật khẩu"
+                    type="password"
+                    value={rePassword}
+                    onChange={(e) => setRePassword(e.target.value)}
+                />
+                <div className="d-flex justify-content-between align-items-center gap-4 form-button mt-2">
                     <button
                         className='btn btn-primary button-register'
                         type="submit"

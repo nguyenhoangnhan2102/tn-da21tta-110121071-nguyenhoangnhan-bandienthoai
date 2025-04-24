@@ -90,28 +90,24 @@ const Login = () => {
                     Hoặc đăng nhập bằng:
                 </div>
                 {errorMessage && <p className="text-danger text-center">{errorMessage}</p>}
-                <div className="d-flex justify-content-center">
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Tên đăng nhập"
-                        name="email"
-                    // value={formData.email}
-                    // onChange={handleChange}
-                    />
-                </div>
-                <div className="mb-3 d-flex justify-content-center">
-                    <TextField
-                        fullWidth
-                        margin="normal"
-                        label="Mật khẩu"
-                        name="password"
-                        type="password"
-                    // value={formData.password}
-                    // onChange={handleChange}
-                    />
-                </div>
-                <div className='d-flex justify-content-between align-items-center form-button'>
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Tên đăng nhập"
+                    name="email"
+                // value={formData.email}
+                // onChange={handleChange}
+                />
+                <TextField
+                    fullWidth
+                    margin="normal"
+                    label="Mật khẩu"
+                    name="password"
+                    type="password"
+                // value={formData.password}
+                // onChange={handleChange}
+                />
+                <div className="d-flex justify-content-between align-items-center form-button mt-2">
                     <button
                         type="submit"
                         className="btn btn-primary"

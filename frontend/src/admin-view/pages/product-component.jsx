@@ -41,9 +41,9 @@ const ProductComponent = () => {
       let imageArray = [];
       const folderName = product.createdAt
         ? new Date(product.createdAt)
-            .toISOString()
-            .split(".")[0] // Lấy phần trước dấu "."
-            .replace(/[-:]/g, "") // Xóa dấu "-" và ":"
+          .toISOString()
+          .split(".")[0] // Lấy phần trước dấu "."
+          .replace(/[-:]/g, "") // Xóa dấu "-" và ":"
         : "unknown-date";
       console.log("sdlahdl;ádasd", folderName);
       try {
