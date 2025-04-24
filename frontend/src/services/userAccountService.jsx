@@ -17,7 +17,7 @@ const userService = {
 
   getUserProfile: async () => {
     try {
-      const response = await axiosInstance.post(`${apiUser}/profile`);
+      const response = await axiosInstance.post(`${apiUser}/manguoidung`);
       if (response.data.EC === 200) {
         return response.data.DT; // Trả về thông tin người dùng
       } else {

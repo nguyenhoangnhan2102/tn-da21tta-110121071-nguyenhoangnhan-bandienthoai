@@ -129,7 +129,7 @@ const HeaderAdmin = () => {
                 onClose={handleMenuClose}
                 sx={{ mt: 1 }}
               >
-                <MenuItem component={Link} to="/profile">
+                <MenuItem component={Link} to="/admin/profile">
                   Thông tin cá nhân
                 </MenuItem>
 
