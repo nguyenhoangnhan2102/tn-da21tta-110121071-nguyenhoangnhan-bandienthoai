@@ -87,7 +87,7 @@ const Register = () => {
                         onChange={handleChange}
                     />
                 </div>
-                <div className="mb-1">
+                <div className="mb-3">
                     <TextField
                         fullWidth
                         margin="normal"
