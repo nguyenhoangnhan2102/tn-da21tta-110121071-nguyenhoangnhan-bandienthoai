@@ -42,7 +42,7 @@ const NavBarAdmin = () => {
         sx={{
           width: "250px",
           backgroundColor: "#fff",
-          padding: "30px 20px",
+          padding: "30px 10px",
           borderRight: "1px solid #ddd",
           position: "fixed",
           top: 0,
@@ -69,6 +69,7 @@ const NavBarAdmin = () => {
           style={{
             marginBottom: "20px",
             color: "#1f1f1f",
+            padding: "0px 16px",
           }}
         >
           Quản lý hệ thống
@@ -88,9 +89,9 @@ const NavBarAdmin = () => {
               "&:hover": { backgroundColor: "#8aad51" },
             }}
           >
-            <ListItemIcon>
+            <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
               {" "}
-              <BarChartIcon sx={{ color: "#1f1f1f" }} />
+              <BarChartIcon />
             </ListItemIcon>
 
             <ListItemText primary="Thống kê cơ bản" />
@@ -114,11 +115,10 @@ const NavBarAdmin = () => {
                 "&:hover": { backgroundColor: "#8aad51" },
               }}
             >
-              <ListItemIcon>
+              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
                 {" "}
-                <PersonIcon sx={{ color: "#1f1f1f" }} />
+                <PersonIcon />
               </ListItemIcon>
-
               <ListItemText primary="Quản lý người dùng" />
             </ListItem>
 
@@ -133,8 +133,8 @@ const NavBarAdmin = () => {
                 userSelect: "none",
               }}
             >
-              <ListItemIcon>
-                <InventoryIcon sx={{ color: "#1f1f1f" }} />
+              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
+                <InventoryIcon />
               </ListItemIcon>
               <ListItemText
                 primary="Quản lý sản phẩm"
@@ -197,8 +197,8 @@ const NavBarAdmin = () => {
                 cursor: "pointer",
               }}
             >
-              <ListItemIcon>
-                <ShoppingCartIcon sx={{ color: "#1f1f1f" }} />
+              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
+                <ShoppingCartIcon />
               </ListItemIcon>
               <ListItemText primary="Quản lý đơn hàng" />
               {openSection === "donHang" ? <ExpandLess /> : <ExpandMore />}
@@ -242,7 +242,7 @@ const NavBarAdmin = () => {
                     borderRadius: "13px",
                     backgroundColor:
                       location.pathname ===
-                      "/admin/san-pham/don-hang/dang-xu-ly"
+                        "/admin/san-pham/don-hang/dang-xu-ly"
                         ? "#8aad51"
                         : "transparent", // Kiểm tra nếu đang ở trang này
                     "&:hover": {

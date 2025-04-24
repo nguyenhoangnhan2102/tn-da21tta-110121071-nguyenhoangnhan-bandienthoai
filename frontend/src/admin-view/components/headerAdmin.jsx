@@ -29,7 +29,6 @@ const HeaderAdmin = () => {
   const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
   const [anchorEl, setAnchorEl] = useState(null);
   const dispatch = useDispatch();
-  const api = process.env.REACT_APP_URL_SERVER;
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -110,16 +109,9 @@ const HeaderAdmin = () => {
                 sx={{ padding: 2, color: "#fff" }}
                 onClick={handleMenuOpen}
               >
-                {userInfo.AVATAR ? (
-                  <Avatar
-                    src={`${api}/images/${userInfo.AVATAR}`}
-                    alt={userInfo.AVATAR}
-                  />
-                ) : (
-                  <AccountCircle />
-                )}
-                <Typography variant="body2" sx={{ ml: 2, color: "white" }}>
-                  {userInfo.TENNGUOIDUNG || "Người dùng"}
+                <AccountCircle />
+                <Typography variant="body2" sx={{ ml: 1, color: "white" }}>
+                  {userInfo.hoten || "Người dùng"}
                 </Typography>
               </Button>
               {/* Menu các tùy chọn */}
