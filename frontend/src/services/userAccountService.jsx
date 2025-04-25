@@ -9,7 +9,7 @@ const userService = {
   getAllUser: async () => {
     try {
       const response = await axiosInstance.get(`${apiUser}`);
-      return response.data;
+      return response.data.DT;
     } catch (error) {
       console.error("Error!!!");
     }

@@ -98,6 +98,7 @@ const DynamicTable = ({ columns, data, onEdit, onDelete }) => {
               setPage(0);
             }}
             labelRowsPerPage="Số hàng mỗi trang"
+            sx={{ marginBottom: 0 }} // 👈 Thêm dòng này
           />
         </TableRow>
       </TableFooter>

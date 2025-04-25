@@ -102,14 +102,14 @@ const NavBarAdmin = () => {
             <ListItem
               button
               component={Link}
-              to="/admin/nguoi-dung"
+              to="/admin/user"
               sx={{
                 borderRadius: "12px",
                 color: "#1f1f1f",
                 cursor: "pointer",
                 userSelect: "none",
                 backgroundColor:
-                  location.pathname === "/admin/nguoi-dung"
+                  location.pathname === "/admin/user"
                     ? "#8aad51"
                     : "transparent", // Kiểm tra nếu đang ở trang này
                 "&:hover": { backgroundColor: "#8aad51" },
@@ -121,7 +121,28 @@ const NavBarAdmin = () => {
               </ListItemIcon>
               <ListItemText primary="Quản lý người dùng" />
             </ListItem>
-
+            <ListItem
+              button
+              component={Link}
+              to="/admin/brand"
+              sx={{
+                borderRadius: "12px",
+                color: "#1f1f1f",
+                cursor: "pointer",
+                userSelect: "none",
+                backgroundColor:
+                  location.pathname === "/admin/brand"
+                    ? "#8aad51"
+                    : "transparent", // Kiểm tra nếu đang ở trang này
+                "&:hover": { backgroundColor: "#8aad51" },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
+                {" "}
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý thương hiệu" />
+            </ListItem>
             {/* Quản lý sản phẩm */}
             <ListItem
               button
