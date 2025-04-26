@@ -22,7 +22,7 @@ const DynamicTable = ({ columns, data, onEdit, onDelete }) => {
     page * rowsPerPage + rowsPerPage
   );
   return (
-    <Table>
+    <Table sx={{ minWidth: 900 }} aria-label="dynamic table">
       <TableHead>
         <TableRow>
           {columns.map((col) => (
@@ -54,7 +54,7 @@ const DynamicTable = ({ columns, data, onEdit, onDelete }) => {
                   )}
                 </TableCell>
               ))}
-              <TableCell>
+              <TableCell sx={{ display: "flex" }}>
                 <Button
                   variant="outlined"
                   color="primary"

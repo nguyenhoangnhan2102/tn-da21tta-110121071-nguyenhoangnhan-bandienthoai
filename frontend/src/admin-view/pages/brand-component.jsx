@@ -24,11 +24,17 @@ const BrandComponent = () => {
         try {
             const response = await brandService.getAllBrand();
             console.log("response", response);
-            setBands(response);
+            // Map lại để mỗi item có thêm trường id = mathuonghieu
+            const mappedResponse = response.map((item) => ({
+                ...item,
+                id: item.mathuonghieu,
+            }));
+            setBands(mappedResponse);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
     }
+
 
     // Hàm tìm kiếm dữ liệu
     const handleSearch = (e) => {
@@ -134,10 +140,9 @@ const BrandComponent = () => {
                     setEditingUser(selectedUser);
                     setShowModal(true);
                 }}
-                onDelete={(mathuonghieu) => {
-                    console.log('Deleting brand with ID:', mathuonghieu); // Log the ID
-                    if (window.confirm("Bạn có chắc muốn xóa user này?")) {
-                        handleDeleteBrand(mathuonghieu);
+                onDelete={(id) => {
+                    if (window.confirm("Bạn có chắc muốn xóa thương hiệu này?")) {
+                        handleDeleteBrand(id);
                     }
                 }}
             />
