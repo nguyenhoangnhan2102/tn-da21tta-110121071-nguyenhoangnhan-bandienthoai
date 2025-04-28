@@ -56,7 +56,6 @@ const registerUser = async (req, res) => {
     const {
         password,
         email,
-        role = "0", // Giả sử mặc định là "user" nếu không có thông tin
         hoten
     } = req.body;
 
@@ -87,17 +86,15 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Thực hiện đăng ký người dùng mới
+        // Thực hiện đăng ký người dùng mới, mặc định gán maquyen = 0
         const [result] = await pool.query(
             `INSERT INTO NGUOIDUNG 
-                (email, password, hoten, role, created_at, updated_at)
-                VALUES (?, ?, ?, ?, NOW(), NOW())
-            `,
+                (email, password, hoten, maquyen, created_at, updated_at)
+                VALUES (?, ?, ?, 0, NOW(), NOW())`,
             [
                 email,
                 hashedPassword,
-                hoten,
-                role
+                hoten
             ]
         );
 
@@ -119,6 +116,7 @@ const registerUser = async (req, res) => {
         });
     }
 };
+
 
 const logoutUser = (req, res) => {
     res.clearCookie("accessToken");
@@ -209,15 +207,17 @@ const loginUser = async (req, res) => {
 
 const loginUserGoogle = async (req, res) => {
     const { email, hoten } = req.body;
+
     if (!email) {
         return res.status(401).json({
-            EM: "email is missing",
+            EM: "Email is missing",
             EC: 401,
             DT: [],
         });
     }
 
     try {
+        // Kiểm tra xem người dùng đã có trong hệ thống chưa
         const [rows] = await pool.query(
             "SELECT * FROM NGUOIDUNG WHERE email = ?",
             [email]
@@ -225,16 +225,19 @@ const loginUserGoogle = async (req, res) => {
 
         if (rows.length > 0) {
             const user = rows[0];
+
+            // Tạo JWT token với thông tin người dùng
             const token = jwt.sign(
                 {
                     manguoidung: user.manguoidung,
                     email: user.email,
                     role: user.role,
+                    maquyen: user.maquyen,  // Quyền của người dùng
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
                     created_at: user.created_at,
-                    updated_at: user.updated_at
+                    updated_at: user.updated_at,
                 },
                 JWT_SECRET,
                 { expiresIn: "5h" }
@@ -249,30 +252,46 @@ const loginUserGoogle = async (req, res) => {
                 },
             });
         } else {
-            const role = "0";
-            const [insertResult] = await pool.query(
-                `INSERT INTO NGUOIDUNG 
-                    (email, role, hoten, created_at, updated_at)
-                 VALUES (?, ?, ?, NOW(), NOW())`,
-                [email, role, hoten]
+            // Kiểm tra xem quyền mặc định (maquyen = 0) có tồn tại trong PHANQUYEN không
+            const [permissionRows] = await pool.query(
+                "SELECT * FROM PHANQUYEN WHERE maquyen = ?",
+                [0]
             );
 
+            if (permissionRows.length === 0) {
+                // Nếu không có quyền mặc định, tạo quyền mặc định
+                await pool.query(
+                    "INSERT INTO PHANQUYEN (maquyen, tenquyen) VALUES (?, ?)",
+                    [0, 'Quyền mặc định']
+                );
+            }
+
+            // Người dùng mới, tạo tài khoản với quyền mặc định (maquyen = 0)
+            const [insertResult] = await pool.query(
+                `INSERT INTO NGUOIDUNG 
+                    (email, hoten, maquyen, created_at, updated_at)
+                 VALUES (?, ?, ?, NOW(), NOW())`,
+                [email, hoten, 0]  // maQuyen = 0 là quyền mặc định
+            );
+
+            // Lấy lại thông tin người dùng mới đã tạo
             const [newUserRows] = await pool.query(
                 "SELECT * FROM NGUOIDUNG WHERE email = ?",
                 [email]
             );
             const user = newUserRows[0];
 
+            // Tạo JWT token cho người dùng mới
             const token = jwt.sign(
                 {
                     manguoidung: user.manguoidung,
                     email: user.email,
-                    role: user.role,
+                    maquyen: user.maquyen,  // Quyền của người dùng
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
                     created_at: user.created_at,
-                    updated_at: user.updated_at
+                    updated_at: user.updated_at,
                 },
                 JWT_SECRET,
                 { expiresIn: "5h" }
@@ -296,6 +315,7 @@ const loginUserGoogle = async (req, res) => {
         });
     }
 };
+
 
 // ---------------------------------------------- updateUserById
 const updateUserById_Admin = async (req, res) => {
