@@ -6,15 +6,17 @@ import userService from "../../services/userAccountService";
 import BrandModal from "../modal/brand-modal";
 import brandService from "../../services/brandService";
 import { toast } from "react-toastify";
+import colorService from "../../services/colorService";
+import ColorModal from "../modal/color-modal";
 
-const BrandComponent = () => {
+const ColorComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterValue, setFilterValue] = useState({});
     const [sortColumn, setSortColumn] = useState("id");
     const [sortOrder, setSortOrder] = useState("asc");
-    const [bands, setBands] = useState([]);
+    const [colors, setColors] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
+    const [editing, setEditing] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -22,14 +24,14 @@ const BrandComponent = () => {
 
     const fetchData = async () => {
         try {
-            const response = await brandService.getAllBrand();
+            const response = await colorService.getAllColor();
             console.log("response", response);
             // Map lại để mỗi item có thêm trường id = mathuonghieu
             const mappedResponse = response.map((item) => ({
                 ...item,
-                id: item.mathuonghieu,
+                id: item.mamau,
             }));
-            setBands(mappedResponse);
+            setColors(mappedResponse);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -42,11 +44,11 @@ const BrandComponent = () => {
     };
 
     // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
-    const filteredData = bands.filter((item) => {
+    const filteredData = colors.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
 
-        const matchSearch = item.tenthuonghieu &&
-            item.tenthuonghieu.toLowerCase().includes(searchLower);
+        const matchSearch = item.tenmau &&
+            item.tenmau.toLowerCase().includes(searchLower);
 
         const matchFilter = Object.entries(filterValue).every(([key, value]) =>
             value ? item[key] === value : true
@@ -65,22 +67,22 @@ const BrandComponent = () => {
     });
 
     // List data cho C_SortList
-    const listData = [
-        {
-            key: "name",
-            value: filterValue.name || "",
-            listSelect: Array.from(new Set(bands.map((u) => u.name))).map(
-                (name) => ({
-                    id: name,
-                    name,
-                })
-            ),
-        },
-    ];
+    // const listData = [
+    //     {
+    //         key: "name",
+    //         value: filterValue.name || "",
+    //         listSelect: Array.from(new Set(bands.map((u) => u.name))).map(
+    //             (name) => ({
+    //                 id: name,
+    //                 name,
+    //             })
+    //         ),
+    //     },
+    // ];
 
-    const handleDeleteBrand = async (mathuonghieu) => {
+    const handleDelete = async (mamau) => {
         try {
-            const response = await brandService.deleteBrand(mathuonghieu);
+            const response = await colorService.deleteColor(mamau);
             if (response) {
                 toast.success("Xóa thương hiệu thành công");
                 fetchData(); // Cập nhật lại danh sách sau khi xóa
@@ -94,9 +96,9 @@ const BrandComponent = () => {
 
     //data của dữ liệu
     const columns = [
-        { key: "mathuonghieu", label: "ID" },
-        { key: "tenthuonghieu", label: "Tên thương hiệu" },
-        { key: "trangthaithuonghieu", label: "Trạng thái" },
+        { key: "mamau", label: "ID" },
+        { key: "tenmau", label: "Tên màu" },
+        { key: "trangthaimau", label: "Trạng thái" },
         { key: "created_at", label: "Ngày tạo" },
         { key: "updated_at", label: "Ngày cập nhật" },
     ];
@@ -124,7 +126,7 @@ const BrandComponent = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => {
-                        setEditingUser(null);
+                        setEditing(null);
                         setShowModal(true);
                     }}
                 >
@@ -137,28 +139,28 @@ const BrandComponent = () => {
                 data={sortedData}
                 onEdit={(id) => {
                     const selectedUser = sortedData.find((u) => u.id === id);
-                    setEditingUser(selectedUser);
+                    setEditing(selectedUser);
                     setShowModal(true);
                 }}
                 onDelete={(id) => {
                     if (window.confirm("Bạn có chắc muốn xóa thương hiệu này?")) {
-                        handleDeleteBrand(id);
+                        handleDelete(id);
                     }
                 }}
             />
 
-            <BrandModal
+            <ColorModal
                 open={showModal}
                 onClose={() => setShowModal(false)}
                 onSave={() => {
                     fetchData();
                     setShowModal(false); // 👈 Đóng modal sau khi lưu
                 }}
-                brand={editingUser} // 👈 Thêm dòng này
+                color={editing} // 👈 Thêm dòng này
                 isView={false}
             />
         </div>
     );
 };
 
-export default BrandComponent;
+export default ColorComponent;

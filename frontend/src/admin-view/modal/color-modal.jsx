@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { toast } from "react-toastify";
 import brandService from "../../services/brandService";
+import colorService from "../../services/colorService";
 // Style for the modal box
 const modalStyle = {
     position: "absolute",
@@ -31,22 +32,22 @@ const modalStyle = {
     overflow: "auto",
 };
 
-const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
+const ColorModal = ({ color, onSave, open, onClose, isView }) => {
     const [form, setForm] = useState({
-        tenthuonghieu: "",
+        tenmau: "",
     });
 
     useEffect(() => {
-        if (brand) {
+        if (color) {
             setForm({
-                tenthuonghieu: brand.tenthuonghieu || "",
+                tenmau: color.tenmau || "",
             });
         } else {
             setForm({
-                tenthuonghieu: "",
+                tenmau: "",
             });
         }
-    }, [brand, open]);
+    }, [color, open]);
 
     const handleChange = (e) => {
         if (isView) return;
@@ -61,15 +62,15 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
 
     const handleSubmit = async () => {
         try {
-            if (brand) {
-                await brandService.updateBrand(brand.mathuonghieu, form.tenthuonghieu);
-                toast.success("Cập nhật loại sản phẩm thành công");
+            if (color) {
+                await colorService.updateColor(color.mamau, form.tenmau);
+                toast.success("Cập nhật thành công");
             } else {
-                const response = await brandService.createBrand(form.tenthuonghieu);
+                const response = await colorService.createColor(form.tenmau);
                 if (response.statusCode === 400) {
                     toast.error("Danh mục này đã tồn tại");
                 } else {
-                    toast.success("Thêm loại sản phẩm thành công");
+                    toast.success("Thêm thành công");
                 }
             }
             onSave(form);
@@ -88,14 +89,14 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
         >
             <Box sx={modalStyle}>
                 <Typography id="modal-title" variant="h6" component="h2">
-                    {isView ? "Xem chi tiết danh mục" : brand ? "Cập nhật danh mục" : "Thêm thương hiệu mới"}
+                    {isView ? "Xem chi tiết danh mục" : color ? "Cập nhật màu" : "Thêm màu mới"}
                 </Typography>
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Tên danh mục"
-                    name="tenthuonghieu"
-                    value={form.tenthuonghieu}
+                    label="Tên màu"
+                    name="tenmau"
+                    value={form.tenmau}
                     onChange={handleChange}
                     disabled={isView}
                 />{" "}
@@ -120,4 +121,4 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
     );
 };
 
-export default BrandModal;
+export default ColorModal;
