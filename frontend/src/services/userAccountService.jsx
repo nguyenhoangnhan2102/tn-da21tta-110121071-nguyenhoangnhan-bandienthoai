@@ -84,6 +84,43 @@ const userService = {
       return false;
     }
   },
+
+  updateUserById_Admin: async (userData) => {
+    try {
+      const response = await axiosInstance.put(`${apiUser}/update`, userData);
+      if (response.data.EC === 1) {
+        toast.success(response.data.EM);
+        return response.data.DT;
+      } else {
+        toast.error(response.data.EM);
+        return null;
+      }
+    } catch (error) {
+      toast.error("Xảy ra lỗi khi cập nhật thông tin người dùng (Admin)");
+      console.error("Error in updateUserById_Admin:", error.message);
+      return null;
+    }
+  },
+
+  updateUserById_User: async (manguoidung, userData) => {
+    try {
+      const response = await axiosInstance.put(`${apiUser}/${manguoidung}`, userData);
+      if (response.data.EC === 1) {
+        toast.success(response.data.EM);
+        return {
+          user: response.data.DT,
+          accessToken: response.data.accessToken,
+        };
+      } else {
+        toast.error(response.data.EM);
+        return null;
+      }
+    } catch (error) {
+      toast.error("Xảy ra lỗi khi cập nhật thông tin người dùng");
+      console.error("Error in updateUserById_User:", error.message);
+      return null;
+    }
+  },
 }
 
 export default userService;

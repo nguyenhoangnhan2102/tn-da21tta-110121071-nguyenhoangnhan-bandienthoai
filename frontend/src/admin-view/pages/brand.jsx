@@ -14,7 +14,7 @@ const BrandComponent = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [bands, setBands] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [editing, setEditing] = useState(null);
+    const [editting, setEditing] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -28,6 +28,7 @@ const BrandComponent = () => {
             const mappedResponse = response.map((item) => ({
                 ...item,
                 id: item.mathuonghieu,
+                trangthaithuonghieu: item.trangthaithuonghieu === 0 ? "Hoạt động" : "Ngưng hoạt động",
             }));
             setBands(mappedResponse);
         } catch (error) {
@@ -136,8 +137,8 @@ const BrandComponent = () => {
                 columns={columns}
                 data={sortedData}
                 onEdit={(id) => {
-                    const selectedUser = sortedData.find((u) => u.id === id);
-                    setEditing(selectedUser);
+                    const selected = sortedData.find((u) => u.id === id);
+                    setEditing(selected);
                     setShowModal(true);
                 }}
                 onDelete={(id) => {
@@ -154,7 +155,7 @@ const BrandComponent = () => {
                     fetchData();
                     setShowModal(false); // 👈 Đóng modal sau khi lưu
                 }}
-                brand={editing} // 👈 Thêm dòng này
+                brand={editting} // 👈 Thêm dòng này
                 isView={false}
             />
         </div>

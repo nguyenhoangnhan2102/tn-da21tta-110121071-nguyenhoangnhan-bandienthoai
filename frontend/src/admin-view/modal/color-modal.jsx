@@ -1,22 +1,11 @@
 import React, { useState, useEffect } from "react";
 import {
     Box,
-    Button,
     Modal,
     Typography,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
     TextField,
-    Menu,
-    InputAdornment,
-    ListItemText,
-    Autocomplete,
-    CircularProgress,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import brandService from "../../services/brandService";
 import colorService from "../../services/colorService";
 // Style for the modal box
 const modalStyle = {

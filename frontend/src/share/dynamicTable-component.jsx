@@ -12,7 +12,7 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
-const DynamicTable = ({ columns, data, onEdit, onDelete }) => {
+const DynamicTable = ({ columns, data, onEdit, onDelete, hideDeleteButton = false }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
 
@@ -65,15 +65,17 @@ const DynamicTable = ({ columns, data, onEdit, onDelete }) => {
                 >
                   Sửa
                 </Button>
-                <Button
-                  variant="outlined"
-                  color="error"
-                  size="small"
-                  startIcon={<DeleteIcon />}
-                  onClick={() => onDelete?.(row.id)}
-                >
-                  Xóa
-                </Button>
+                {!hideDeleteButton && (
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    startIcon={<DeleteIcon />}
+                    onClick={() => onDelete?.(row.id)}
+                  >
+                    Xóa
+                  </Button>
+                )}
               </TableCell>
             </TableRow>
           ))

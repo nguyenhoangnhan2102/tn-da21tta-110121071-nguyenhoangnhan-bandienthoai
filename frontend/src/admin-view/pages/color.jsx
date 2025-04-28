@@ -16,7 +16,7 @@ const ColorComponent = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [colors, setColors] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [editing, setEditing] = useState(null);
+    const [editting, setEditing] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -30,6 +30,7 @@ const ColorComponent = () => {
             const mappedResponse = response.map((item) => ({
                 ...item,
                 id: item.mamau,
+                trangthaimau: item.trangthaimau === 0 ? "Hoạt động" : "Ngưng hoạt động",
             }));
             setColors(mappedResponse);
         } catch (error) {
@@ -105,7 +106,7 @@ const ColorComponent = () => {
 
     return (
         <div style={{ padding: "2rem" }}>
-            <h2>📋 Danh sách sản phẩm</h2>
+            <h2>📋 Danh sách màu</h2>
 
             {/* Giao diện tìm kiếm */}
             <input
@@ -130,7 +131,7 @@ const ColorComponent = () => {
                         setShowModal(true);
                     }}
                 >
-                    Thêm thương hiệu
+                    Thêm màu
                 </Button>
             </div>
             {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
@@ -138,8 +139,8 @@ const ColorComponent = () => {
                 columns={columns}
                 data={sortedData}
                 onEdit={(id) => {
-                    const selectedUser = sortedData.find((u) => u.id === id);
-                    setEditing(selectedUser);
+                    const selected = sortedData.find((u) => u.id === id);
+                    setEditing(selected);
                     setShowModal(true);
                 }}
                 onDelete={(id) => {
@@ -156,7 +157,7 @@ const ColorComponent = () => {
                     fetchData();
                     setShowModal(false); // 👈 Đóng modal sau khi lưu
                 }}
-                color={editing} // 👈 Thêm dòng này
+                color={editting} // 👈 Thêm dòng này
                 isView={false}
             />
         </div>

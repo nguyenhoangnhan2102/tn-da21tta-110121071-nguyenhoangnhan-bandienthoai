@@ -3,6 +3,7 @@ import DynamicTable from "../../share/dynamicTable-component";
 // import ProductModalMui from "../modal/product-modal";
 import { Button } from "@mui/material";
 import userService from "../../services/userAccountService";
+import UserModal from "../modal/user-modal";
 
 const UserComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -11,7 +12,7 @@ const UserComponent = () => {
     const [sortOrder, setSortOrder] = useState("asc");
     const [users, setUsers] = useState([]);
     const [showModal, setShowModal] = useState(false);
-    const [editingUser, setEditingUser] = useState(null);
+    const [editting, setEditing] = useState(null);
 
     useEffect(() => {
         fetchData();
@@ -21,7 +22,12 @@ const UserComponent = () => {
         try {
             const response = await userService.getAllUser();
             console.log("response", response);
-            setUsers(response);
+            const mappedResponse = response.map((item) => ({
+                ...item,
+                id: item.manguoidung,
+                role: item.role === 1 ? "Quản trị viên" : "Người dùng",
+            }));
+            setUsers(mappedResponse);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -46,10 +52,6 @@ const UserComponent = () => {
         return matchSearch && matchFilter;
     });
 
-
-    console.log("filteredData", filteredData);
-    console.log("users", users);
-
     // Sắp xếp dữ liệu
     const sortedData = filteredData.sort((a, b) => {
         if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
@@ -57,28 +59,28 @@ const UserComponent = () => {
         return 0;
     });
 
-    // List data cho C_SortList
-    const listData = [
-        {
-            key: "name",
-            value: filterValue.name || "",
-            listSelect: Array.from(new Set(users.map((u) => u.name))).map(
-                (name) => ({
-                    id: name,
-                    name,
-                })
-            ),
-        },
-    ];
+    // // List data cho C_SortList
+    // const listData = [
+    //     {
+    //         key: "name",
+    //         value: filterValue.name || "",
+    //         listSelect: Array.from(new Set(users.map((u) => u.name))).map(
+    //             (name) => ({
+    //                 id: name,
+    //                 name,
+    //             })
+    //         ),
+    //     },
+    // ];
 
-    // Hàm thay đổi bộ lọc
-    const handleFilterChange = (updatedListData) => {
-        const updatedFilterValue = updatedListData.reduce((acc, item) => {
-            acc[item.key] = item.value;
-            return acc;
-        }, {});
-        setFilterValue(updatedFilterValue); // Cập nhật giá trị bộ lọc
-    };
+    // // Hàm thay đổi bộ lọc
+    // const handleFilterChange = (updatedListData) => {
+    //     const updatedFilterValue = updatedListData.reduce((acc, item) => {
+    //         acc[item.key] = item.value;
+    //         return acc;
+    //     }, {});
+    //     setFilterValue(updatedFilterValue); // Cập nhật giá trị bộ lọc
+    // };
 
     //data của dữ liệu
     const columns = [
@@ -101,7 +103,7 @@ const UserComponent = () => {
                 onChange={handleSearch}
                 style={{ marginBottom: "1rem", padding: "0.5rem" }}
             />
-            <div
+            {/* <div
                 style={{
                     display: "flex",
                     justifyContent: "flex-end",
@@ -118,29 +120,33 @@ const UserComponent = () => {
                 >
                     Thêm sản phẩm
                 </Button>
-            </div>
+            </div> */}
             {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
             <DynamicTable
                 columns={columns}
                 data={sortedData}
-            // onEdit={(id) => {
-            //     const selectedUser = sortedData.find((u) => u.id === id);
-            //     setEditingUser(selectedUser);
-            //     setShowModal(true);
-            // }}
+                hideDeleteButton={true}
+                onEdit={(id) => {
+                    const selected = sortedData.find((u) => u.id === id);
+                    setEditing(selected);
+                    setShowModal(true);
+                }}
             // onDelete={(id) => {
             //     if (window.confirm("Bạn có chắc muốn xóa user này?")) {
             //         handleDeleteUser(id);
             //     }
             // }}
             />
-            {/*
-            <ProductModalMui
+            <UserModal
                 open={showModal}
                 onClose={() => setShowModal(false)}
-                onSubmit={() => fetchProduct()}
-                initialData={editingUser}
-            /> */}
+                onSave={() => {
+                    fetchData();
+                    setShowModal(false); // 👈 Đóng modal sau khi lưu
+                }}
+                user={editting} // 👈 Thêm dòng này
+                isView={false}
+            />
         </div>
     );
 };
