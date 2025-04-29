@@ -92,6 +92,7 @@ const UserComponent = () => {
         { key: "role", label: "Vai trò" },
         { key: "created_at", label: "Ngày tạo" },
         { key: "updated_at", label: "Ngày cập nhật" },
+        { key: "updated_at", label: "Ngày cập nhật" },
     ];
     return (
         <div className="mt-3">
