@@ -46,7 +46,6 @@ const capacityRouters = require("./routers/capacityRouters.js");
 const brandRouters = require("./routers/brandRouters.js");
 const colorRouters = require("./routers/colorRouters");
 const productRouters = require("./routers/productRouters.js");
-const permissionRouters = require("./routers/permissionRouters");
 
 //router
 app.use("/user", userRoute);
@@ -54,7 +53,6 @@ app.use("/capacity", capacityRouters);
 app.use("/brand", brandRouters);
 app.use("/color", colorRouters);
 app.use("/product", productRouters);
-app.use("/permission", permissionRouters);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId

@@ -86,10 +86,9 @@ const registerUser = async (req, res) => {
             });
         }
 
-        // Thực hiện đăng ký người dùng mới, mặc định gán maquyen = 0
         const [result] = await pool.query(
             `INSERT INTO NGUOIDUNG 
-                (email, password, hoten, maquyen, created_at, updated_at)
+                (email, password, hoten, role, created_at, updated_at)
                 VALUES (?, ?, ?, 0, NOW(), NOW())`,
             [
                 email,
@@ -320,8 +319,6 @@ const loginUserGoogle = async (req, res) => {
 const updateUserById_Admin = async (req, res) => {
     const {
         manguoidung,
-        email,
-        password,
         hoten,
         sodienthoai,
         diachi,
@@ -342,8 +339,7 @@ const updateUserById_Admin = async (req, res) => {
         // Cập nhật thông tin người dùng trong database
         const [result] = await pool.query(
             `UPDATE NGUOIDUNG
-                SET email = ?,
-                password = ?,
+                SET
                 hoten = ?,
                 sodienthoai = ?,
                 diachi = ?,
@@ -351,8 +347,6 @@ const updateUserById_Admin = async (req, res) => {
                 updated_at = ?
             WHERE manguoidung = ?`,
             [
-                email,
-                password,
                 hoten,
                 sodienthoai,
                 diachi,
@@ -371,11 +365,14 @@ const updateUserById_Admin = async (req, res) => {
             });
         }
 
-        return res.status(200).json({
-            EM: "Cập nhật thông tin người dùng thành công",
-            EC: 1,
-            DT: { manguoidung },
-        });
+        if (result.affectedRows === 0) {
+            return res.status(200).json({
+                EM: "Không có thay đổi nào được thực hiện",
+                EC: 1,
+                DT: { manguoidung },
+            });
+        }
+
     } catch (error) {
         console.error("Error in updateUserById:", error);
         return res.status(500).json({

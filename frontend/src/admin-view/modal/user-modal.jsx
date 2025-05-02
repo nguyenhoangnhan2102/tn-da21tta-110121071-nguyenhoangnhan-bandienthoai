@@ -4,6 +4,7 @@ import {
     Modal,
     Typography,
     TextField,
+    MenuItem,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import userService from "../../services/userAccountService";
@@ -52,14 +53,14 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
 
     const handleChange = (e) => {
         if (isView) return;
-
         const { name, value } = e.target;
 
         setForm((prev) => ({
             ...prev,
-            [name]: value,
+            [name]: name === "role" ? parseInt(value) : value,
         }));
     };
+
 
     const handleSubmit = async () => {
         try {
@@ -71,7 +72,7 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                 };
 
                 // Gọi API để cập nhật người dùng
-                const response = await userService.updateUserById_User(form.manguoidung, updatedData);
+                const response = await userService.updateUserById_Admin(updatedData);
 
                 if (response) {
                     toast.success("Cập nhật thành công");
@@ -128,6 +129,7 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                     disabled={isView}
                 />{" "}
                 <TextField
+                    select
                     fullWidth
                     margin="normal"
                     label="Phân quyền"
@@ -135,7 +137,11 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                     value={form.role}
                     onChange={handleChange}
                     disabled={isView}
-                />{" "}
+                >
+                    <MenuItem value={1}>Quản trị viên</MenuItem>
+                    <MenuItem value={2}>Nhân viên</MenuItem>
+                    <MenuItem value={0}>Người dùng</MenuItem>
+                </TextField>
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
                     {!isView ? (
                         <button
