@@ -232,7 +232,6 @@ const loginUserGoogle = async (req, res) => {
                     manguoidung: user.manguoidung,
                     email: user.email,
                     role: user.role,
-                    maquyen: user.maquyen,  // Quyền của người dùng
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
@@ -248,45 +247,36 @@ const loginUserGoogle = async (req, res) => {
                 EC: 200,
                 DT: {
                     accessToken: token,
-                    userInfo: user,
+                    userInfo: {
+                        manguoidung: user.manguoidung,
+                        email: user.email,
+                        role: user.role,
+                        hoten: user.hoten,
+                        sodienthoai: user.sodienthoai,
+                        diachi: user.diachi,
+                        created_at: user.created_at,
+                        updated_at: user.updated_at,
+                    },
                 },
             });
         } else {
-            // Kiểm tra xem quyền mặc định (maquyen = 0) có tồn tại trong PHANQUYEN không
-            const [permissionRows] = await pool.query(
-                "SELECT * FROM PHANQUYEN WHERE maquyen = ?",
-                [0]
-            );
-
-            if (permissionRows.length === 0) {
-                // Nếu không có quyền mặc định, tạo quyền mặc định
-                await pool.query(
-                    "INSERT INTO PHANQUYEN (maquyen, tenquyen) VALUES (?, ?)",
-                    [0, 'Quyền mặc định']
-                );
-            }
-
-            // Người dùng mới, tạo tài khoản với quyền mặc định (maquyen = 0)
+            const role = "0";
             const [insertResult] = await pool.query(
-                `INSERT INTO NGUOIDUNG 
-                    (email, hoten, maquyen, created_at, updated_at)
-                 VALUES (?, ?, ?, NOW(), NOW())`,
-                [email, hoten, 0]  // maQuyen = 0 là quyền mặc định
+                "INSERT INTO NGUOIDUNG (email, role, hoten, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
+                [email, role, hoten]
             );
-
-            // Lấy lại thông tin người dùng mới đã tạo
-            const [newUserRows] = await pool.query(
+            const [rows] = await pool.query(
                 "SELECT * FROM NGUOIDUNG WHERE email = ?",
                 [email]
             );
-            const user = newUserRows[0];
-
+            const user = rows[0];
+            const newUserId = insertResult.insertId;
             // Tạo JWT token cho người dùng mới
             const token = jwt.sign(
                 {
                     manguoidung: user.manguoidung,
                     email: user.email,
-                    maquyen: user.maquyen,  // Quyền của người dùng
+                    role: user.role,
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
@@ -302,7 +292,16 @@ const loginUserGoogle = async (req, res) => {
                 EC: 200,
                 DT: {
                     accessToken: token,
-                    userInfo: user,
+                    userInfo: {
+                        manguoidung: user.manguoidung,
+                        email: user.email,
+                        role: user.role,
+                        hoten: user.hoten,
+                        sodienthoai: user.sodienthoai,
+                        diachi: user.diachi,
+                        created_at: user.created_at,
+                        updated_at: user.updated_at,
+                    },
                 },
             });
         }
