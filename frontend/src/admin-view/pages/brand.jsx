@@ -103,6 +103,10 @@ const BrandComponent = () => {
         { key: "updated_at", label: "Ngày cập nhật" },
         { key: "updated_at", label: "Ngày cập nhật" },
         { key: "updated_at", label: "Ngày cập nhật" },
+        { key: "updated_at", label: "Ngày cập nhật" },
+        { key: "updated_at", label: "Ngày cập nhật" },
+        { key: "updated_at", label: "Ngày cập nhật" },
+        { key: "updated_at", label: "Ngày cập nhật" },
     ];
 
     return (
