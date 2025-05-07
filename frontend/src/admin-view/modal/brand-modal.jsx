@@ -98,6 +98,9 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
                     value={form.tenthuonghieu}
                     onChange={handleChange}
                     disabled={isView}
+                    inputProps={{
+                        autoFocus: true
+                    }}
                 />{" "}
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
                     {!isView ? (

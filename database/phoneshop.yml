@@ -1,6 +1,6 @@
 version: '3.8'
 services:
-  db-shopphone:
+  db-phoneshop:
     image: mysql:5.7.40
     restart: always
     environment:
