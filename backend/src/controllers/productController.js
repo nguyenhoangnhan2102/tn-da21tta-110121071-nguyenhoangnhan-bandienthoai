@@ -48,36 +48,106 @@ const getProductById = async (req, res) => {
 };
 
 // Tạo sản phẩm (cho phép nhiều hình ảnh lưu dạng JSON chuỗi)
+// const createProduct = async (req, res) => {
+//     const {
+//         mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram,
+//         congnghemanhinh, dophangiai, cameratruoc, camerasau, pin
+//     } = req.body;
+
+//     const images = req.files?.map(file => file.filename); // từ multer
+//     const hinhanh = images?.length > 0 ? JSON.stringify(images) : null;
+
+//     try {
+//         const [result] = await pool.query(
+//             `INSERT INTO SANPHAM 
+//             (mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram, congnghemanhinh, dophangiai, cameratruoc, camerasau, pin, hinhanh)
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//             [mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram, congnghemanhinh, dophangiai, cameratruoc, camerasau, pin, hinhanh]
+//         );
+
+//         return res.status(201).json({
+//             EM: "Tạo sản phẩm thành công",
+//             EC: 1,
+//             DT: { masanpham: result.insertId },
+//         });
+//     } catch (error) {
+//         return res.status(400).json({
+//             EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
+//             EC: -1,
+//             DT: [],
+//         });
+//     }
+// };
+
 const createProduct = async (req, res) => {
     const {
-        mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram,
-        congnghemanhinh, dophangiai, cameratruoc, camerasau, pin
+        mathuonghieu,
+        tensanpham,
+        gia,
+        hinhanh,
+        hedieuhanh,
+        ram,
+        cpu,
+        gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
+        pin,
+        mota,
+        chitietsanpham // Mảng các object: [{ mamau, madungluong, soluong }]
     } = req.body;
 
-    const images = req.files?.map(file => file.filename); // từ multer
-    const hinhanh = images?.length > 0 ? JSON.stringify(images) : null;
+    const connection = await pool.getConnection();
 
     try {
-        const [result] = await pool.query(
-            `INSERT INTO SANPHAM 
-            (mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram, congnghemanhinh, dophangiai, cameratruoc, camerasau, pin, hinhanh)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram, congnghemanhinh, dophangiai, cameratruoc, camerasau, pin, hinhanh]
+        await connection.beginTransaction();
+
+        // 1. Tạo sản phẩm
+        const [result] = await connection.query(
+            `INSERT INTO SANPHAM (
+                mathuonghieu, tensanpham, gia, hinhanh, hedieuhanh, ram, cpu,
+                gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh,
+                pin, mota
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                mathuonghieu, tensanpham, gia, hinhanh, hedieuhanh, ram, cpu,
+                gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh,
+                pin, mota
+            ]
         );
 
+        const masanpham = result.insertId;
+
+        // 2. Tạo chi tiết sản phẩm với màu và dung lượng
+        for (const ct of chitietsanpham) {
+            const { mamau, madungluong, soluong } = ct;
+            await connection.query(
+                `INSERT INTO CHITIETSANPHAM (masanpham, mamau, madungluong, soluong)
+                 VALUES (?, ?, ?, ?)`,
+                [masanpham, mamau, madungluong, soluong]
+            );
+        }
+
+        await connection.commit();
+
         return res.status(201).json({
-            EM: "Tạo sản phẩm thành công",
+            EM: "Tạo sản phẩm và chi tiết thành công",
             EC: 1,
-            DT: { masanpham: result.insertId },
+            DT: { masanpham, tensanpham },
         });
     } catch (error) {
+        await connection.rollback();
         return res.status(400).json({
             EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
             EC: -1,
             DT: [],
         });
+    } finally {
+        connection.release();
     }
 };
+
 
 // Cập nhật sản phẩm
 const updateProduct = async (req, res) => {
