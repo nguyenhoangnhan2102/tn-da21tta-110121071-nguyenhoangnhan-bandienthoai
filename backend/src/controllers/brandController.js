@@ -30,7 +30,7 @@ const createBrand = async (req, res) => {
 
     try {
         await pool.query(
-            "INSERT INTO THUONGHIEU (tenthuonghieu, created_at, updated_at) VALUES (?, NOW(), NOW())",
+            "INSERT INTO THUONGHIEU (tenthuonghieu) VALUES (?)",
             [tenthuonghieu]
         );
         return res.status(201).json({

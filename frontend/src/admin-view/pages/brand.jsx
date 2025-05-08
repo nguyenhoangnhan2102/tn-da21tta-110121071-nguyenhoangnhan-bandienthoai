@@ -98,8 +98,6 @@ const BrandComponent = () => {
         { key: "mathuonghieu", label: "ID" },
         { key: "tenthuonghieu", label: "Tên thương hiệu" },
         { key: "trangthaithuonghieu", label: "Trạng thái" },
-        { key: "created_at", label: "Ngày tạo" },
-        { key: "updated_at", label: "Ngày cập nhật" },
     ];
 
     return (

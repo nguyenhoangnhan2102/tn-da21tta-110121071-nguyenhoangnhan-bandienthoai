@@ -88,8 +88,8 @@ const registerUser = async (req, res) => {
 
         const [result] = await pool.query(
             `INSERT INTO NGUOIDUNG 
-                (email, password, hoten, role, created_at, updated_at)
-                VALUES (?, ?, ?, 0, NOW(), NOW())`,
+                (email, password, hoten, role)
+                VALUES (?, ?, ?, 0)`,
             [
                 email,
                 hashedPassword,
@@ -169,8 +169,6 @@ const loginUser = async (req, res) => {
                 hoten: user.hoten,
                 sodienthoai: user.sodienthoai,
                 diachi: user.diachi,
-                created_at: user.created_at,
-                updated_at: user.updated_at
             },
             JWT_SECRET,
             { expiresIn: "5h" }
@@ -189,8 +187,6 @@ const loginUser = async (req, res) => {
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at
                 },
             },
         });
@@ -234,8 +230,6 @@ const loginUserGoogle = async (req, res) => {
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at,
                 },
                 JWT_SECRET,
                 { expiresIn: "5h" }
@@ -253,15 +247,13 @@ const loginUserGoogle = async (req, res) => {
                         hoten: user.hoten,
                         sodienthoai: user.sodienthoai,
                         diachi: user.diachi,
-                        created_at: user.created_at,
-                        updated_at: user.updated_at,
                     },
                 },
             });
         } else {
             const role = "0";
             const [insertResult] = await pool.query(
-                "INSERT INTO NGUOIDUNG (email, role, hoten, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
+                "INSERT INTO NGUOIDUNG (email, role, hoten) VALUES (?, ?, ?)",
                 [email, role, hoten]
             );
             const [rows] = await pool.query(
@@ -279,8 +271,6 @@ const loginUserGoogle = async (req, res) => {
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at,
                 },
                 JWT_SECRET,
                 { expiresIn: "5h" }
@@ -298,8 +288,6 @@ const loginUserGoogle = async (req, res) => {
                         hoten: user.hoten,
                         sodienthoai: user.sodienthoai,
                         diachi: user.diachi,
-                        created_at: user.created_at,
-                        updated_at: user.updated_at,
                     },
                 },
             });
@@ -490,8 +478,6 @@ const updateUserById_User = async (req, res) => {
                     hoten: user.hoten,
                     sodienthoai: user.sodienthoai,
                     diachi: user.diachi,
-                    created_at: user.created_at,
-                    updated_at: user.updated_at
                 },
                 JWT_SECRET,
                 { expiresIn: "5h" }
