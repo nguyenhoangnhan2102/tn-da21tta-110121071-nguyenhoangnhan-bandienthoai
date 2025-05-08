@@ -1,0 +1,150 @@
+
+-- Bảng NGUOIDUNG
+CREATE TABLE NGUOIDUNG (
+    manguoidung INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    hoten VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    email VARCHAR(100) UNIQUE,
+    password VARCHAR(255),
+    sodienthoai VARCHAR(20),
+    diachi TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    role INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Bảng MAU (màu sắc)
+CREATE TABLE MAU (
+    mamau INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    tenmau VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    trangthaimau INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Bảng DUNGLUONG
+CREATE TABLE DUNGLUONG (
+    madungluong INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    dungluong VARCHAR(50),
+    trangthaidungluong INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Bảng THUONGHIEU
+CREATE TABLE THUONGHIEU (
+    mathuonghieu INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    tenthuonghieu VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    trangthaithuonghieu INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+-- Bảng SANPHAM
+CREATE TABLE SANPHAM (
+    masanpham INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    mathuonghieu INT,
+    tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    gia DECIMAL(18, 2),
+    hinhanh VARCHAR(255),
+    hedieuhanh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    cpu VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    gpu VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    cameratruoc VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    camerasau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    congnghemanhinh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    dophangiaimanhinh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    pin VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    mota TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    trangthai INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (mathuonghieu) REFERENCES THUONGHIEU(mathuonghieu)
+);
+
+-- Bảng CHITIETSANPHAM
+CREATE TABLE CHITIETSANPHAM (
+    machitiet INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    masanpham INT,
+    mamau INT,
+    madungluong INT,
+    soluong INT,
+    trangthai INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (masanpham) REFERENCES SANPHAM(masanpham),
+    FOREIGN KEY (mamau) REFERENCES MAU(mamau),
+    FOREIGN KEY (madungluong) REFERENCES DUNGLUONG(madungluong)
+);
+
+-- Bảng DONHANG
+CREATE TABLE DONHANG (
+    madonhang INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    manguoidung INT,
+    tongtien DECIMAL(18, 2),
+    diachigiaohang TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    trangthaidonhang INT DEFAULT 0, -- trạng thái đơn hàng: 0-chờ xử lý, 1-đã xử lý,...
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung)
+);
+
+-- Bảng CHITIETDONHANG
+CREATE TABLE CHITIETDONHANG (
+    machitietdonhang INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    madonhang INT,
+    machitiet INT,
+    soluongSP INT,
+    giaSP DECIMAL(15,2),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang),
+    FOREIGN KEY (machitiet) REFERENCES CHITIETSANPHAM(machitiet)
+);
+
+-- Bảng GIOHANG
+CREATE TABLE GIOHANG (
+    magiohang INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    manguoidung INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung)
+);
+
+-- Bảng CHITIETGIOHANG
+CREATE TABLE CHITIETGIOHANG (
+    machitietgiohang INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    magiohang INT,
+    machitiet INT,
+    soluong INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (magiohang) REFERENCES GIOHANG(magiohang),
+    FOREIGN KEY (machitiet) REFERENCES CHITIETSANPHAM(machitiet)
+);
+
+-- Bảng THANHTOAN
+CREATE TABLE THANHTOAN (
+    mathanhtoan INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    madonhang INT,
+    phuongthuc VARCHAR(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, -- ví dụ: chuyển khoản, COD
+    trangthai INT DEFAULT 0, -- 0: chưa thanh toán, 1: đã thanh toán
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang)
+);
+
+-- Bảng DANHGIA
+CREATE TABLE DANHGIA (
+    madanhgia INT AUTO_INCREMENT PRIMARY KEY,
+    manguoidung INT,
+    masanpham INT,
+    sao INT CHECK (sao BETWEEN 1 AND 5),
+    binhluan TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    trangthai INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung),
+    FOREIGN KEY (masanpham) REFERENCES SANPHAM(masanpham)
+);
+
