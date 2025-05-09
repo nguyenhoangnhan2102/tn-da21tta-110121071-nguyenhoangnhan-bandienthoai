@@ -4,6 +4,7 @@ import DashboardAdmin from "./pages/DashboardAdmin";
 import Profile from "./components/profile";
 import UserComponent from "./pages/user";
 import BrandComponent from "./pages/brand";
+import ProductComponent from "./pages/product";
 
 const RouterAdmin = () => {
   const element = useRoutes([
@@ -18,6 +19,10 @@ const RouterAdmin = () => {
     {
       path: "/user",
       element: <UserComponent />,
+    },
+    {
+      path: "/product",
+      element: <ProductComponent />,
     },
     {
       path: "/brand",

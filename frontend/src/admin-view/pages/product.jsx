@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import DynamicTable from "../../share-component/dynamicTable-component";
-import DynamicSearchSort from "../../share-component/dynamicSearchSort";
-import productService from "../../services/product-service";
-import ProductModalMui from "../modal/product-modal";
+import DynamicTable from "../../share/dynamicTable-component";
 import { Button } from "@mui/material";
+import productService from "../../services/productService";
+import ProductDetailModal from "../modal/detailProduct-modal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL_PRODUCTS;
+
 const ProductComponent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterValue, setFilterValue] = useState({});
@@ -14,6 +14,8 @@ const ProductComponent = () => {
   const [product, setProduct] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState(null);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showViewModal, setShowViewModal] = useState(false);
 
   useEffect(() => {
     fetchProduct();
@@ -35,36 +37,8 @@ const ProductComponent = () => {
   };
 
   const fetchProduct = async () => {
-    const search = searchTerm;
-    const response = await productService.getProducts({ search });
-    const ProductWithImageUrl = response.listData.map((product) => {
-      let imageArray = [];
-      const folderName = product.createdAt
-        ? new Date(product.createdAt)
-          .toISOString()
-          .split(".")[0] // Lấy phần trước dấu "."
-          .replace(/[-:]/g, "") // Xóa dấu "-" và ":"
-        : "unknown-date";
-      console.log("sdlahdl;ádasd", folderName);
-      try {
-        imageArray = product.image ? JSON.parse(product.image) : [];
-      } catch (err) {
-        console.error("Lỗi parse ảnh:", err);
-      }
-
-      return {
-        ...product,
-        imageUrl:
-          imageArray.length > 0
-            ? `${API_URL}/uploads/product/${folderName}/${imageArray[0]}`
-            : null,
-        image: imageArray.length > 0 ? imageArray : null,
-        linkCreate: folderName,
-      };
-    });
-
-    console.log("ProductWithImageUrl;sdasd", ProductWithImageUrl);
-    setProduct(ProductWithImageUrl || []);
+    const response = await productService.getAllProducts();
+    setProduct(response || []);
   };
 
   // Hàm tìm kiếm dữ liệu
@@ -73,15 +47,19 @@ const ProductComponent = () => {
   };
 
   // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
+  // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
   const filteredData = product.filter((item) => {
-    const matchSearch = Object.values(item).some((value) =>
-      value.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const searchLower = searchTerm.toLowerCase();
+
+    const matchSearch = item.tensanpham &&
+      item.tensanpham.toLowerCase().includes(searchLower);
+
     const matchFilter = Object.entries(filterValue).every(([key, value]) =>
       value ? item[key] === value : true
     );
     return matchSearch && matchFilter;
   });
+
 
   // Sắp xếp dữ liệu
   const sortedData = filteredData.sort((a, b) => {
@@ -90,47 +68,30 @@ const ProductComponent = () => {
     return 0;
   });
 
-  // List data cho C_SortList
-  const listData = [
-    {
-      key: "name",
-      value: filterValue.name || "",
-      listSelect: Array.from(new Set(product.map((u) => u.name))).map(
-        (name) => ({
-          id: name,
-          name,
-        })
-      ),
-    },
-  ];
-
-  // Hàm thay đổi bộ lọc
-  const handleFilterChange = (updatedListData) => {
-    const updatedFilterValue = updatedListData.reduce((acc, item) => {
-      acc[item.key] = item.value;
-      return acc;
-    }, {});
-    setFilterValue(updatedFilterValue); // Cập nhật giá trị bộ lọc
-  };
-
-  //hàm tạo và cập nhật
-
-  const handleDeleteUser = async (id) => {
-    if (id) {
-      const response = await productService.deleteProducts(id);
-      if (response) {
-        fetchProduct();
-      }
-    }
-  };
+  // const handleDeleteUser = async (id) => {
+  //   if (id) {
+  //     const response = await productService.deleteProducts(id);
+  //     if (response) {
+  //       fetchProduct();
+  //     }
+  //   }
+  // };
 
   //data của dữ liệu
   const columns = [
-    { key: "id", label: "ID" },
-    { key: "name", label: "tên danh mục" },
-    { key: "imageUrl", label: "hình ảnh", isImage: true },
-    { key: "createdAt", label: "ngày tạo" },
-    { key: "updatedAt", label: "ngày cập nhật" },
+    // { key: "masanpham", label: "ID" },
+    { key: "tensanpham", label: "Tên" },
+    { key: "hinhanh", label: "Hình ảnh", isImage: true },
+    { key: "hedieuhanh", label: "Hệ điều hành" },
+    { key: "ram", label: "RAM" },
+    { key: "tenthuonghieu", label: "Thương hiệu" },
+    // { key: "cpu", label: "CPU" },
+    // { key: "gpu", label: "Tên" },
+    // { key: "cameratruoc", label: "Tên" },
+    // { key: "camerasau", label: "Tên" },
+    // { key: "congnghemanhinh", label: "Tên" },
+    // { key: "dophangiaimanhinh", label: "Tên" },
+    // { key: "pin", label: "Tên" },
   ];
   return (
     <div style={{ padding: "2rem" }}>
@@ -146,12 +107,6 @@ const ProductComponent = () => {
       />
 
       {/* Giao diện lọc động */}
-      <DynamicSearchSort
-        initialListData={listData}
-        label="Chọn danh mục"
-        onCategoryChange={(newCategory) => console.log(newCategory)} // Xử lý thay đổi danh mục (nếu có)
-        onChange={handleFilterChange} // Cập nhật bộ lọc khi người dùng chọn
-      />
       <div
         style={{
           display: "flex",
@@ -179,17 +134,24 @@ const ProductComponent = () => {
           setEditingUser(selectedUser);
           setShowModal(true);
         }}
-        onDelete={(id) => {
-          if (window.confirm("Bạn có chắc muốn xóa user này?")) {
-            handleDeleteUser(id);
-          }
+        showViewButton={true}
+        onView={(id) => {
+          const selected = sortedData.find((item) => item.id === id);
+          setSelectedProduct(selected);
+          setShowViewModal(true);
         }}
+
+      // onDelete={(id) => {
+      //   if (window.confirm("Bạn có chắc muốn xóa user này?")) {
+      //     handleDeleteUser(id);
+      //   }
+      // }}
       />
-      <ProductModalMui
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onSubmit={() => fetchProduct()}
-        initialData={editingUser}
+      <ProductDetailModal
+        open={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        product={selectedProduct}
+        imageBaseUrl={API_URL}
       />
     </div>
   );

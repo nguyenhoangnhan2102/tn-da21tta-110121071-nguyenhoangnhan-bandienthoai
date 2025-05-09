@@ -3,49 +3,76 @@ const pool = require("../config/database");
 // Lấy tất cả sản phẩm (chỉ lấy sản phẩm chưa bị xóa)
 const getAllProducts = async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM SANPHAM WHERE trangthai = 0");
-        return res.status(200).json({
-            EM: "Lấy tất cả sản phẩm thành công",
-            EC: 1,
-            DT: rows,
+        const [rows] = await pool.query(`
+            SELECT sp.*, th.tenthuonghieu 
+            FROM SANPHAM sp
+            LEFT JOIN THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
+            WHERE sp.trangthai = 0
+            ORDER BY sp.masanpham DESC
+        `);
+
+        res.status(200).json({
+            EM: "Lấy danh sách sản phẩm thành công",
+            EC: 0,
+            DT: rows
         });
     } catch (error) {
-        return res.status(500).json({
-            EM: `Lỗi server: ${error.message}`,
+        res.status(500).json({
+            EM: `Lỗi: ${error.message}`,
             EC: -1,
-            DT: [],
+            DT: []
         });
     }
 };
 
+
 // Lấy sản phẩm theo ID
 const getProductById = async (req, res) => {
-    const { masanpham } = req.params;
+    const masanpham = req.params.id;
+
     try {
-        const [rows] = await pool.query(
-            "SELECT * FROM SANPHAM WHERE masanpham = ? AND trangthai = 0",
-            [masanpham]
-        );
-        if (rows.length === 0) {
+        // Lấy thông tin sản phẩm chính
+        const [productRows] = await pool.query(`
+            SELECT sp.*, th.tenthuonghieu 
+            FROM SANPHAM sp
+            LEFT JOIN THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
+            WHERE sp.masanpham = ? AND sp.trangthai = 0
+        `, [masanpham]);
+
+        if (productRows.length === 0) {
             return res.status(404).json({
                 EM: "Không tìm thấy sản phẩm",
                 EC: 0,
-                DT: [],
+                DT: null
             });
         }
+
+        // Lấy danh sách màu - dung lượng của sản phẩm
+        const [detailRows] = await pool.query(`
+            SELECT * FROM CHITIETSANPHAM 
+            WHERE masanpham = ? AND trangthai = 0
+        `, [masanpham]);
+
+        const result = {
+            ...productRows[0],
+            variations: detailRows
+        };
+
         return res.status(200).json({
             EM: "Lấy sản phẩm thành công",
-            EC: 1,
-            DT: rows[0],
+            EC: 0,
+            DT: result
         });
+
     } catch (error) {
         return res.status(500).json({
-            EM: `Lỗi server: ${error.message}`,
+            EM: `Lỗi khi lấy sản phẩm: ${error.message}`,
             EC: -1,
-            DT: [],
+            DT: null
         });
     }
 };
+
 
 // Tạo sản phẩm (cho phép nhiều hình ảnh lưu dạng JSON chuỗi)
 // const createProduct = async (req, res) => {
@@ -140,74 +167,68 @@ const createProduct = async (req, res) => {
 
 // Cập nhật sản phẩm
 const updateProduct = async (req, res) => {
-    const { masanpham } = req.params;
+    const masanpham = req.params.id;
     const {
-        mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram,
-        congnghemanhinh, dophangiai, cameratruoc, camerasau, pin
+        mathuonghieu,
+        tensanpham,
+        hinhanh,
+        hedieuhanh,
+        ram,
+        cpu,
+        gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
+        pin,
+        mota
     } = req.body;
 
-    const images = req.files?.map(file => file.filename); // dùng multer để lấy ảnh
-    const hinhanh = images?.length > 0 ? JSON.stringify(images) : null;
-
     try {
-        const [result] = await pool.query(
-            `UPDATE SANPHAM SET 
-            mathuonghieu = ?, tensanpham = ?, hedieuhanh = ?, cpu = ?, gpu = ?, ram = ?, 
-            congnghemanhinh = ?, dophangiai = ?, cameratruoc = ?, camerasau = ?, pin = ?, hinhanh = ?, updated_at = CURRENT_TIMESTAMP
-            WHERE masanpham = ? AND trangthai = 0`,
-            [
-                mathuonghieu, tensanpham, hedieuhanh, cpu, gpu, ram,
-                congnghemanhinh, dophangiai, cameratruoc, camerasau, pin, hinhanh, masanpham
-            ]
+        const [result] = await pool.query(`
+            UPDATE SANPHAM SET 
+                mathuonghieu = ?, tensanpham = ?, hinhanh = ?, hedieuhanh = ?,
+                ram = ?, cpu = ?, gpu = ?, cameratruoc = ?, camerasau = ?,
+                congnghemanhinh = ?, dophangiaimanhinh = ?, pin = ?, mota = ?
+            WHERE masanpham = ?`,
+            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, ram, cpu, gpu, cameratruoc, camerasau,
+             congnghemanhinh, dophangiaimanhinh, pin, mota, masanpham]
         );
 
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                EM: "Không tìm thấy sản phẩm để cập nhật",
-                EC: 0,
-                DT: [],
-            });
-        }
-
-        return res.status(200).json({
+        res.status(200).json({
             EM: "Cập nhật sản phẩm thành công",
-            EC: 1,
-            DT: { masanpham },
+            EC: 0,
+            DT: result
         });
     } catch (error) {
-        return res.status(400).json({
-            EM: `Lỗi khi cập nhật sản phẩm: ${error.message}`,
+        res.status(500).json({
+            EM: `Lỗi cập nhật: ${error.message}`,
             EC: -1,
-            DT: [],
+            DT: []
         });
     }
 };
 
 // Xóa mềm sản phẩm
 const deleteProduct = async (req, res) => {
-    const { masanpham } = req.params;
+    const masanpham = req.params.id;
+
     try {
         const [result] = await pool.query(
-            "UPDATE SANPHAM SET trangthai = 1, updated_at = CURRENT_TIMESTAMP WHERE masanpham = ?",
+            `UPDATE SANPHAM SET trangthai = 1 WHERE masanpham = ?`,
             [masanpham]
         );
-        if (result.affectedRows === 0) {
-            return res.status(404).json({
-                EM: "Không tìm thấy sản phẩm để xóa",
-                EC: 0,
-                DT: [],
-            });
-        }
-        return res.status(200).json({
-            EM: "Xóa mềm sản phẩm thành công",
-            EC: 1,
-            DT: [],
+
+        res.status(200).json({
+            EM: "Xóa sản phẩm thành công (trạng thái = 1)",
+            EC: 0,
+            DT: result
         });
     } catch (error) {
-        return res.status(500).json({
-            EM: `Lỗi server khi xóa sản phẩm: ${error.message}`,
+        res.status(500).json({
+            EM: `Lỗi xóa sản phẩm: ${error.message}`,
             EC: -1,
-            DT: [],
+            DT: []
         });
     }
 };
