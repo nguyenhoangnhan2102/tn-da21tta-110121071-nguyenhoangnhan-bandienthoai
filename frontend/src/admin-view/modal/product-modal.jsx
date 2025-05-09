@@ -101,15 +101,22 @@ const ProductModal = ({ product, onSave, open, onClose, isView }) => {
         }));
     };
 
-
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
-        setForm({ ...form, hinhanh: files });
 
-        const previews = files.map((file) => URL.createObjectURL(file));
-        setPreviewImages(previews);
+        // Thêm ảnh mới vào danh sách ảnh cũ
+        const updatedHinhanh = [...form.hinhanh, ...files];
+        const updatedPreviews = [
+            ...previewImages,
+            ...files.map((file) => URL.createObjectURL(file))
+        ];
+
+        setForm((prev) => ({
+            ...prev,
+            hinhanh: updatedHinhanh
+        }));
+        setPreviewImages(updatedPreviews);
     };
-
 
     return (
         <Modal
