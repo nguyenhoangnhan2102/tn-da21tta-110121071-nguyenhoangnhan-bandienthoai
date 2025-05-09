@@ -118,6 +118,15 @@ const ProductModal = ({ product, onSave, open, onClose, isView }) => {
         setPreviewImages(updatedPreviews);
     };
 
+    const handleRemoveImage = (indexToRemove) => {
+        setPreviewImages((prev) => prev.filter((_, index) => index !== indexToRemove));
+        setForm((prev) => ({
+            ...prev,
+            hinhanh: prev.hinhanh.filter((_, index) => index !== indexToRemove)
+        }));
+    };
+
+
     return (
         <Modal
             open={open}
@@ -268,18 +277,48 @@ const ProductModal = ({ product, onSave, open, onClose, isView }) => {
                         {previewImages.length > 0 && (
                             <Box mt={2} display="flex" flexWrap="wrap" gap={2}>
                                 {previewImages.map((src, index) => (
-                                    <img
+                                    <Box
                                         key={index}
-                                        src={src}
-                                        alt={`preview-${index}`}
-                                        style={{
-                                            width: 100,
-                                            height: 100,
-                                            objectFit: "cover",
-                                            borderRadius: 8,
-                                            border: "1px solid #ccc",
-                                        }}
-                                    />
+                                        position="relative"
+                                        width={100}
+                                        height={100}
+                                        borderRadius={2}
+                                        overflow="hidden"
+                                        border="1px solid #ccc"
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`preview-${index}`}
+                                            style={{
+                                                width: "100%",
+                                                height: "100%",
+                                                objectFit: "cover"
+                                            }}
+                                        />
+                                        {!isView && (
+                                            <button
+                                                onClick={() => handleRemoveImage(index)}
+                                                style={{
+                                                    position: "absolute",
+                                                    top: 2,
+                                                    right: 2,
+                                                    background: "rgba(0,0,0,0.6)",
+                                                    color: "white",
+                                                    border: "none",
+                                                    borderRadius: "50%",
+                                                    width: 20,
+                                                    height: 20,
+                                                    cursor: "pointer",
+                                                    fontSize: "14px",
+                                                    lineHeight: "20px",
+                                                    textAlign: "center"
+                                                }}
+                                                title="Xoá ảnh"
+                                            >
+                                                ×
+                                            </button>
+                                        )}
+                                    </Box>
                                 ))}
                             </Box>
                         )}
