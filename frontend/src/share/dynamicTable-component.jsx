@@ -12,6 +12,8 @@ import {
 
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from '@mui/icons-material/Visibility';
+
 const DynamicTable = ({
   columns,
   data,
@@ -68,7 +70,9 @@ const DynamicTable = ({
                     variant="outlined"
                     color="info"
                     size="small"
+                    startIcon={<VisibilityIcon />}
                     onClick={() => onView?.(row.id)}
+                    style={{ marginRight: "8px" }}
                   >
                     Xem
                   </Button>

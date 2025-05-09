@@ -167,25 +167,9 @@ const NavBarAdmin = () => {
               in={openSection === "sanPham"}
               timeout="auto"
               unmountOnExit
+              to="/admin/product"
             >
               <List component="div" disablePadding>
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/san-pham"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname === "/admin/san-pham"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": { backgroundColor: "#8aad51" },
-                  }}
-                >
-                  <ListItemText primary="Thêm sản phẩm" />
-                </ListItem>{" "}
                 <List>
                   <ListItem
                     button

@@ -3,6 +3,8 @@ import DynamicTable from "../../share/dynamicTable-component";
 import { Button } from "@mui/material";
 import productService from "../../services/productService";
 import ProductDetailModal from "../modal/detailProduct-modal";
+import AddIcon from '@mui/icons-material/Add';
+import ProductModal from "../modal/product-modal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL_PRODUCTS;
 
@@ -13,28 +15,13 @@ const ProductComponent = () => {
   const [sortOrder, setSortOrder] = useState("asc");
   const [product, setProduct] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [editingUser, setEditingUser] = useState(null);
+  const [editting, setEditing] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [showViewModal, setShowViewModal] = useState(false);
 
   useEffect(() => {
     fetchProduct();
-  }, [searchTerm]);
-
-  const formatDateFolder = (isoDate) => {
-    const date = new Date(isoDate);
-
-    const pad = (n) => n.toString().padStart(2, "0");
-
-    const year = date.getFullYear();
-    const month = pad(date.getMonth() + 1);
-    const day = pad(date.getDate());
-    const hour = pad(date.getHours());
-    const minute = pad(date.getMinutes());
-    const second = pad(date.getSeconds());
-
-    return `${year}-${month}-${day}_${hour}-${minute}-${second}`;
-  };
+  }, []);
 
   const fetchProduct = async () => {
     const response = await productService.getAllProducts();
@@ -118,11 +105,11 @@ const ProductComponent = () => {
           variant="contained"
           color="primary"
           onClick={() => {
-            setEditingUser(null);
+            setEditing(null);
             setShowModal(true);
           }}
         >
-          ➕ Thêm sản phẩm
+          <AddIcon /> Thêm sản phẩm
         </Button>
       </div>
       {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
@@ -131,7 +118,7 @@ const ProductComponent = () => {
         data={sortedData}
         onEdit={(id) => {
           const selectedUser = sortedData.find((u) => u.id === id);
-          setEditingUser(selectedUser);
+          setEditing(selectedUser);
           setShowModal(true);
         }}
         showViewButton={true}
@@ -152,6 +139,17 @@ const ProductComponent = () => {
         onClose={() => setShowViewModal(false)}
         product={selectedProduct}
         imageBaseUrl={API_URL}
+      />
+
+      <ProductModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSave={() => {
+          fetchProduct();
+          setShowModal(false); // 👈 Đóng modal sau khi lưu
+        }}
+        product={editting} // 👈 Thêm dòng này
+        isView={false}
       />
     </div>
   );

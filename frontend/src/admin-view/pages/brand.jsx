@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DynamicTable from "../../share/dynamicTable-component";
-// import ProductModalMui from "../modal/product-modal";
 import { Button } from "@mui/material";
-import userService from "../../services/userAccountService";
 import BrandModal from "../modal/brand-modal";
 import brandService from "../../services/brandService";
 import { toast } from "react-toastify";
+import AddIcon from '@mui/icons-material/Add';
 
 const BrandComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -55,29 +54,12 @@ const BrandComponent = () => {
         return matchSearch && matchFilter;
     });
 
-
-    console.log("filteredData", filteredData);
-
     // Sắp xếp dữ liệu
     const sortedData = filteredData.sort((a, b) => {
         if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
         if (a[sortColumn] > b[sortColumn]) return sortOrder === "asc" ? 1 : -1;
         return 0;
     });
-
-    // List data cho C_SortList
-    const listData = [
-        {
-            key: "name",
-            value: filterValue.name || "",
-            listSelect: Array.from(new Set(bands.map((u) => u.name))).map(
-                (name) => ({
-                    id: name,
-                    name,
-                })
-            ),
-        },
-    ];
 
     const handleDelete = async (mathuonghieu) => {
         try {
@@ -127,7 +109,7 @@ const BrandComponent = () => {
                         setShowModal(true);
                     }}
                 >
-                    Thêm thương hiệu
+                    <AddIcon />Thêm thương hiệu
                 </Button>
             </div>
             {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
