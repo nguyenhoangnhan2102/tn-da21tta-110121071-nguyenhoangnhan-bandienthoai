@@ -5,6 +5,7 @@ import productService from "../../services/productService";
 import ProductDetailModal from "../modal/detailProduct-modal";
 import AddIcon from '@mui/icons-material/Add';
 import ProductModal from "../modal/product-modal";
+import ProductFormModal from "../modal/product-modal";
 
 const API_URL = process.env.REACT_APP_API_BASE_URL_PRODUCTS;
 
@@ -141,7 +142,7 @@ const ProductComponent = () => {
         imageBaseUrl={API_URL}
       />
 
-      <ProductModal
+      <ProductFormModal
         open={showModal}
         onClose={() => setShowModal(false)}
         onSave={() => {
