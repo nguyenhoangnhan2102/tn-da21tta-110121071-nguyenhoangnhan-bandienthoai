@@ -18,22 +18,32 @@ const storage = multer.diskStorage({
 });
 
 // Image file filter function
-const imageFilter = function (req, file, cb) {
-  if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
-    req.fileValidationError = "Only image files are allowed!";
-    return cb(new Error("Only image files are allowed!"), false);
-  }
-  cb(null, true);
-};
+// const imageFilter = function (req, file, cb) {
+//   if (!file.originalname.match(/\.(jpg|JPG|jpeg|JPEG|png|PNG|gif|GIF)$/)) {
+//     req.fileValidationError = "Only image files are allowed!";
+//     return cb(new Error("Only image files are allowed!"), false);
+//   }
+//   cb(null, true);
+// };
 
-// Export configured multer instance
+// // Export configured multer instance
+// const upload = multer({
+//   storage: storage,
+//   limits: {
+//     fileSize: 100 * 1024 * 1024, // Cho phép mỗi trường dữ liệu tối đa 100MB
+//   },
+//   fileFilter: imageFilter,
+// });  // 'hinhanh' là tên field trong form, cho phép upload tối đa 5 file
+
 const upload = multer({
   storage: storage,
-  limits: {
-    fileSize: 100 * 1024 * 1024, // Cho phép mỗi trường dữ liệu tối đa 100MB
+  limits: { fileSize: 10 * 1024 * 1024 },  // Giới hạn kích thước tệp (10MB)
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.match(/^image\/(jpeg|png|jpg|gif)$/)) {
+      return cb(new Error('Chỉ cho phép tải lên hình ảnh!'));
+    }
+    cb(null, true);
   },
-  fileFilter: imageFilter,
-});  // 'hinhanh' là tên field trong form, cho phép upload tối đa 5 file
-
+});
 
 module.exports = upload;

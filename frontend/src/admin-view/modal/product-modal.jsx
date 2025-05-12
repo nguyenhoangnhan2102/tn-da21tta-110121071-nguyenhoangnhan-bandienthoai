@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
+import brandService from '../../services/brandService';
+import productService from '../../services/productService';
 
 const modalStyle = {
   position: 'absolute',
@@ -26,9 +28,9 @@ const modalStyle = {
   p: 4,
   borderRadius: 2,
   maxWidth: '90%',
-  maxHeight: '90vh',
+  maxHeight: '98vh',
   overflowY: 'auto',
-  width: 900,
+  width: 1100,
 };
 
 const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
@@ -37,7 +39,6 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
     tensanpham: '',
     hinhanh: [],
     hedieuhanh: '',
-    ram: '',
     cpu: '',
     gpu: '',
     cameratruoc: '',
@@ -46,7 +47,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
     dophangiaimanhinh: '',
     pin: '',
     mota: '',
-    chiTietSanPham: [{ mau: '', dungluong: '', soluong: '', gia: '' }],
+    chiTietSanPham: [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
   };
 
   const [form, setForm] = useState(initialFormState);
@@ -55,17 +56,13 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
 
   // Giả lập danh sách thương hiệu, bạn có thể thay bằng API gọi danh sách thương hiệu
   useEffect(() => {
-    const fetchBrands = async () => {
-      // Thay bằng API thực tế nếu có
-      const mockBrands = [
-        { id: 1, name: 'Apple' },
-        { id: 2, name: 'Samsung' },
-        { id: 3, name: 'Xiaomi' },
-      ];
-      setBrands(mockBrands);
-    };
     fetchBrands();
   }, []);
+
+  const fetchBrands = async () => {
+      const response = await brandService.getAllBrand();
+      setBrands(response || []);
+  };
 
   // Load dữ liệu sản phẩm khi chỉnh sửa/xem
   useEffect(() => {
@@ -75,7 +72,6 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
         tensanpham: product.tensanpham || '',
         hinhanh: product.hinhanh || [],
         hedieuhanh: product.hedieuhanh || '',
-        ram: product.ram || '',
         cpu: product.cpu || '',
         gpu: product.gpu || '',
         cameratruoc: product.cameratruoc || '',
@@ -84,7 +80,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
         mota: product.mota || '',
-        chiTietSanPham: product.chiTietSanPham || [{ mau: '', dungluong: '', soluong: '', gia: '' }],
+        chiTietSanPham: product.chiTietSanPham || [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
       });
       setPreviewImages(product.hinhanh || []);
     } else {
@@ -124,7 +120,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   const addDetail = () => {
     setForm((prev) => ({
       ...prev,
-      chiTietSanPham: [...prev.chiTietSanPham, { mau: '', dungluong: '', soluong: '', gia: '' }],
+      chiTietSanPham: [...prev.chiTietSanPham, { mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
     }));
   };
 
@@ -135,9 +131,44 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
     }));
   };
 
-  const handleSubmit = () => {
-    onSubmit(form);
-  };
+  const handleSubmit = async () => {
+  // Chuyển đổi dữ liệu trước khi gửi lên server
+  const formData = new FormData();
+  formData.append('mathuonghieu', form.mathuonghieu);
+  formData.append('tensanpham', form.tensanpham);
+  formData.append('hedieuhanh', form.hedieuhanh);
+  formData.append('cpu', form.cpu);
+  formData.append('gpu', form.gpu);
+  formData.append('cameratruoc', form.cameratruoc);
+  formData.append('camerasau', form.camerasau);
+  formData.append('congnghemanhinh', form.congnghemanhinh);
+  formData.append('dophangiaimanhinh', form.dophangiaimanhinh);
+  formData.append('pin', form.pin);
+  formData.append('mota', form.mota);
+
+  // Append each product image to the formData
+  form.hinhanh.forEach((file) => {
+    formData.append('hinhanh', file); // Assuming the backend expects multiple image files
+  });
+
+  // Append the details of the product
+  form.chiTietSanPham.forEach((detail, index) => {
+    formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
+    formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
+    formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
+    formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
+    formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
+    formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
+  });
+
+  // Call createProduct API service
+  const success = await productService.createProduct(formData);
+  
+  if (success) {
+    onClose(); // Close modal on success
+  }
+};
+
 
   return (
     <Modal
@@ -163,8 +194,8 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                 onChange={handleChange}
               >
                 {brands.map((brand) => (
-                  <MenuItem key={brand.id} value={brand.id}>
-                    {brand.name}
+                  <MenuItem key={brand.mathuonghieu} value={brand.mathuonghieu}>
+                    {brand.tenthuonghieu}
                   </MenuItem>
                 ))}
               </Select>
@@ -372,11 +403,22 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                 <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
+                    label="RAM"
+                    type="text"
+                    value={detail.ram}
+                    onChange={(e) => handleDetailChange(index, 'ram', e.target.value)}
+                    disabled={isView}
+                  />
+                </Grid>
+                <Grid item>
+                  <TextField
+                    fullWidth
                     label="Số lượng"
                     type="number"
                     value={detail.soluong}
                     onChange={(e) => handleDetailChange(index, 'soluong', e.target.value)}
                     disabled={isView}
+                    style={{width: "100px"}}
                   />
                 </Grid>
                 <Grid item xs={12} sm={2}>
@@ -389,7 +431,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                     disabled={isView}
                   />
                 </Grid>
-                 <Grid item xs={12} sm={2}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     label="Giá bán"
@@ -400,7 +442,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                   />
                 </Grid>
                 {!isView && (
-                  <Grid item xs={12} sm={2}>
+                  <Grid>
                     <IconButton onClick={() => removeDetail(index)} disabled={form.chiTietSanPham.length === 1}>
                       <DeleteIcon />
                     </IconButton>
