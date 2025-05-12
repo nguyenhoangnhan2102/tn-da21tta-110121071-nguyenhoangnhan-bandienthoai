@@ -29,8 +29,6 @@ CREATE TABLE `CHITIETDONHANG` (
   `machitiet` int(11) DEFAULT NULL,
   `soluongSP` int(11) DEFAULT NULL,
   `giaSP` decimal(15,2) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`machitietdonhang`),
   KEY `madonhang` (`madonhang`),
   KEY `machitiet` (`machitiet`),
@@ -49,37 +47,6 @@ LOCK TABLES `CHITIETDONHANG` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `CHITIETGIOHANG`
---
-
-DROP TABLE IF EXISTS `CHITIETGIOHANG`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `CHITIETGIOHANG` (
-  `machitietgiohang` int(11) NOT NULL AUTO_INCREMENT,
-  `magiohang` int(11) DEFAULT NULL,
-  `machitiet` int(11) DEFAULT NULL,
-  `soluong` int(11) DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`machitietgiohang`),
-  KEY `magiohang` (`magiohang`),
-  KEY `machitiet` (`machitiet`),
-  CONSTRAINT `CHITIETGIOHANG_ibfk_1` FOREIGN KEY (`magiohang`) REFERENCES `GIOHANG` (`magiohang`),
-  CONSTRAINT `CHITIETGIOHANG_ibfk_2` FOREIGN KEY (`machitiet`) REFERENCES `CHITIETSANPHAM` (`machitiet`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `CHITIETGIOHANG`
---
-
-LOCK TABLES `CHITIETGIOHANG` WRITE;
-/*!40000 ALTER TABLE `CHITIETGIOHANG` DISABLE KEYS */;
-/*!40000 ALTER TABLE `CHITIETGIOHANG` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `CHITIETSANPHAM`
 --
 
@@ -89,20 +56,17 @@ DROP TABLE IF EXISTS `CHITIETSANPHAM`;
 CREATE TABLE `CHITIETSANPHAM` (
   `machitiet` int(11) NOT NULL AUTO_INCREMENT,
   `masanpham` int(11) DEFAULT NULL,
-  `mamau` int(11) DEFAULT NULL,
-  `madungluong` int(11) DEFAULT NULL,
+  `mau` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dungluong` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ram` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `soluong` int(11) DEFAULT NULL,
+  `giaban` decimal(18,2) DEFAULT NULL,
+  `gianhap` decimal(18,2) DEFAULT NULL,
   `trangthai` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`machitiet`),
   KEY `masanpham` (`masanpham`),
-  KEY `mamau` (`mamau`),
-  KEY `madungluong` (`madungluong`),
-  CONSTRAINT `CHITIETSANPHAM_ibfk_1` FOREIGN KEY (`masanpham`) REFERENCES `SANPHAM` (`masanpham`),
-  CONSTRAINT `CHITIETSANPHAM_ibfk_2` FOREIGN KEY (`mamau`) REFERENCES `MAU` (`mamau`),
-  CONSTRAINT `CHITIETSANPHAM_ibfk_3` FOREIGN KEY (`madungluong`) REFERENCES `DUNGLUONG` (`madungluong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+  CONSTRAINT `CHITIETSANPHAM_ibfk_1` FOREIGN KEY (`masanpham`) REFERENCES `SANPHAM` (`masanpham`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -111,6 +75,10 @@ CREATE TABLE `CHITIETSANPHAM` (
 
 LOCK TABLES `CHITIETSANPHAM` WRITE;
 /*!40000 ALTER TABLE `CHITIETSANPHAM` DISABLE KEYS */;
+INSERT INTO `CHITIETSANPHAM` VALUES
+(1,1,'Đỏ','128GB','8GB',10,1600000.00,1500000.00,0),
+(2,2,'Xanh','test1','test1',3213,31233.00,3123.00,0),
+(3,2,'Đỏ','test1','test1',243213,33213.00,32132.00,0);
 /*!40000 ALTER TABLE `CHITIETSANPHAM` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -128,8 +96,6 @@ CREATE TABLE `DANHGIA` (
   `sao` int(11) DEFAULT NULL,
   `binhluan` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `trangthai` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`madanhgia`),
   KEY `manguoidung` (`manguoidung`),
   KEY `masanpham` (`masanpham`),
@@ -157,11 +123,11 @@ DROP TABLE IF EXISTS `DONHANG`;
 CREATE TABLE `DONHANG` (
   `madonhang` int(11) NOT NULL AUTO_INCREMENT,
   `manguoidung` int(11) DEFAULT NULL,
+  `thoigiandat` datetime DEFAULT NULL,
   `tongtien` decimal(18,2) DEFAULT NULL,
+  `ghichu` text,
   `diachigiaohang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `trangthaidonhang` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`madonhang`),
   KEY `manguoidung` (`manguoidung`),
   CONSTRAINT `DONHANG_ibfk_1` FOREIGN KEY (`manguoidung`) REFERENCES `NGUOIDUNG` (`manguoidung`)
@@ -178,32 +144,6 @@ LOCK TABLES `DONHANG` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `DUNGLUONG`
---
-
-DROP TABLE IF EXISTS `DUNGLUONG`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `DUNGLUONG` (
-  `madungluong` int(11) NOT NULL AUTO_INCREMENT,
-  `dungluong` varchar(50) DEFAULT NULL,
-  `trangthaidungluong` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`madungluong`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `DUNGLUONG`
---
-
-LOCK TABLES `DUNGLUONG` WRITE;
-/*!40000 ALTER TABLE `DUNGLUONG` DISABLE KEYS */;
-/*!40000 ALTER TABLE `DUNGLUONG` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Table structure for table `GIOHANG`
 --
 
@@ -213,11 +153,15 @@ DROP TABLE IF EXISTS `GIOHANG`;
 CREATE TABLE `GIOHANG` (
   `magiohang` int(11) NOT NULL AUTO_INCREMENT,
   `manguoidung` int(11) DEFAULT NULL,
+  `machitiet` int(11) DEFAULT NULL,
+  `soluong` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`magiohang`),
   KEY `manguoidung` (`manguoidung`),
-  CONSTRAINT `GIOHANG_ibfk_1` FOREIGN KEY (`manguoidung`) REFERENCES `NGUOIDUNG` (`manguoidung`)
+  KEY `machitiet` (`machitiet`),
+  CONSTRAINT `GIOHANG_ibfk_1` FOREIGN KEY (`manguoidung`) REFERENCES `NGUOIDUNG` (`manguoidung`),
+  CONSTRAINT `GIOHANG_ibfk_2` FOREIGN KEY (`machitiet`) REFERENCES `CHITIETSANPHAM` (`machitiet`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -228,37 +172,6 @@ CREATE TABLE `GIOHANG` (
 LOCK TABLES `GIOHANG` WRITE;
 /*!40000 ALTER TABLE `GIOHANG` DISABLE KEYS */;
 /*!40000 ALTER TABLE `GIOHANG` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `MAU`
---
-
-DROP TABLE IF EXISTS `MAU`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `MAU` (
-  `mamau` int(11) NOT NULL AUTO_INCREMENT,
-  `tenmau` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `trangthaimau` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`mamau`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `MAU`
---
-
-LOCK TABLES `MAU` WRITE;
-/*!40000 ALTER TABLE `MAU` DISABLE KEYS */;
-INSERT INTO `MAU` VALUES
-(1,'Đen',0,'2025-05-07 16:38:28','2025-05-07 16:38:28'),
-(2,'Xanh',0,'2025-05-07 16:38:32','2025-05-07 16:38:32'),
-(3,'Trắng',0,'2025-05-07 16:41:18','2025-05-07 16:41:18'),
-(4,'Xanh',0,'2025-05-07 16:41:25','2025-05-07 16:41:25');
-/*!40000 ALTER TABLE `MAU` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -276,8 +189,6 @@ CREATE TABLE `NGUOIDUNG` (
   `sodienthoai` varchar(20) DEFAULT NULL,
   `diachi` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `role` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`manguoidung`),
   UNIQUE KEY `email` (`email`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
@@ -290,7 +201,7 @@ CREATE TABLE `NGUOIDUNG` (
 LOCK TABLES `NGUOIDUNG` WRITE;
 /*!40000 ALTER TABLE `NGUOIDUNG` DISABLE KEYS */;
 INSERT INTO `NGUOIDUNG` VALUES
-(1,'Nhân Nguyễn Hoàng','duonglotan@gmail.com',NULL,NULL,NULL,1,'2025-05-07 16:36:39','2025-05-07 16:36:56');
+(1,'Nhân Nguyễn Hoàng','duonglotan@gmail.com',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `NGUOIDUNG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -305,10 +216,8 @@ CREATE TABLE `SANPHAM` (
   `masanpham` int(11) NOT NULL AUTO_INCREMENT,
   `mathuonghieu` int(11) DEFAULT NULL,
   `tensanpham` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `gia` decimal(18,2) DEFAULT NULL,
   `hinhanh` varchar(255) DEFAULT NULL,
   `hedieuhanh` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ram` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cpu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `gpu` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cameratruoc` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -318,12 +227,10 @@ CREATE TABLE `SANPHAM` (
   `pin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `mota` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `trangthai` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`masanpham`),
   KEY `mathuonghieu` (`mathuonghieu`),
   CONSTRAINT `SANPHAM_ibfk_1` FOREIGN KEY (`mathuonghieu`) REFERENCES `THUONGHIEU` (`mathuonghieu`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -332,6 +239,9 @@ CREATE TABLE `SANPHAM` (
 
 LOCK TABLES `SANPHAM` WRITE;
 /*!40000 ALTER TABLE `SANPHAM` DISABLE KEYS */;
+INSERT INTO `SANPHAM` VALUES
+(1,1,'test','hinhanh-1747070930280.jpg,hinhanh-1747070930290.jpg,hinhanh-1747070930299.jpg,hinhanh-1747070930305.jpg','test','test','test','test','test','test','test','test','test',0),
+(2,1,'test1','hinhanh-1747071187979.jpg,hinhanh-1747071187991.jpg,hinhanh-1747071187997.jpg,hinhanh-1747071188005.jpg','test1','test1','test1','test1','test1','test1','test1','test1','test1',0);
 /*!40000 ALTER TABLE `SANPHAM` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -347,8 +257,6 @@ CREATE TABLE `THANHTOAN` (
   `madonhang` int(11) DEFAULT NULL,
   `phuongthuc` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trangthai` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mathanhtoan`),
   KEY `madonhang` (`madonhang`),
   CONSTRAINT `THANHTOAN_ibfk_1` FOREIGN KEY (`madonhang`) REFERENCES `DONHANG` (`madonhang`)
@@ -375,10 +283,8 @@ CREATE TABLE `THUONGHIEU` (
   `mathuonghieu` int(11) NOT NULL AUTO_INCREMENT,
   `tenthuonghieu` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trangthaithuonghieu` int(11) DEFAULT '0',
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mathuonghieu`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -388,10 +294,8 @@ CREATE TABLE `THUONGHIEU` (
 LOCK TABLES `THUONGHIEU` WRITE;
 /*!40000 ALTER TABLE `THUONGHIEU` DISABLE KEYS */;
 INSERT INTO `THUONGHIEU` VALUES
-(1,'Samsung',0,'2025-05-07 16:37:14','2025-05-07 16:37:14'),
-(2,'Xiaomi',0,'2025-05-07 16:37:21','2025-05-07 16:37:21'),
-(3,'realme',0,'2025-05-07 16:37:25','2025-05-07 16:37:25'),
-(4,'iPhone',0,'2025-05-07 16:37:36','2025-05-07 16:38:08');
+(1,'Samsung',0),
+(2,'realme',0);
 /*!40000 ALTER TABLE `THUONGHIEU` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -408,4 +312,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-05-07 23:51:53
+-- Dump completed on 2025-05-13  0:48:10
