@@ -28,7 +28,7 @@ const modalStyle = {
   maxWidth: '90%',
   maxHeight: '90vh',
   overflowY: 'auto',
-  width: 800,
+  width: 900,
 };
 
 const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
@@ -351,7 +351,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
             </Typography>
             {form.chiTietSanPham.map((detail, index) => (
               <Grid container spacing={1} key={index} alignItems="center" mb={2}>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     label="Màu"
@@ -360,7 +360,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                     disabled={isView}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
                     label="Dung lượng"
@@ -382,10 +382,20 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                 <Grid item xs={12} sm={2}>
                   <TextField
                     fullWidth
-                    label="Giá"
+                    label="Giá nhập"
                     type="number"
-                    value={detail.gia}
-                    onChange={(e) => handleDetailChange(index, 'gia', e.target.value)}
+                    value={detail.gianhap}
+                    onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value)}
+                    disabled={isView}
+                  />
+                </Grid>
+                 <Grid item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    label="Giá bán"
+                    type="number"
+                    value={detail.giaban}
+                    onChange={(e) => handleDetailChange(index, 'giaban', e.target.value)}
                     disabled={isView}
                   />
                 </Grid>

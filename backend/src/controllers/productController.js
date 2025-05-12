@@ -112,7 +112,6 @@ const createProduct = async (req, res) => {
         tensanpham,
         hinhanh,
         hedieuhanh,
-        ram,
         cpu,
         gpu,
         cameratruoc,
@@ -130,18 +129,18 @@ const createProduct = async (req, res) => {
         await connection.beginTransaction();
 
         const [productResult] = await connection.query(
-            `INSERT INTO SANPHAM (mathuonghieu, tensanpham, hinhanh, hedieuhanh, ram, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
+            `INSERT INTO SANPHAM (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, ram, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota]
+            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota]
         );
 
         const masanpham = productResult.insertId;
 
         for (const detail of chiTietSanPham) {
             await connection.query(
-                `INSERT INTO CHITIETSANPHAM (masanpham, mau, dungluong, soluong, gia)
+                `INSERT INTO CHITIETSANPHAM (masanpham, mau, dungluong, ram, soluong, giaban, gianhap)
                  VALUES (?, ?, ?, ?, ?)`,
-                [masanpham, detail.mau, detail.dungluong, detail.soluong, detail.gia]
+                [masanpham, detail.mau, detail.dungluong, detail.ram, detail.soluong, detail.giaban, detail.gianhap]
             );
         }
 
@@ -173,7 +172,6 @@ const updateProduct = async (req, res) => {
         tensanpham,
         hinhanh,
         hedieuhanh,
-        ram,
         cpu,
         gpu,
         cameratruoc,
@@ -188,10 +186,10 @@ const updateProduct = async (req, res) => {
         const [result] = await pool.query(`
             UPDATE SANPHAM SET 
                 mathuonghieu = ?, tensanpham = ?, hinhanh = ?, hedieuhanh = ?,
-                ram = ?, cpu = ?, gpu = ?, cameratruoc = ?, camerasau = ?,
+                cpu = ?, gpu = ?, cameratruoc = ?, camerasau = ?,
                 congnghemanhinh = ?, dophangiaimanhinh = ?, pin = ?, mota = ?
             WHERE masanpham = ?`,
-            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, ram, cpu, gpu, cameratruoc, camerasau,
+            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau,
              congnghemanhinh, dophangiaimanhinh, pin, mota, masanpham]
         );
 
