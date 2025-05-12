@@ -31,6 +31,7 @@ const DynamicTable = ({
     page * rowsPerPage,
     page * rowsPerPage + rowsPerPage
   );
+
   return (
     <Table sx={{ minWidth: 900 }} aria-label="dynamic table">
       <TableHead>
@@ -50,15 +51,22 @@ const DynamicTable = ({
                   {typeof col.render === "function" ? (
                     col.render(row[col.key], row)
                   ) : col.isImage ? (
-                    <img
-                      src={row[col.key]}
-                      alt={col.label}
-                      style={{
-                        width: "60px",
-                        height: "auto",
-                        objectFit: "contain",
-                      }}
-                    />
+                    // Render image if isImage is true
+                    <div>
+                      {/* Lấy ảnh đầu tiên từ danh sách ảnh */}
+                      {row[col.key].split(',')[0] && (
+                        <img
+                          src={`http://localhost:3333/images/${row[col.key].split(',')[0]}`} // Chỉ lấy ảnh đầu tiên
+                          alt={col.label}
+                          style={{
+                            width: "60px",
+                            height: "auto",
+                            objectFit: "contain",
+                            marginRight: "8px",
+                          }}
+                        />
+                      )}
+                    </div>
                   ) : (
                     row[col.key]
                   )}
@@ -122,7 +130,7 @@ const DynamicTable = ({
               setPage(0);
             }}
             labelRowsPerPage="Số hàng mỗi trang"
-            sx={{ marginBottom: 0 }} // 👈 Thêm dòng này
+            sx={{ marginBottom: 0 }}
           />
         </TableRow>
       </TableFooter>

@@ -26,6 +26,7 @@ const ProductComponent = () => {
 
   const fetchProduct = async () => {
     const response = await productService.getAllProducts();
+    console.log("response",response)
     setProduct(response || []);
   };
 
@@ -71,7 +72,6 @@ const ProductComponent = () => {
     { key: "tensanpham", label: "Tên" },
     { key: "hinhanh", label: "Hình ảnh", isImage: true },
     { key: "hedieuhanh", label: "Hệ điều hành" },
-    { key: "ram", label: "RAM" },
     { key: "tenthuonghieu", label: "Thương hiệu" },
     // { key: "cpu", label: "CPU" },
     // { key: "gpu", label: "Tên" },
