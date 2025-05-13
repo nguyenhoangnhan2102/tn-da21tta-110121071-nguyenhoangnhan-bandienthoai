@@ -110,6 +110,7 @@ const createProduct = async (req, res) => {
   const {
     mathuonghieu,
     tensanpham,
+    hinhanh,
     hedieuhanh,
     cpu,
     gpu,
@@ -119,50 +120,79 @@ const createProduct = async (req, res) => {
     dophangiaimanhinh,
     pin,
     mota,
-    chiTietSanPham
+    chiTietSanPham, // Cập nhật để nhận chi tiết sản phẩm
   } = req.body;
 
   const uploadedImages = req.files.map(file => file.filename);
-  const hinhanh = uploadedImages.join(",");
+  const productImages = uploadedImages.join(","); // Các ảnh của sản phẩm
 
   const connection = await pool.getConnection();
 
   try {
     await connection.beginTransaction();
 
+    // Thêm vào bảng SANPHAM
     const [productResult] = await connection.query(
-      `INSERT INTO SANPHAM (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
+      `INSERT INTO SANPHAM 
+        (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota]
+      [
+        mathuonghieu,
+        tensanpham,
+        productImages, // Dữ liệu ảnh đã được upload
+        hedieuhanh,
+        cpu,
+        gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
+        pin,
+        mota,
+      ]
     );
 
-    const masanpham = productResult.insertId;
+    const masanpham = productResult.insertId; // Lấy masanpham của sản phẩm mới tạo
 
+    // Thêm vào bảng CHITIETSANPHAM cho các chi tiết sản phẩm
     for (const detail of chiTietSanPham) {
       await connection.query(
-        `INSERT INTO CHITIETSANPHAM (masanpham, mau, dungluong, ram, soluong, giaban, gianhap)
-         VALUES (?, ?, ?, ?, ?, ?, ?)`,
-        [masanpham, detail.mau, detail.dungluong, detail.ram, detail.soluong, detail.giaban, detail.gianhap]
+        `INSERT INTO CHITIETSANPHAM
+          (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, trangthai, hinhanh)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          masanpham, // Đặt masanpham tương ứng với sản phẩm vừa tạo
+          detail.mau,
+          detail.dungluong,
+          detail.ram,
+          detail.soluong,
+          detail.giaban,
+          detail.gianhap,
+          detail.trangthai || 0, // Trạng thái có thể là 0 (chưa có sẵn) hoặc 1 (có sẵn)
+          detail.hinhanh || "", // Thêm ảnh chi tiết (nếu có)
+        ]
       );
     }
 
+    // Commit transaction sau khi thêm thành công
     await connection.commit();
     res.status(201).json({
       EM: "Tạo sản phẩm thành công",
       EC: 1,
-      DT: [],
+      DT: [], // Có thể trả về thông tin chi tiết sản phẩm hoặc gì đó khác nếu cần
     });
   } catch (error) {
-    await connection.rollback();
+    await connection.rollback(); // Rollback nếu có lỗi xảy ra
     res.status(500).json({
       EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
       EC: -1,
       DT: [],
     });
   } finally {
-    connection.release();
+    connection.release(); // Giải phóng kết nối
   }
 };
+
 
 // Cập nhật sản phẩm
 const updateProduct = async (req, res) => {
