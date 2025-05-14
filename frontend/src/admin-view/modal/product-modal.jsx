@@ -80,7 +80,17 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
         mota: product.mota || '',
-        chiTietSanPham: product.chiTietSanPham || [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
+        chiTietSanPham: [{
+          mau: '',
+          dungluong: '',
+          ram: '',
+          soluong: '',
+          gianhap: '',
+          giaban: '',
+          khuyenmai: '',
+          hinhanh: null,
+          giagiam: '',
+        }]
       });
       setPreviewImages(product.hinhanh || []);
     } else {
@@ -109,15 +119,32 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   const handleDetailChange = (index, field, value) => {
     setForm((prev) => {
       const newDetails = [...prev.chiTietSanPham];
-      newDetails[index] = { ...newDetails[index], [field]: value };
+      const detail = { ...newDetails[index], [field]: value };
+
+      // Tự động tính giagiam khi giaban hoặc khuyenmai thay đổi
+      const giaban = parseFloat(field === 'giaban' ? value : detail.giaban || 0);
+      const khuyenmai = parseFloat(field === 'khuyenmai' ? value : detail.khuyenmai || 0);
+      detail.giagiam = (giaban *khuyenmai) / 100;
+
+      newDetails[index] = detail;
       return { ...prev, chiTietSanPham: newDetails };
     });
   };
-
+  
   const addDetail = () => {
     setForm((prev) => ({
       ...prev,
-      chiTietSanPham: [...prev.chiTietSanPham, { mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
+      chiTietSanPham: [...prev.chiTietSanPham, {
+        mau: '',
+        dungluong: '',
+        ram: '',
+        soluong: '',
+        gianhap: '',
+        giaban: '',
+        khuyenmai: '',
+        hinhanh: null,
+        giagiam: '',
+      }]
     }));
   };
 
@@ -150,16 +177,17 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
 
     // Append the details of the product
     form.chiTietSanPham.forEach((detail, index) => {
-      formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
-      formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
-      formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
-      formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
-      formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
-      formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
+    formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
+    formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
+    formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
+    formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
+    formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
+    formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
+    formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai || 0);
 
-      // Only one image for each detail
-      if (detail.hinhanh) formData.append(`chiTietSanPham[${index}][hinhanh]`, detail.hinhanh);
-    });
+    if (detail.hinhanhchitiet)
+      formData.append(`chiTietSanPham[${index}][hinhanhchitiet]`, detail.hinhanhchitiet);
+   });
 
     // Call createProduct API service
     const success = await productService.createProduct(formData);
@@ -388,20 +416,20 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                       type="file"
                       hidden
                       accept="image/*"
-                      onChange={(e) => handleDetailChange(index, 'hinhanh', e.target.files[0])}
+                      onChange={(e) => handleDetailChange(index, 'hinhanhchitiet', e.target.files[0])}
                     />
                   </Button>
-                  {detail.hinhanh && (
+                  {detail.hinhanhchitiet && (
                     <Box mt={2} position="relative" width={100} height={100} borderRadius={2} overflow="hidden" border="1px solid #ccc">
                       <img
-                        src={URL.createObjectURL(detail.hinhanh)}
+                        src={URL.createObjectURL(detail.hinhanhchitiet)}
                         alt={`detail-image-${index}`}
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                       />
                       {!isView && (
                         <IconButton
                           size="small"
-                          onClick={() => handleDetailChange(index, 'hinhanh', null)} // Xóa ảnh
+                          onClick={() => handleDetailChange(index, 'hinhanhchitiet', null)} // Xóa ảnh
                           sx={{
                             position: 'absolute',
                             top: 2,
@@ -434,6 +462,26 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                 </Grid>
                 <Grid item xs={12} sm={2}>
                   <TextField fullWidth label="Giá bán" type="number" value={detail.giaban} onChange={(e) => handleDetailChange(index, 'giaban', e.target.value)} disabled={isView} />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    label="Khuyến mãi"
+                    type="number"
+                    value={detail.khuyenmai}
+                    onChange={(e) => handleDetailChange(index, 'khuyenmai', e.target.value)}
+                    disabled={isView}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField
+                    fullWidth
+                    label="Giá giảm"
+                    type="number"
+                    value={detail.giagiam}
+                    disabled
+                    InputLabelProps={{ shrink: true }} // ← Khắc phục label bị che
+                  />
                 </Grid>
                 {!isView && (
                   <Grid>

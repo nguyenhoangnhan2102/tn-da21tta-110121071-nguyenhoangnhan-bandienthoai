@@ -110,7 +110,6 @@ const createProduct = async (req, res) => {
   const {
     mathuonghieu,
     tensanpham,
-    hinhanh,
     hedieuhanh,
     cpu,
     gpu,
@@ -120,11 +119,11 @@ const createProduct = async (req, res) => {
     dophangiaimanhinh,
     pin,
     mota,
-    chiTietSanPham, // Cập nhật để nhận chi tiết sản phẩm
+    chiTietSanPham,
   } = req.body;
 
   const uploadedImages = req.files.map(file => file.filename);
-  const productImages = uploadedImages.join(","); // Các ảnh của sản phẩm chính
+  const productImages = uploadedImages.join(","); // Ghép ảnh sản phẩm chính
 
   const connection = await pool.getConnection();
 
@@ -139,7 +138,7 @@ const createProduct = async (req, res) => {
       [
         mathuonghieu,
         tensanpham,
-        productImages, // Dữ liệu ảnh đã được upload cho sản phẩm chính
+        productImages,
         hedieuhanh,
         cpu,
         gpu,
@@ -152,51 +151,49 @@ const createProduct = async (req, res) => {
       ]
     );
 
-    const masanpham = productResult.insertId; // Lấy masanpham của sản phẩm mới tạo
+    const masanpham = productResult.insertId;
 
-    // Thêm vào bảng CHITIETSANPHAM cho các chi tiết sản phẩm
+    // Thêm vào bảng CHITIETSANPHAM
     for (const detail of chiTietSanPham) {
-      // Chỉ lấy 1 ảnh duy nhất cho chi tiết sản phẩm
-      const detailImage = detail.hinhanh ? detail.hinhanh[0] : null;
+      const detailImage = detail.hinhanhchitiet ? detail.hinhanhchitiet[0] : null;
 
       await connection.query(
         `INSERT INTO CHITIETSANPHAM
-          (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, trangthai, hinhanh)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, khuyenmai, trangthai, hinhanhchitiet, giagiam)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         [
-          masanpham, // Đặt masanpham tương ứng với sản phẩm vừa tạo
+          masanpham,
           detail.mau,
           detail.dungluong,
           detail.ram,
           detail.soluong,
           detail.giaban,
           detail.gianhap,
-          detail.trangthai || 0, // Trạng thái có thể là 0 (chưa có sẵn) hoặc 1 (có sẵn)
-          detailImage, // Lấy ảnh chi tiết (chỉ 1 ảnh duy nhất)
+          detail.khuyenmai || 0,
+          detail.trangthai || 0,
+          detailImage,
+          detail.giagiam,
         ]
       );
     }
 
-    // Commit transaction sau khi thêm thành công
     await connection.commit();
     res.status(201).json({
       EM: "Tạo sản phẩm thành công",
       EC: 1,
-      DT: [], // Có thể trả về thông tin chi tiết sản phẩm hoặc gì đó khác nếu cần
+      DT: [],
     });
   } catch (error) {
-    await connection.rollback(); // Rollback nếu có lỗi xảy ra
+    await connection.rollback();
     res.status(500).json({
       EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
       EC: -1,
       DT: [],
     });
   } finally {
-    connection.release(); // Giải phóng kết nối
+    connection.release();
   }
 };
-
-
 
 // Cập nhật sản phẩm
 const updateProduct = async (req, res) => {
