@@ -47,7 +47,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
     dophangiaimanhinh: '',
     pin: '',
     mota: '',
-    chiTietSanPham: [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
+    chiTietSanPham: [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
   };
 
   const [form, setForm] = useState(initialFormState);
@@ -60,8 +60,8 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   }, []);
 
   const fetchBrands = async () => {
-      const response = await brandService.getAllBrand();
-      setBrands(response || []);
+    const response = await brandService.getAllBrand();
+    setBrands(response || []);
   };
 
   // Load dữ liệu sản phẩm khi chỉnh sửa/xem
@@ -80,7 +80,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
         mota: product.mota || '',
-        chiTietSanPham: product.chiTietSanPham || [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
+        chiTietSanPham: product.chiTietSanPham || [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
       });
       setPreviewImages(product.hinhanh || []);
     } else {
@@ -97,16 +97,13 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages((prev) => [...prev, ...newImages]);
-    setForm((prev) => ({ ...prev, hinhanh: [...prev.hinhanh, ...files] }));
+    setPreviewImages(newImages); // Chỉ hiển thị 1 ảnh cho sản phẩm chính
+    setForm((prev) => ({ ...prev, hinhanh: files })); // Lưu tất cả ảnh cho sản phẩm chính
   };
 
-  const handleRemoveImage = (index) => {
-    setPreviewImages((prev) => prev.filter((_, i) => i !== index));
-    setForm((prev) => ({
-      ...prev,
-      hinhanh: prev.hinhanh.filter((_, i) => i !== index),
-    }));
+  const handleRemoveImage = () => {
+    setPreviewImages([]);
+    setForm((prev) => ({ ...prev, hinhanh: [] }));
   };
 
   const handleDetailChange = (index, field, value) => {
@@ -120,7 +117,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   const addDetail = () => {
     setForm((prev) => ({
       ...prev,
-      chiTietSanPham: [...prev.chiTietSanPham, { mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '' }],
+      chiTietSanPham: [...prev.chiTietSanPham, { mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
     }));
   };
 
@@ -132,43 +129,45 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
-  // Chuyển đổi dữ liệu trước khi gửi lên server
-  const formData = new FormData();
-  formData.append('mathuonghieu', form.mathuonghieu);
-  formData.append('tensanpham', form.tensanpham);
-  formData.append('hedieuhanh', form.hedieuhanh);
-  formData.append('cpu', form.cpu);
-  formData.append('gpu', form.gpu);
-  formData.append('cameratruoc', form.cameratruoc);
-  formData.append('camerasau', form.camerasau);
-  formData.append('congnghemanhinh', form.congnghemanhinh);
-  formData.append('dophangiaimanhinh', form.dophangiaimanhinh);
-  formData.append('pin', form.pin);
-  formData.append('mota', form.mota);
+    // Chuyển đổi dữ liệu trước khi gửi lên server
+    const formData = new FormData();
+    formData.append('mathuonghieu', form.mathuonghieu);
+    formData.append('tensanpham', form.tensanpham);
+    formData.append('hedieuhanh', form.hedieuhanh);
+    formData.append('cpu', form.cpu);
+    formData.append('gpu', form.gpu);
+    formData.append('cameratruoc', form.cameratruoc);
+    formData.append('camerasau', form.camerasau);
+    formData.append('congnghemanhinh', form.congnghemanhinh);
+    formData.append('dophangiaimanhinh', form.dophangiaimanhinh);
+    formData.append('pin', form.pin);
+    formData.append('mota', form.mota);
 
-  // Append each product image to the formData
-  form.hinhanh.forEach((file) => {
-    formData.append('hinhanh', file); // Assuming the backend expects multiple image files
-  });
+    // Append product images (Only 1 image for the product)
+    form.hinhanh.forEach((file) => {
+      formData.append('hinhanh', file); // Assuming the backend expects one or more product images
+    });
 
-  // Append the details of the product
-  form.chiTietSanPham.forEach((detail, index) => {
-    formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
-    formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
-    formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
-    formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
-    formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
-    formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
-  });
+    // Append the details of the product
+    form.chiTietSanPham.forEach((detail, index) => {
+      formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
+      formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
+      formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
+      formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
+      formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
+      formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
 
-  // Call createProduct API service
-  const success = await productService.createProduct(formData);
-  
-  if (success) {
-    onClose(); // Close modal on success
-  }
-};
+      // Only one image for each detail
+      if (detail.hinhanh) formData.append(`chiTietSanPham[${index}][hinhanh]`, detail.hinhanh);
+    });
 
+    // Call createProduct API service
+    const success = await productService.createProduct(formData);
+    console.log("formData",formData)
+    if (success) {
+      onClose(); // Close modal on success
+    }
+  };
 
   return (
     <Modal
@@ -376,70 +375,65 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
             )}
           </Grid>
 
+          {/* Chi tiết sản phẩm */}
           <Grid item xs={12}>
-            <Typography variant="subtitle1" mt={2} mb={1}>
-              Chi tiết sản phẩm
-            </Typography>
+            <Typography variant="subtitle1" mt={2} mb={1}>Chi tiết sản phẩm</Typography>
             {form.chiTietSanPham.map((detail, index) => (
               <Grid container spacing={1} key={index} alignItems="center" mb={2}>
-                <Grid item xs={12} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Màu"
-                    value={detail.mau}
-                    onChange={(e) => handleDetailChange(index, 'mau', e.target.value)}
-                    disabled={isView}
-                  />
+                {/* Hình ảnh chi tiết sản phẩm */}
+                <Grid item xs={12}>
+                  <Button variant="contained" component="label" disabled={isView}>
+                    Tải ảnh chi tiết
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={(e) => handleDetailChange(index, 'hinhanh', e.target.files[0])}
+                    />
+                  </Button>
+                  {detail.hinhanh && (
+                    <Box mt={2} position="relative" width={100} height={100} borderRadius={2} overflow="hidden" border="1px solid #ccc">
+                      <img
+                        src={URL.createObjectURL(detail.hinhanh)}
+                        alt={`detail-image-${index}`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      {!isView && (
+                        <IconButton
+                          size="small"
+                          onClick={() => handleDetailChange(index, 'hinhanh', null)} // Xóa ảnh
+                          sx={{
+                            position: 'absolute',
+                            top: 2,
+                            right: 2,
+                            bgcolor: 'rgba(0,0,0,0.6)',
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
+                  )}
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Dung lượng"
-                    value={detail.dungluong}
-                    onChange={(e) => handleDetailChange(index, 'dungluong', e.target.value)}
-                    disabled={isView}
-                  />
+                  <TextField fullWidth label="Màu" value={detail.mau} onChange={(e) => handleDetailChange(index, 'mau', e.target.value)} disabled={isView} />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="RAM"
-                    type="text"
-                    value={detail.ram}
-                    onChange={(e) => handleDetailChange(index, 'ram', e.target.value)}
-                    disabled={isView}
-                  />
-                </Grid>
-                <Grid item>
-                  <TextField
-                    fullWidth
-                    label="Số lượng"
-                    type="number"
-                    value={detail.soluong}
-                    onChange={(e) => handleDetailChange(index, 'soluong', e.target.value)}
-                    disabled={isView}
-                    style={{width: "100px"}}
-                  />
+                  <TextField fullWidth label="Dung lượng" value={detail.dungluong} onChange={(e) => handleDetailChange(index, 'dungluong', e.target.value)} disabled={isView} />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Giá nhập"
-                    type="number"
-                    value={detail.gianhap}
-                    onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value)}
-                    disabled={isView}
-                  />
+                  <TextField fullWidth label="RAM" value={detail.ram} onChange={(e) => handleDetailChange(index, 'ram', e.target.value)} disabled={isView} />
                 </Grid>
                 <Grid item xs={12} sm={2}>
-                  <TextField
-                    fullWidth
-                    label="Giá bán"
-                    type="number"
-                    value={detail.giaban}
-                    onChange={(e) => handleDetailChange(index, 'giaban', e.target.value)}
-                    disabled={isView}
-                  />
+                  <TextField fullWidth label="Số lượng" value={detail.soluong} onChange={(e) => handleDetailChange(index, 'soluong', e.target.value)} disabled={isView} />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField fullWidth label="Giá nhập" type="number" value={detail.gianhap} onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value)} disabled={isView} />
+                </Grid>
+                <Grid item xs={12} sm={2}>
+                  <TextField fullWidth label="Giá bán" type="number" value={detail.giaban} onChange={(e) => handleDetailChange(index, 'giaban', e.target.value)} disabled={isView} />
                 </Grid>
                 {!isView && (
                   <Grid>
@@ -450,11 +444,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                 )}
               </Grid>
             ))}
-            {!isView && (
-              <Button startIcon={<AddIcon />} onClick={addDetail}>
-                Thêm chi tiết
-              </Button>
-            )}
+            {!isView && <Button startIcon={<AddIcon />} onClick={addDetail}>Thêm chi tiết</Button>}
           </Grid>
         </Grid>
 

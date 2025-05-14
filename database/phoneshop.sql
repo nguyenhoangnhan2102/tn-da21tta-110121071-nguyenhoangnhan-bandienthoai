@@ -62,11 +62,13 @@ CREATE TABLE `CHITIETSANPHAM` (
   `soluong` int(11) DEFAULT NULL,
   `giaban` decimal(18,2) DEFAULT NULL,
   `gianhap` decimal(18,2) DEFAULT NULL,
+  `khuyenmai` decimal(18,2) DEFAULT NULL,
   `trangthai` int(11) DEFAULT '0',
+  `hinhanhchitiet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`machitiet`),
   KEY `masanpham` (`masanpham`),
   CONSTRAINT `CHITIETSANPHAM_ibfk_1` FOREIGN KEY (`masanpham`) REFERENCES `SANPHAM` (`masanpham`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,10 +77,6 @@ CREATE TABLE `CHITIETSANPHAM` (
 
 LOCK TABLES `CHITIETSANPHAM` WRITE;
 /*!40000 ALTER TABLE `CHITIETSANPHAM` DISABLE KEYS */;
-INSERT INTO `CHITIETSANPHAM` VALUES
-(1,1,'Đỏ','128GB','8GB',10,1600000.00,1500000.00,0),
-(2,2,'Xanh','test1','test1',3213,31233.00,3123.00,0),
-(3,2,'Đỏ','test1','test1',243213,33213.00,32132.00,0);
 /*!40000 ALTER TABLE `CHITIETSANPHAM` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -191,7 +189,7 @@ CREATE TABLE `NGUOIDUNG` (
   `role` int(11) DEFAULT '0',
   PRIMARY KEY (`manguoidung`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -200,8 +198,6 @@ CREATE TABLE `NGUOIDUNG` (
 
 LOCK TABLES `NGUOIDUNG` WRITE;
 /*!40000 ALTER TABLE `NGUOIDUNG` DISABLE KEYS */;
-INSERT INTO `NGUOIDUNG` VALUES
-(1,'Nhân Nguyễn Hoàng','duonglotan@gmail.com',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `NGUOIDUNG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -230,7 +226,7 @@ CREATE TABLE `SANPHAM` (
   PRIMARY KEY (`masanpham`),
   KEY `mathuonghieu` (`mathuonghieu`),
   CONSTRAINT `SANPHAM_ibfk_1` FOREIGN KEY (`mathuonghieu`) REFERENCES `THUONGHIEU` (`mathuonghieu`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -239,9 +235,6 @@ CREATE TABLE `SANPHAM` (
 
 LOCK TABLES `SANPHAM` WRITE;
 /*!40000 ALTER TABLE `SANPHAM` DISABLE KEYS */;
-INSERT INTO `SANPHAM` VALUES
-(1,1,'test','hinhanh-1747070930280.jpg,hinhanh-1747070930290.jpg,hinhanh-1747070930299.jpg,hinhanh-1747070930305.jpg','test','test','test','test','test','test','test','test','test',0),
-(2,1,'test1','hinhanh-1747071187979.jpg,hinhanh-1747071187991.jpg,hinhanh-1747071187997.jpg,hinhanh-1747071188005.jpg','test1','test1','test1','test1','test1','test1','test1','test1','test1',0);
 /*!40000 ALTER TABLE `SANPHAM` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -284,7 +277,7 @@ CREATE TABLE `THUONGHIEU` (
   `tenthuonghieu` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trangthaithuonghieu` int(11) DEFAULT '0',
   PRIMARY KEY (`mathuonghieu`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -293,9 +286,6 @@ CREATE TABLE `THUONGHIEU` (
 
 LOCK TABLES `THUONGHIEU` WRITE;
 /*!40000 ALTER TABLE `THUONGHIEU` DISABLE KEYS */;
-INSERT INTO `THUONGHIEU` VALUES
-(1,'Samsung',0),
-(2,'realme',0);
 /*!40000 ALTER TABLE `THUONGHIEU` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,4 +302,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-05-13  0:48:10
+-- Dump completed on 2025-05-14 21:11:24

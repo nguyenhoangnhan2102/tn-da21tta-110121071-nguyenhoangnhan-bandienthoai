@@ -124,7 +124,7 @@ const createProduct = async (req, res) => {
   } = req.body;
 
   const uploadedImages = req.files.map(file => file.filename);
-  const productImages = uploadedImages.join(","); // Các ảnh của sản phẩm
+  const productImages = uploadedImages.join(","); // Các ảnh của sản phẩm chính
 
   const connection = await pool.getConnection();
 
@@ -139,7 +139,7 @@ const createProduct = async (req, res) => {
       [
         mathuonghieu,
         tensanpham,
-        productImages, // Dữ liệu ảnh đã được upload
+        productImages, // Dữ liệu ảnh đã được upload cho sản phẩm chính
         hedieuhanh,
         cpu,
         gpu,
@@ -156,6 +156,9 @@ const createProduct = async (req, res) => {
 
     // Thêm vào bảng CHITIETSANPHAM cho các chi tiết sản phẩm
     for (const detail of chiTietSanPham) {
+      // Chỉ lấy 1 ảnh duy nhất cho chi tiết sản phẩm
+      const detailImage = detail.hinhanh ? detail.hinhanh[0] : null;
+
       await connection.query(
         `INSERT INTO CHITIETSANPHAM
           (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, trangthai, hinhanh)
@@ -169,7 +172,7 @@ const createProduct = async (req, res) => {
           detail.giaban,
           detail.gianhap,
           detail.trangthai || 0, // Trạng thái có thể là 0 (chưa có sẵn) hoặc 1 (có sẵn)
-          detail.hinhanh || "", // Thêm ảnh chi tiết (nếu có)
+          detailImage, // Lấy ảnh chi tiết (chỉ 1 ảnh duy nhất)
         ]
       );
     }
@@ -192,6 +195,7 @@ const createProduct = async (req, res) => {
     connection.release(); // Giải phóng kết nối
   }
 };
+
 
 
 // Cập nhật sản phẩm
