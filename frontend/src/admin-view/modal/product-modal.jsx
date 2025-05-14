@@ -107,14 +107,18 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
     const newImages = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(newImages); // Chỉ hiển thị 1 ảnh cho sản phẩm chính
-    setForm((prev) => ({ ...prev, hinhanh: files })); // Lưu tất cả ảnh cho sản phẩm chính
+    setPreviewImages(newImages);
+    setForm((prev) => ({ ...prev, hinhanh: files }));
   };
 
-  const handleRemoveImage = () => {
-    setPreviewImages([]);
-    setForm((prev) => ({ ...prev, hinhanh: [] }));
+  const handleRemoveImage = (indexToRemove) => {
+    setPreviewImages((prev) => prev.filter((_, i) => i !== indexToRemove));
+    setForm((prev) => ({
+      ...prev,
+      hinhanh: prev.hinhanh.filter((_, i) => i !== indexToRemove),
+    }));
   };
+
 
   const handleDetailChange = (index, field, value) => {
     setForm((prev) => {
@@ -156,8 +160,9 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
   };
 
   const handleSubmit = async () => {
-    // Chuyển đổi dữ liệu trước khi gửi lên server
     const formData = new FormData();
+
+    // Thông tin sản phẩm chính
     formData.append('mathuonghieu', form.mathuonghieu);
     formData.append('tensanpham', form.tensanpham);
     formData.append('hedieuhanh', form.hedieuhanh);
@@ -170,32 +175,34 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
     formData.append('pin', form.pin);
     formData.append('mota', form.mota);
 
-    // Append product images (Only 1 image for the product)
+    // Ảnh sản phẩm chính (nhiều ảnh)
     form.hinhanh.forEach((file) => {
-      formData.append('hinhanh', file); // Assuming the backend expects one or more product images
+      formData.append('hinhanh', file); // backend dùng upload.array('hinhanh')
     });
 
-    // Append the details of the product
+    // Chi tiết sản phẩm (dạng mảng)
     form.chiTietSanPham.forEach((detail, index) => {
-    formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
-    formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
-    formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
-    formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
-    formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
-    formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
-    formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai || 0);
+      formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
+      formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
+      formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
+      formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
+      formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
+      formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
+      formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai || 0);
+      formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam || 0);
 
-    if (detail.hinhanhchitiet)
-      formData.append(`chiTietSanPham[${index}][hinhanhchitiet]`, detail.hinhanhchitiet);
-   });
+      if (detail.hinhanhchitiet) {
+        formData.append('hinhanhchitiet', detail.hinhanhchitiet); // chỉ dùng chung 1 tên field!
+      }
+    });
 
-    // Call createProduct API service
+    // Gửi lên server
     const success = await productService.createProduct(formData);
-    console.log("formData",formData)
-    if (success) {
-      onClose(); // Close modal on success
-    }
+      if (success) {
+        onClose(); // đóng modal nếu thành công
+      }
   };
+
 
   return (
     <Modal

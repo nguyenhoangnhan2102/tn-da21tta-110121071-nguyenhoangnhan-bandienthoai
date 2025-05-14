@@ -122,8 +122,8 @@ const createProduct = async (req, res) => {
     chiTietSanPham,
   } = req.body;
 
-  const uploadedImages = req.files.map(file => file.filename);
-  const productImages = uploadedImages.join(","); // Ghép ảnh sản phẩm chính
+  const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
+  const productImages = uploadedImages.join(",");
 
   const connection = await pool.getConnection();
 
@@ -152,10 +152,11 @@ const createProduct = async (req, res) => {
     );
 
     const masanpham = productResult.insertId;
-
+    const detailImages = req.files['hinhanhchitiet'] || [];
     // Thêm vào bảng CHITIETSANPHAM
-    for (const detail of chiTietSanPham) {
-      const detailImage = detail.hinhanhchitiet ? detail.hinhanhchitiet[0] : null;
+    for (let i = 0; i < chiTietSanPham.length; i++) {
+      const detail = chiTietSanPham[i];
+      const detailImage = detailImages[i]?.filename || null;
 
       await connection.query(
         `INSERT INTO CHITIETSANPHAM

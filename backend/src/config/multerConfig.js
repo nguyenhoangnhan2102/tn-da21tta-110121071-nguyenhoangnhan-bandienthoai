@@ -46,4 +46,9 @@ const upload = multer({
   },
 });
 
-module.exports = upload;
+const multipleUpload = upload.fields([
+  { name: 'hinhanh', maxCount: 5 },             // ảnh chính (nhiều)
+  { name: 'hinhanhchitiet', maxCount: 50 },     // ảnh chi tiết (mỗi cái 1 ảnh nhưng gửi thành danh sách)
+]);
+
+module.exports = multipleUpload;
