@@ -26,7 +26,7 @@ const ProductComponent = () => {
 
   const fetchProduct = async () => {
     const response = await productService.getAllProducts();
-    console.log("response",response)
+    console.log("response", response)
     setProduct(response || []);
   };
 
