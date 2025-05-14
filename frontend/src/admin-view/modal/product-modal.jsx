@@ -17,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import brandService from '../../services/brandService';
 import productService from '../../services/productService';
+// import CreateProductDetailModal from './detailProductCreate-modal';
 
 const modalStyle = {
   position: 'absolute',
@@ -52,6 +53,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
 
   const [form, setForm] = useState(initialFormState);
   const [previewImages, setPreviewImages] = useState([]);
+  // const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [brands, setBrands] = useState([]);
 
   // Giả lập danh sách thương hiệu, bạn có thể thay bằng API gọi danh sách thương hiệu
@@ -203,8 +205,15 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
       }
   };
 
+  // const handleSaveDetail = (newDetail) => {
+  //   setForm((prev) => ({
+  //     ...prev,
+  //     chiTietSanPham: [...prev.chiTietSanPham, newDetail]
+  //   }));
+  // };
 
   return (
+    <>
     <Modal
       open={open}
       onClose={onClose}
@@ -359,7 +368,9 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
               rows={3}
             />
           </Grid>
-
+          <Button startIcon={<AddIcon />} onClick={() => setDetailModalOpen(true)}>
+            Thêm chi tiết
+          </Button>
           <Grid item xs={12}>
             <Button variant="contained" component="label" disabled={isView}>
               Tải ảnh
@@ -415,7 +426,6 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
             <Typography variant="subtitle1" mt={2} mb={1}>Chi tiết sản phẩm</Typography>
             {form.chiTietSanPham.map((detail, index) => (
               <Grid container spacing={1} key={index} alignItems="center" mb={2}>
-                {/* Hình ảnh chi tiết sản phẩm */}
                 <Grid item xs={12}>
                   <Button variant="contained" component="label" disabled={isView}>
                     Tải ảnh chi tiết
@@ -487,7 +497,7 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
                     type="number"
                     value={detail.giagiam}
                     disabled
-                    InputLabelProps={{ shrink: true }} // ← Khắc phục label bị che
+                    InputLabelProps={{ shrink: true }}
                   />
                 </Grid>
                 {!isView && (
@@ -515,6 +525,12 @@ const ProductFormModal = ({ open, onClose, isView, product, onSubmit }) => {
         </Box>
       </Box>
     </Modal>
+    {/* <CreateProductDetailModal
+      open={detailModalOpen}
+      onClose={() => setDetailModalOpen(false)}
+      onSave={handleSaveDetail}
+    /> */}
+    </>
   );
 };
 
