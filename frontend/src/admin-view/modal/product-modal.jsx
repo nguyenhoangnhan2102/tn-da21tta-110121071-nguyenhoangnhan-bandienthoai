@@ -225,7 +225,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
       >
         <Box sx={modalStyle}>
           <Typography id="modal-title" variant="h6" component="h2" mb={2}>
-            {isView ? 'Xem chi tiết sản phẩm' : product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
+            {product ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}
           </Typography>
 
           <Grid container spacing={2}>

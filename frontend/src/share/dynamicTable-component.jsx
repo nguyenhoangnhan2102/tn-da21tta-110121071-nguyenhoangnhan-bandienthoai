@@ -47,7 +47,7 @@ const DynamicTable = ({
           paginatedData.map((row, index) => (
             <TableRow key={index}>
               {columns.map((col) => (
-                <TableCell key={col.key}>
+                <TableCell key={col.key} sx={{ padding: "0px 16px" }}>
                   {typeof col.render === "function" ? (
                     col.render(row[col.key], row)
                   ) : col.isImage ? (
@@ -56,13 +56,12 @@ const DynamicTable = ({
                       {/* Lấy ảnh đầu tiên từ danh sách ảnh */}
                       {row[col.key].split(',')[0] && (
                         <img
-                          src={`http://localhost:3333/images/${row[col.key].split(',')[0]}`} // Chỉ lấy ảnh đầu tiên
+                          src={`http://localhost:3333/images/${row[col.key].split(',')[0]}`}
                           alt={col.label}
                           style={{
-                            width: "60px",
-                            height: "auto",
+                            width: "90px",
+                            height: "60px",
                             objectFit: "contain",
-                            marginRight: "8px",
                           }}
                         />
                       )}

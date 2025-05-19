@@ -123,6 +123,7 @@ const ProductComponent = () => {
         data={sortedData}
         onEdit={(id) => {
           const selected = sortedData.find((u) => u.id === id);
+          console.log("selectedProduct", selected);
           setEditing(selected);
           setShowModal(true);
         }}

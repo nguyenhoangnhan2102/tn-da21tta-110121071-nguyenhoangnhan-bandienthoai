@@ -162,13 +162,11 @@ const createProduct = async (req, res) => {
     }
 };
 
-// Cập nhật sản phẩm
 const updateProduct = async (req, res) => {
     const masanpham = req.params.id;
     const {
         mathuonghieu,
         tensanpham,
-        hinhanh,
         hedieuhanh,
         cpu,
         gpu,
@@ -177,33 +175,97 @@ const updateProduct = async (req, res) => {
         congnghemanhinh,
         dophangiaimanhinh,
         pin,
-        mota
+        mota,
+        chiTietSanPham
     } = req.body;
 
+    const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
+    const productImages = uploadedImages.join(","); // có thể giữ ảnh cũ nếu không upload mới
+
+    const connection = await pool.getConnection();
     try {
-        const [result] = await pool.query(`
-            UPDATE SANPHAM SET 
-                mathuonghieu = ?, tensanpham = ?, hinhanh = ?, hedieuhanh = ?,
-                cpu = ?, gpu = ?, cameratruoc = ?, camerasau = ?,
-                congnghemanhinh = ?, dophangiaimanhinh = ?, pin = ?, mota = ?
-            WHERE masanpham = ?`,
-            [mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau,
-                congnghemanhinh, dophangiaimanhinh, pin, mota, masanpham]
+        await connection.beginTransaction();
+
+        // Cập nhật bảng SANPHAM
+        await connection.query(
+            `UPDATE SANPHAM SET 
+                mathuonghieu = ?, 
+                tensanpham = ?, 
+                hinhanh = IF(CHAR_LENGTH(?) > 0, ?, hinhanh), 
+                hedieuhanh = ?, 
+                cpu = ?, 
+                gpu = ?, 
+                cameratruoc = ?, 
+                camerasau = ?, 
+                congnghemanhinh = ?, 
+                dophangiaimanhinh = ?, 
+                pin = ?, 
+                mota = ?
+             WHERE masanpham = ?`,
+            [
+                mathuonghieu,
+                tensanpham,
+                productImages, productImages, // điều kiện giữ ảnh cũ nếu không upload mới
+                hedieuhanh,
+                cpu,
+                gpu,
+                cameratruoc,
+                camerasau,
+                congnghemanhinh,
+                dophangiaimanhinh,
+                pin,
+                mota,
+                masanpham
+            ]
         );
 
-        res.status(200).json({
+        // Xóa chi tiết cũ
+        await connection.query(`DELETE FROM CHITIETSANPHAM WHERE masanpham = ?`, [masanpham]);
+
+        // Thêm lại chi tiết mới
+        const detailImages = req.files['hinhanhchitiet'] || [];
+        for (let i = 0; i < chiTietSanPham.length; i++) {
+            const detail = chiTietSanPham[i];
+            const detailImage = detailImages[i]?.filename || null;
+
+            await connection.query(
+                `INSERT INTO CHITIETSANPHAM
+                (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, khuyenmai, trangthai, hinhanhchitiet, giagiam)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    masanpham,
+                    detail.mau,
+                    detail.dungluong,
+                    detail.ram,
+                    detail.soluong,
+                    detail.giaban,
+                    detail.gianhap,
+                    detail.khuyenmai || 0,
+                    detail.trangthai || 0,
+                    detailImage,
+                    detail.giagiam
+                ]
+            );
+        }
+
+        await connection.commit();
+        return res.status(200).json({
             EM: "Cập nhật sản phẩm thành công",
             EC: 0,
-            DT: result
+            DT: []
         });
     } catch (error) {
-        res.status(500).json({
-            EM: `Lỗi cập nhật: ${error.message}`,
+        await connection.rollback();
+        return res.status(500).json({
+            EM: `Lỗi cập nhật sản phẩm: ${error.message}`,
             EC: -1,
             DT: []
         });
+    } finally {
+        connection.release();
     }
 };
+
 
 // Xóa mềm sản phẩm
 const deleteProduct = async (req, res) => {
