@@ -53,10 +53,34 @@ const productService = {
     },
 
     // Cập nhật sản phẩm
-    updateProduct: async (masanpham, productData) => {
+    // updateProduct: async (masanpham, productData) => {
+    //     try {
+    //         const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, productData);
+    //         if (response.data.EC === 1) {
+    //             toast.success(response.data.EM);
+    //             return true;
+    //         } else {
+    //             toast.error(response.data.EM);
+    //             return false;
+    //         }
+    //     } catch (error) {
+    //         toast.error("Lỗi khi cập nhật sản phẩm");
+    //         console.error("updateProduct error:", error.message);
+    //         return false;
+    //     }
+    // },
+
+    updateProduct: async (masanpham, formData) => {
         try {
-            const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, productData);
-            if (response.data.EC === 1) {
+            const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+            console.log("🟡 update response:", response); // 👈 THÊM DÒNG NÀY
+
+
+            if (response.data.EC === 0) {
                 toast.success(response.data.EM);
                 return true;
             } else {

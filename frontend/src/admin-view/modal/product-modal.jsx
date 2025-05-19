@@ -17,6 +17,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import brandService from '../../services/brandService';
 import productService from '../../services/productService';
+import { toast } from 'react-toastify';
 // import CreateProductDetailModal from './detailProductCreate-modal';
 
 const modalStyle = {
@@ -73,6 +74,10 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         ? product.hinhanh.split(',').map((img) => `${imageBaseUrl}/${img.trim()}`)
         : product.hinhanh;
 
+      const originalImages = typeof product.hinhanh === 'string'
+        ? product.hinhanh.split(',').map((img) => img.trim())
+        : product.hinhanh || [];
+
       const chiTietSanPhamArray = Array.isArray(product.chiTietSanPham) && product.chiTietSanPham.length > 0
         ? product.chiTietSanPham.map(detail => ({
           mau: detail.mau || '',
@@ -102,7 +107,8 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       setForm({
         mathuonghieu: product.mathuonghieu || '',
         tensanpham: product.tensanpham || '',
-        hinhanh: product.hinhanh || [],
+        // hinhanh: product.hinhanh || [],
+        hinhanh: originalImages, // 👈 không phải preview link mà là tên gốc để giữ state
         hedieuhanh: product.hedieuhanh || '',
         cpu: product.cpu || '',
         gpu: product.gpu || '',
@@ -189,7 +195,6 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
   const handleSubmit = async () => {
     const formData = new FormData();
 
-    // Thông tin sản phẩm chính
     formData.append('mathuonghieu', form.mathuonghieu);
     formData.append('tensanpham', form.tensanpham);
     formData.append('hedieuhanh', form.hedieuhanh);
@@ -202,14 +207,14 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     formData.append('pin', form.pin);
     formData.append('mota', form.mota);
 
-    // Ảnh sản phẩm chính (nhiều ảnh)
+    // Hình ảnh sản phẩm chính
     form.hinhanh.forEach((file) => {
       if (file instanceof File) {
-        formData.append('hinhanh', file); // backend sẽ nhận upload.array('hinhanh')
+        formData.append('hinhanh', file);
       }
     });
 
-    // Chi tiết sản phẩm (dạng mảng)
+    // Chi tiết sản phẩm
     form.chiTietSanPham.forEach((detail, index) => {
       formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
       formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
@@ -220,28 +225,32 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai || 0);
       formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam || 0);
 
-      if (detail.hinhanhchitiet) {
-        formData.append('hinhanhchitiet', detail.hinhanhchitiet); // chỉ dùng chung 1 tên field!
+      if (detail.hinhanhchitiet instanceof File) {
+        formData.append('hinhanhchitiet', detail.hinhanhchitiet);
       }
     });
+
     try {
-      // Gửi lên server
-      const success = await productService.createProduct(formData);
+      let success = false;
+
+      if (product) {
+        // Nếu có sản phẩm → cập nhật
+        success = await productService.updateProduct(product.masanpham, formData);
+        toast.success("Cập nhật thành công!");
+      } else {
+        // Nếu chưa có → tạo mới
+        success = await productService.createProduct(formData);
+        toast.success("Tạo mới thành công!");
+      }
+      console.log("Success?", success); // 👈 Thêm dòng này
       if (success) {
         onSave(form);
-        onClose(); // đóng modal nếu thành công
+        onClose();
       }
     } catch (error) {
-      console.error("Error saving brand:", error);
+      console.error("Lỗi khi lưu sản phẩm:", error);
     }
   };
-
-  // const handleSaveDetail = (newDetail) => {
-  //   setForm((prev) => ({
-  //     ...prev,
-  //     chiTietSanPham: [...prev.chiTietSanPham, newDetail]
-  //   }));
-  // };
 
   return (
     <>
