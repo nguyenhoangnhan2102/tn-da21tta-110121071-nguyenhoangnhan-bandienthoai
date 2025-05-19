@@ -158,6 +158,7 @@ const ProductComponent = () => {
         }}
         product={editting} // 👈 Thêm dòng này
         isView={false}
+        imageBaseUrl={API_IMG_URL}
       />
     </div>
   );

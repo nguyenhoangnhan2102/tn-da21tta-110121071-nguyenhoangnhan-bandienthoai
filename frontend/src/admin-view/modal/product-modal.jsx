@@ -34,7 +34,7 @@ const modalStyle = {
   width: 1100,
 };
 
-const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
+const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl }) => {
   const initialFormState = {
     mathuonghieu: '',
     tensanpham: '',
@@ -69,6 +69,10 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
   // Load dữ liệu sản phẩm khi chỉnh sửa/xem
   useEffect(() => {
     if (product) {
+      const imageArray = typeof product.hinhanh === 'string'
+        ? product.hinhanh.split(',').map((img) => `${imageBaseUrl}/${img.trim()}`)
+        : product.hinhanh;
+
       setForm({
         mathuonghieu: product.mathuonghieu || '',
         tensanpham: product.tensanpham || '',
@@ -94,7 +98,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
           giagiam: '',
         }]
       });
-      setPreviewImages(product.hinhanh || []);
+      setPreviewImages(imageArray || []);
     } else {
       setForm(initialFormState);
       setPreviewImages([]);
@@ -229,6 +233,56 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
           </Typography>
 
           <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Button variant="contained" component="label" disabled={isView}>
+                Tải ảnh
+                <input
+                  type="file"
+                  hidden
+                  multiple
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
+              </Button>
+              {previewImages.length > 0 && (
+                <Box mt={2} display="flex" flexWrap="wrap" gap={2}>
+                  {previewImages.map((src, index) => (
+                    <Box
+                      key={index}
+                      position="relative"
+                      width={100}
+                      height={100}
+                      borderRadius={2}
+                      overflow="hidden"
+                      border="1px solid #ccc"
+                    >
+                      <img
+                        src={src}
+                        alt={`preview-${index}`}
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                      {!isView && (
+                        <IconButton
+                          size="small"
+                          onClick={() => handleRemoveImage(index)}
+                          sx={{
+                            position: 'absolute',
+                            top: 2,
+                            right: 2,
+                            bgcolor: 'rgba(0,0,0,0.6)',
+                            color: 'white',
+                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
+                      )}
+                    </Box>
+                  ))}
+                </Box>
+              )}
+            </Grid>
+
             <Grid item xs={12} sm={6}>
               <FormControl fullWidth disabled={isView}>
                 <InputLabel id="brand-label">Thương hiệu</InputLabel>
@@ -371,55 +425,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product }) => {
                 rows={3}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Button variant="contained" component="label" disabled={isView}>
-                Tải ảnh
-                <input
-                  type="file"
-                  hidden
-                  multiple
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
-              </Button>
-              {previewImages.length > 0 && (
-                <Box mt={2} display="flex" flexWrap="wrap" gap={2}>
-                  {previewImages.map((src, index) => (
-                    <Box
-                      key={index}
-                      position="relative"
-                      width={100}
-                      height={100}
-                      borderRadius={2}
-                      overflow="hidden"
-                      border="1px solid #ccc"
-                    >
-                      <img
-                        src={src}
-                        alt={`preview-${index}`}
-                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                      />
-                      {!isView && (
-                        <IconButton
-                          size="small"
-                          onClick={() => handleRemoveImage(index)}
-                          sx={{
-                            position: 'absolute',
-                            top: 2,
-                            right: 2,
-                            bgcolor: 'rgba(0,0,0,0.6)',
-                            color: 'white',
-                            '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Box>
-                  ))}
-                </Box>
-              )}
-            </Grid>
+
 
             {/* Chi tiết sản phẩm */}
             <Grid item xs={12}>
