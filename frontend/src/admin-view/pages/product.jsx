@@ -118,8 +118,8 @@ const ProductComponent = () => {
         columns={columns}
         data={sortedData}
         onEdit={(id) => {
-          const selectedUser = sortedData.find((u) => u.id === id);
-          setEditing(selectedUser);
+          const selected = sortedData.find((u) => u.id === id);
+          setEditing(selected);
           setShowModal(true);
         }}
         showViewButton={true}
@@ -135,10 +135,9 @@ const ProductComponent = () => {
       //   }
       // }}
       />
-      <ProductFormModal
+      <ProductDetailModal
         open={showViewModal}
         onClose={() => setShowViewModal(false)}
-        onSave={() => { }}
         product={selectedProduct}
         isView={true}
       />

@@ -25,13 +25,11 @@ const getAllProducts = async (req, res) => {
     }
 };
 
-
-// Lấy sản phẩm theo ID
 const getProductById = async (req, res) => {
     const masanpham = req.params.id;
 
     try {
-        // Lấy thông tin sản phẩm chính
+        // Lấy thông tin sản phẩm chính kèm thương hiệu
         const [productRows] = await pool.query(`
             SELECT sp.*, th.tenthuonghieu 
             FROM SANPHAM sp
@@ -39,34 +37,33 @@ const getProductById = async (req, res) => {
             WHERE sp.masanpham = ? AND sp.trangthai = 0
         `, [masanpham]);
 
-        if (productRows.length === 0) {
-            return res.status(404).json({
-                EM: "Không tìm thấy sản phẩm",
-                EC: 0,
-                DT: null
-            });
-        }
-
-        // Lấy danh sách màu - dung lượng của sản phẩm
-        const [detailRows] = await pool.query(`
-            SELECT * FROM CHITIETSANPHAM 
-            WHERE masanpham = ? AND trangthai = 0
-        `, [masanpham]);
-
-        const result = {
-            ...productRows[0],
-            variations: detailRows
-        };
-
-        return res.status(200).json({
-            EM: "Lấy sản phẩm thành công",
+        // if (productRows.length === 0) {
+        return res.status(404).json({
+            EM: "Không tìm thấy sản phẩm",
             EC: 0,
-            DT: result
+            DT: null
         });
+        // }
 
+        // // Lấy danh sách biến thể sản phẩm (chi tiết sản phẩm)
+        // const [detailRows] = await pool.query(`
+        //     SELECT * FROM CHITIETSANPHAM 
+        //     WHERE masanpham = ? AND trangthai = 0
+        // `, [masanpham]);
+
+        // const result = {
+        //     ...productRows[0],
+        //     variations: detailRows
+        // };
+
+        // return res.status(200).json({
+        //     EM: "Lấy chi tiết sản phẩm thành công",
+        //     EC: 0,
+        //     DT: result
+        // });
     } catch (error) {
         return res.status(500).json({
-            EM: `Lỗi khi lấy sản phẩm: ${error.message}`,
+            EM: `Lỗi lấy chi tiết sản phẩm: ${error.message}`,
             EC: -1,
             DT: null
         });
@@ -107,38 +104,9 @@ const getProductById = async (req, res) => {
 // };
 
 const createProduct = async (req, res) => {
-  const {
-    mathuonghieu,
-    tensanpham,
-    hedieuhanh,
-    cpu,
-    gpu,
-    cameratruoc,
-    camerasau,
-    congnghemanhinh,
-    dophangiaimanhinh,
-    pin,
-    mota,
-    chiTietSanPham,
-  } = req.body;
-
-  const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
-  const productImages = uploadedImages.join(",");
-
-  const connection = await pool.getConnection();
-
-  try {
-    await connection.beginTransaction();
-
-    // Thêm vào bảng SANPHAM
-    const [productResult] = await connection.query(
-      `INSERT INTO SANPHAM 
-        (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
+    const {
         mathuonghieu,
         tensanpham,
-        productImages,
         hedieuhanh,
         cpu,
         gpu,
@@ -148,52 +116,81 @@ const createProduct = async (req, res) => {
         dophangiaimanhinh,
         pin,
         mota,
-      ]
-    );
+        chiTietSanPham,
+    } = req.body;
 
-    const masanpham = productResult.insertId;
-    const detailImages = req.files['hinhanhchitiet'] || [];
-    // Thêm vào bảng CHITIETSANPHAM
-    for (let i = 0; i < chiTietSanPham.length; i++) {
-      const detail = chiTietSanPham[i];
-      const detailImage = detailImages[i]?.filename || null;
+    const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
+    const productImages = uploadedImages.join(",");
 
-      await connection.query(
-        `INSERT INTO CHITIETSANPHAM
+    const connection = await pool.getConnection();
+
+    try {
+        await connection.beginTransaction();
+
+        // Thêm vào bảng SANPHAM
+        const [productResult] = await connection.query(
+            `INSERT INTO SANPHAM 
+        (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+                mathuonghieu,
+                tensanpham,
+                productImages,
+                hedieuhanh,
+                cpu,
+                gpu,
+                cameratruoc,
+                camerasau,
+                congnghemanhinh,
+                dophangiaimanhinh,
+                pin,
+                mota,
+            ]
+        );
+
+        const masanpham = productResult.insertId;
+        const detailImages = req.files['hinhanhchitiet'] || [];
+        // Thêm vào bảng CHITIETSANPHAM
+        for (let i = 0; i < chiTietSanPham.length; i++) {
+            const detail = chiTietSanPham[i];
+            const detailImage = detailImages[i]?.filename || null;
+
+            await connection.query(
+                `INSERT INTO CHITIETSANPHAM
           (masanpham, mau, dungluong, ram, soluong, giaban, gianhap, khuyenmai, trangthai, hinhanhchitiet, giagiam)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [
-          masanpham,
-          detail.mau,
-          detail.dungluong,
-          detail.ram,
-          detail.soluong,
-          detail.giaban,
-          detail.gianhap,
-          detail.khuyenmai || 0,
-          detail.trangthai || 0,
-          detailImage,
-          detail.giagiam,
-        ]
-      );
-    }
+                [
+                    masanpham,
+                    detail.mau,
+                    detail.dungluong,
+                    detail.ram,
+                    detail.soluong,
+                    detail.giaban,
+                    detail.gianhap,
+                    detail.khuyenmai || 0,
+                    detail.trangthai || 0,
+                    detailImage,
+                    detail.giagiam,
+                ]
+            );
+        }
 
-    await connection.commit();
-    res.status(201).json({
-      EM: "Tạo sản phẩm thành công",
-      EC: 1,
-      DT: [],
-    });
-  } catch (error) {
-    await connection.rollback();
-    res.status(500).json({
-      EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
-      EC: -1,
-      DT: [],
-    });
-  } finally {
-    connection.release();
-  }
+        await connection.commit();
+        res.status(201).json({
+            EM: "Tạo sản phẩm thành công",
+            EC: 1,
+            DT: [],
+        });
+    } catch (error) {
+        await connection.rollback();
+        res.status(500).json({
+            EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
+            EC: -1,
+            DT: [],
+        });
+    } finally {
+        connection.release();
+    }
 };
 
 // Cập nhật sản phẩm
@@ -222,7 +219,7 @@ const updateProduct = async (req, res) => {
                 congnghemanhinh = ?, dophangiaimanhinh = ?, pin = ?, mota = ?
             WHERE masanpham = ?`,
             [mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau,
-             congnghemanhinh, dophangiaimanhinh, pin, mota, masanpham]
+                congnghemanhinh, dophangiaimanhinh, pin, mota, masanpham]
         );
 
         res.status(200).json({
