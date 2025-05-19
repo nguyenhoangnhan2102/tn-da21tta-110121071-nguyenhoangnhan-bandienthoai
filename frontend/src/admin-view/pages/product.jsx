@@ -27,7 +27,11 @@ const ProductComponent = () => {
   const fetchProduct = async () => {
     const response = await productService.getAllProducts();
     console.log("response", response)
-    setProduct(response || []);
+    const mappedResponse = response.map((item) => ({
+      ...item,
+      id: item.masanpham,
+    }));
+    setProduct(mappedResponse || []);
   };
 
   // Hàm tìm kiếm dữ liệu
@@ -68,7 +72,7 @@ const ProductComponent = () => {
 
   //data của dữ liệu
   const columns = [
-    // { key: "masanpham", label: "ID" },
+    { key: "masanpham", label: "ID" },
     { key: "tensanpham", label: "Tên" },
     { key: "hinhanh", label: "Hình ảnh", isImage: true },
     { key: "hedieuhanh", label: "Hệ điều hành" },
@@ -124,7 +128,8 @@ const ProductComponent = () => {
         }}
         showViewButton={true}
         onView={(id) => {
-          const selected = sortedData.find((item) => item.id === id);
+          const selected = sortedData.find((u) => u.id === id);
+          console.log("selectedProduct", selected);
           setSelectedProduct(selected);
           setShowViewModal(true);
         }}
