@@ -128,10 +128,15 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
   };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const newImages = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(newImages);
-    setForm((prev) => ({ ...prev, hinhanh: files }));
+    const files = Array.from(e.target.files); // Danh sách File vừa upload
+    const newPreviews = files.map((file) => URL.createObjectURL(file));
+
+    setPreviewImages((prev) => [...prev, ...newPreviews]); // Gộp ảnh preview
+
+    setForm((prev) => ({
+      ...prev,
+      hinhanh: [...prev.hinhanh, ...files], // Gộp vào mảng hinhanh (File[])
+    }));
   };
 
   const handleRemoveImage = (indexToRemove) => {
@@ -199,7 +204,9 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
 
     // Ảnh sản phẩm chính (nhiều ảnh)
     form.hinhanh.forEach((file) => {
-      formData.append('hinhanh', file); // backend dùng upload.array('hinhanh')
+      if (file instanceof File) {
+        formData.append('hinhanh', file); // backend sẽ nhận upload.array('hinhanh')
+      }
     });
 
     // Chi tiết sản phẩm (dạng mảng)
