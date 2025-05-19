@@ -74,34 +74,83 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                 {/* Thông tin sản phẩm */}
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Thương hiệu" value={data.tenthuonghieu || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Thương hiệu"
+                            value={data.tenthuonghieu || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Tên sản phẩm" value={data.tensanpham || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Tên sản phẩm"
+                            value={data.tensanpham || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Hệ điều hành" value={data.hedieuhanh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth label="Hệ điều hành"
+                            value={data.hedieuhanh || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="CPU" value={data.cpu || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="CPU"
+                            value={data.cpu || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="GPU" value={data.gpu || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="GPU"
+                            value={data.gpu || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Camera trước" value={data.cameratruoc || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Camera trước"
+                            value={data.cameratruoc || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Camera sau" value={data.camerasau || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Camera sau"
+                            value={data.camerasau || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Công nghệ màn hình" value={data.congnghemanhinh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Công nghệ màn hình"
+                            value={data.congnghemanhinh || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Độ phân giải màn hình" value={data.dophangiaimanhinh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Độ phân giải màn hình"
+                            value={data.dophangiaimanhinh || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12} sm={6}>
-                        <TextField fullWidth label="Pin" value={data.pin || ''} InputProps={{ readOnly: true }} margin="dense" />
+                        <TextField
+                            fullWidth
+                            label="Pin"
+                            value={data.pin || ''}
+                            InputProps={{ readOnly: true }}
+                            margin="dense" />
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -119,7 +168,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                 {/* Chi tiết phiên bản sản phẩm */}
                 {Array.isArray(data.chiTietSanPham) && data.chiTietSanPham.length > 0 && (
                     <Box mt={3}>
-                        <Typography variant="subtitle1">📦 Các phiên bản sản phẩm</Typography>
+                        <Typography variant="subtitle1">📦 Biến thể sản phẩm</Typography>
                         <Grid container spacing={2} mt={1}>
                             {data.chiTietSanPham.map((detail, index) => (
                                 <Grid item xs={12} key={index}>
@@ -148,14 +197,46 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                                             alignItems="center"
                                             gap={2}
                                         >
-                                            <TextField label="Màu" value={detail.mau} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Dung lượng" value={detail.dungluong} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="RAM" value={detail.ram} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Số lượng" value={detail.soluong} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Giá nhập" value={detail.gianhap} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Giá bán" value={detail.giaban} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Khuyến mãi (%)" value={detail.khuyenmai} InputProps={{ readOnly: true }} size="small" />
-                                            <TextField label="Giá giảm" value={detail.giagiam} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField
+                                                label="Màu"
+                                                value={detail.mau}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Dung lượng"
+                                                value={detail.dungluong}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="RAM"
+                                                value={detail.ram}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Số lượng"
+                                                value={detail.soluong}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Giá nhập"
+                                                value={(parseInt(detail.gianhap)).toLocaleString("vi-VN") + " đ"}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Giá bán"
+                                                value={(parseInt(detail.giaban)).toLocaleString("vi-VN") + " đ"}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Khuyến mãi (%)"
+                                                value={detail.khuyenmai + "%"}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
+                                            <TextField
+                                                label="Giá giảm"
+                                                value={(parseInt(detail.giagiam)).toLocaleString("vi-VN") + " đ"}
+                                                InputProps={{ readOnly: true }}
+                                                size="small" />
                                         </Box>
                                     </Box>
                                 </Grid>
