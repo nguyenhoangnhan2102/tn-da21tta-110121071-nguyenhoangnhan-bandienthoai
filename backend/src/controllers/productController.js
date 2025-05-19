@@ -54,7 +54,7 @@ const getProductById = async (req, res) => {
         // Gộp lại kết quả
         const result = {
             ...productRows[0],
-            variations: detailRows
+            chiTietSanPham: detailRows
         };
 
         return res.status(200).json({
