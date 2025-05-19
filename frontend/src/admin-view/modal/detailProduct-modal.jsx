@@ -4,10 +4,7 @@ import {
     Box,
     Typography,
     Grid,
-    Divider,
-    List,
-    ListItem,
-    ListItemText
+    TextField
 } from '@mui/material';
 import productService from '../../services/productService';
 
@@ -22,15 +19,12 @@ const style = {
     boxShadow: 24,
     p: 4,
     borderRadius: 2,
-    maxHeight: '90vh',
+    maxHeight: '98vh',
     overflowY: 'auto'
 };
 
-const imageBaseUrl = 'http://localhost:3333/images'; // ✅ chỉnh URL ảnh tùy môi trường của bạn
-
-const ProductDetailModal = ({ open, onClose, product }) => {
+const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://localhost:3333/images" }) => {
     const [data, setData] = useState(null);
-    console.log("product", product?.masanpham);
 
     useEffect(() => {
         if (open && product?.masanpham) {
@@ -38,12 +32,10 @@ const ProductDetailModal = ({ open, onClose, product }) => {
         }
     }, [open, product?.masanpham]);
 
-
     const fetchData = async (id) => {
         try {
             const response = await productService.getProductById(id);
-            console.log("re", response);
-            setData(response);
+            setData(response || []);
         } catch (error) {
             console.error("Error fetching product:", error);
         }
@@ -56,95 +48,115 @@ const ProductDetailModal = ({ open, onClose, product }) => {
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={style}>
-                <Typography variant="h5" gutterBottom>
-                    🛍 Chi tiết sản phẩm: {data.tensanpham}
+                <Typography variant="h6" gutterBottom>
+                    🛍 Chi tiết sản phẩm
                 </Typography>
 
-                <Divider sx={{ mb: 2 }} />
-
                 {/* Ảnh sản phẩm */}
-                <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid container spacing={2} mb={2}>
                     {imageList.map((img, idx) => (
-                        <Grid item xs={6} sm={4} md={3} key={idx}>
+                        <Grid item key={idx}>
                             <img
                                 src={`${imageBaseUrl}/${img}`}
                                 alt={`product-${idx}`}
-                                style={{ width: '100%', height: 150, objectFit: 'cover', borderRadius: 4 }}
+                                style={{
+                                    width: 100,
+                                    height: 100,
+                                    objectFit: 'cover',
+                                    borderRadius: 4,
+                                    border: '1px solid #ccc'
+                                }}
                             />
                         </Grid>
                     ))}
                 </Grid>
 
+                {/* Thông tin sản phẩm */}
                 <Grid container spacing={2}>
                     <Grid item xs={12} sm={6}>
-                        <List>
-                            <ListItem>
-                                <ListItemText primary="Thương hiệu" secondary={data.tenthuonghieu || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Hệ điều hành" secondary={data.hedieuhanh || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="CPU" secondary={data.cpu || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="GPU" secondary={data.gpu || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Pin" secondary={data.pin || '-'} />
-                            </ListItem>
-                        </List>
+                        <TextField fullWidth label="Thương hiệu" value={data.tenthuonghieu || ''} InputProps={{ readOnly: true }} margin="dense" />
                     </Grid>
-
                     <Grid item xs={12} sm={6}>
-                        <List>
-                            <ListItem>
-                                <ListItemText primary="Camera trước" secondary={data.cameratruoc || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Camera sau" secondary={data.camerasau || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Công nghệ màn hình" secondary={data.congnghemanhinh || '-'} />
-                            </ListItem>
-                            <ListItem>
-                                <ListItemText primary="Độ phân giải màn hình" secondary={data.dophangiaimanhinh || '-'} />
-                            </ListItem>
-                        </List>
+                        <TextField fullWidth label="Tên sản phẩm" value={data.tensanpham || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Hệ điều hành" value={data.hedieuhanh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="CPU" value={data.cpu || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="GPU" value={data.gpu || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Camera trước" value={data.cameratruoc || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Camera sau" value={data.camerasau || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Công nghệ màn hình" value={data.congnghemanhinh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Độ phân giải màn hình" value={data.dophangiaimanhinh || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <TextField fullWidth label="Pin" value={data.pin || ''} InputProps={{ readOnly: true }} margin="dense" />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            fullWidth
+                            label="Mô tả"
+                            value={data.mota || ''}
+                            InputProps={{ readOnly: true }}
+                            multiline
+                            rows={3}
+                            margin="dense"
+                        />
                     </Grid>
                 </Grid>
 
-                <Box mt={3}>
-                    <Typography variant="subtitle1">📝 Mô tả sản phẩm</Typography>
-                    <Typography variant="body2" sx={{ whiteSpace: 'pre-line', mt: 1 }}>
-                        {data.mota || 'Không có mô tả'}
-                    </Typography>
-                </Box>
-
-                {Array.isArray(data.chiTietSanPham) && (
-                    <Box mt={4}>
-                        <Typography variant="subtitle1" gutterBottom>
-                            📦 Các phiên bản sản phẩm
-                        </Typography>
-                        <Grid container spacing={2}>
-                            {data.chiTietSanPham.map((detail, i) => (
-                                <Grid item xs={12} sm={6} md={4} key={i}>
-                                    <Box border="1px solid #ccc" borderRadius={2} p={2}>
+                {/* Chi tiết phiên bản sản phẩm */}
+                {Array.isArray(data.chiTietSanPham) && data.chiTietSanPham.length > 0 && (
+                    <Box mt={3}>
+                        <Typography variant="subtitle1">📦 Các phiên bản sản phẩm</Typography>
+                        <Grid container spacing={2} mt={1}>
+                            {data.chiTietSanPham.map((detail, index) => (
+                                <Grid item xs={12} key={index}>
+                                    <Box
+                                        p={2}
+                                        mb={2}
+                                        border="1px solid #ccc"
+                                        borderRadius={2}
+                                    >
+                                        {/* Hình ảnh nằm riêng một dòng */}
                                         {detail.hinhanhchitiet && (
-                                            <img
-                                                src={`${imageBaseUrl}/${detail.hinhanhchitiet}`}
-                                                alt={`variant-${i}`}
-                                                style={{ width: '100%', height: 140, objectFit: 'cover', borderRadius: 4 }}
-                                            />
+                                            <Box mb={2}>
+                                                <img
+                                                    src={`${imageBaseUrl}/${detail.hinhanhchitiet}`}
+                                                    alt={`variant-${index}`}
+                                                    style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 4, border: '1px solid #ccc' }}
+                                                />
+                                            </Box>
                                         )}
-                                        <Typography variant="body2"><strong>Màu:</strong> {detail.mau}</Typography>
-                                        <Typography variant="body2"><strong>Dung lượng:</strong> {detail.dungluong}</Typography>
-                                        <Typography variant="body2"><strong>RAM:</strong> {detail.ram}</Typography>
-                                        <Typography variant="body2"><strong>Số lượng:</strong> {detail.soluong}</Typography>
-                                        <Typography variant="body2"><strong>Giá nhập:</strong> {detail.gianhap}</Typography>
-                                        <Typography variant="body2"><strong>Giá bán:</strong> {detail.giaban}</Typography>
-                                        <Typography variant="body2"><strong>Khuyến mãi:</strong> {detail.khuyenmai}%</Typography>
-                                        <Typography variant="body2"><strong>Giá giảm:</strong> {detail.giagiam}</Typography>
+
+                                        {/* Thông tin nằm ngang một dòng */}
+                                        <Box
+                                            display="flex"
+                                            flexDirection="row"
+                                            flexWrap="wrap"
+                                            alignItems="center"
+                                            gap={2}
+                                        >
+                                            <TextField label="Màu" value={detail.mau} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Dung lượng" value={detail.dungluong} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="RAM" value={detail.ram} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Số lượng" value={detail.soluong} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Giá nhập" value={detail.gianhap} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Giá bán" value={detail.giaban} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Khuyến mãi (%)" value={detail.khuyenmai} InputProps={{ readOnly: true }} size="small" />
+                                            <TextField label="Giá giảm" value={detail.giagiam} InputProps={{ readOnly: true }} size="small" />
+                                        </Box>
                                     </Box>
                                 </Grid>
                             ))}

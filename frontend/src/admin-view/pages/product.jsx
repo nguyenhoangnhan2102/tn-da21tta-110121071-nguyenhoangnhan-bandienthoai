@@ -7,7 +7,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ProductModal from "../modal/product-modal";
 import ProductFormModal from "../modal/product-modal";
 
-const API_URL = process.env.REACT_APP_API_BASE_URL_PRODUCTS;
+const API_IMG_URL = process.env.REACT_APP_URL_SERVER + "/images";
 
 const ProductComponent = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -145,6 +145,7 @@ const ProductComponent = () => {
         onClose={() => setShowViewModal(false)}
         product={selectedProduct}
         isView={true}
+        imageBaseUrl={API_IMG_URL}
       />
 
       <ProductFormModal
