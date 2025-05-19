@@ -3,7 +3,8 @@ const pool = require("../config/database");
 // Lấy tất cả sản phẩm (chỉ lấy sản phẩm chưa bị xóa)
 const getAllProducts = async (req, res) => {
     try {
-        const [rows] = await pool.query(`
+        // 1. Lấy danh sách sản phẩm chính
+        const [productRows] = await pool.query(`
             SELECT sp.*, th.tenthuonghieu 
             FROM SANPHAM sp
             LEFT JOIN THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
@@ -11,10 +12,25 @@ const getAllProducts = async (req, res) => {
             ORDER BY sp.masanpham DESC
         `);
 
+        // 2. Lấy toàn bộ chi tiết sản phẩm
+        const [detailRows] = await pool.query(`
+            SELECT * FROM CHITIETSANPHAM 
+            WHERE trangthai = 0
+        `);
+
+        // 3. Gộp chi tiết sản phẩm vào từng sản phẩm
+        const productMap = productRows.map(product => {
+            const chiTietSanPham = detailRows.filter(detail => detail.masanpham === product.masanpham);
+            return {
+                ...product,
+                chiTietSanPham
+            };
+        });
+
         res.status(200).json({
-            EM: "Lấy danh sách sản phẩm thành công",
+            EM: "Lấy danh sách sản phẩm kèm chi tiết thành công",
             EC: 0,
-            DT: rows
+            DT: productMap
         });
     } catch (error) {
         res.status(500).json({
@@ -24,6 +40,7 @@ const getAllProducts = async (req, res) => {
         });
     }
 };
+
 
 const getProductById = async (req, res) => {
     const masanpham = req.params.id;

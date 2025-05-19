@@ -73,6 +73,32 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         ? product.hinhanh.split(',').map((img) => `${imageBaseUrl}/${img.trim()}`)
         : product.hinhanh;
 
+      const chiTietSanPhamArray = Array.isArray(product.chiTietSanPham) && product.chiTietSanPham.length > 0
+        ? product.chiTietSanPham.map(detail => ({
+          mau: detail.mau || '',
+          dungluong: detail.dungluong || '',
+          ram: detail.ram || '',
+          soluong: detail.soluong || '',
+          gianhap: detail.gianhap || '',
+          giaban: detail.giaban || '',
+          khuyenmai: detail.khuyenmai || '',
+          giagiam: detail.giagiam || '',
+          hinhanhchitiet: detail.hinhanhchitiet
+            ? `${imageBaseUrl}/${detail.hinhanhchitiet}`
+            : null,
+        }))
+        : [{
+          mau: '',
+          dungluong: '',
+          ram: '',
+          soluong: '',
+          gianhap: '',
+          giaban: '',
+          khuyenmai: '',
+          giagiam: '',
+          hinhanhchitiet: null,
+        }];
+
       setForm({
         mathuonghieu: product.mathuonghieu || '',
         tensanpham: product.tensanpham || '',
@@ -86,18 +112,9 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
         mota: product.mota || '',
-        chiTietSanPham: [{
-          mau: '',
-          dungluong: '',
-          ram: '',
-          soluong: '',
-          gianhap: '',
-          giaban: '',
-          khuyenmai: '',
-          hinhanh: null,
-          giagiam: '',
-        }]
+        chiTietSanPham: chiTietSanPhamArray
       });
+
       setPreviewImages(imageArray || []);
     } else {
       setForm(initialFormState);
@@ -445,9 +462,13 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                     {detail.hinhanhchitiet && (
                       <Box mt={2} position="relative" width={100} height={100} borderRadius={2} overflow="hidden" border="1px solid #ccc">
                         <img
-                          src={URL.createObjectURL(detail.hinhanhchitiet)}
-                          alt={`detail-image-${index}`}
-                          style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                          src={
+                            typeof detail.hinhanhchitiet === "string"
+                              ? detail.hinhanhchitiet // ảnh từ server
+                              : URL.createObjectURL(detail.hinhanhchitiet) // ảnh vừa chọn
+                          }
+                          alt={`detail-${index}`}
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
                         />
                         {!isView && (
                           <IconButton
