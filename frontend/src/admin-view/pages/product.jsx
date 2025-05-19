@@ -135,11 +135,12 @@ const ProductComponent = () => {
       //   }
       // }}
       />
-      <ProductDetailModal
+      <ProductFormModal
         open={showViewModal}
         onClose={() => setShowViewModal(false)}
+        onSave={() => { }}
         product={selectedProduct}
-        imageBaseUrl={API_URL}
+        isView={true}
       />
 
       <ProductFormModal
