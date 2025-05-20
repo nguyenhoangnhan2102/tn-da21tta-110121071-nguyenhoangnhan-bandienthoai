@@ -192,6 +192,7 @@ const updateProduct = async (req, res) => {
         congnghemanhinh,
         dophangiaimanhinh,
         pin,
+        trangthai,
         mota,
         chiTietSanPham
     } = req.body;
@@ -216,7 +217,8 @@ const updateProduct = async (req, res) => {
                 camerasau = ?, 
                 congnghemanhinh = ?, 
                 dophangiaimanhinh = ?, 
-                pin = ?, 
+                pin = ?,
+                trangthai = ?, 
                 mota = ?
              WHERE masanpham = ?`,
             [
@@ -231,6 +233,7 @@ const updateProduct = async (req, res) => {
                 congnghemanhinh,
                 dophangiaimanhinh,
                 pin,
+                trangthai,
                 mota,
                 masanpham
             ]

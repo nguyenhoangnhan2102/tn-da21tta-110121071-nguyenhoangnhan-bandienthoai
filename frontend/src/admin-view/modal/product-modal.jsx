@@ -118,7 +118,10 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         congnghemanhinh: product.congnghemanhinh || '',
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
-        trangthai: product.trangthai !== undefined ? product.trangthai : 0,  // set trạng thái
+        // trangthai: product.trangthai !== undefined ? product.trangthai : 0,
+        trangthai: product.trangthai === "Hoạt động" ? 0
+          : product.trangthai === "Không hoạt động" ? 1
+            : Number(product.trangthai) || 0,
         mota: product.mota || '',
         chiTietSanPham: chiTietSanPhamArray
       });
