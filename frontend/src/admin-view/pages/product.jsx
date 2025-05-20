@@ -30,6 +30,7 @@ const ProductComponent = () => {
     const mappedResponse = response.map((item) => ({
       ...item,
       id: item.masanpham,
+      trangthai: item.trangthai === 0 ? "Hoạt động" : "Không hoạt động",
     }));
     setProduct(mappedResponse || []);
   };
@@ -77,6 +78,7 @@ const ProductComponent = () => {
     { key: "hinhanh", label: "Hình ảnh", isImage: true },
     { key: "hedieuhanh", label: "Hệ điều hành" },
     { key: "tenthuonghieu", label: "Thương hiệu" },
+    { key: "trangthai", label: "Trạng thái" },
     // { key: "cpu", label: "CPU" },
     // { key: "gpu", label: "Tên" },
     // { key: "cameratruoc", label: "Tên" },
