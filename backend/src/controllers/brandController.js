@@ -18,7 +18,7 @@ const getAllBrand = async (req, res) => {
 };
 
 const createBrand = async (req, res) => {
-    const { tenthuonghieu } = req.body;
+    const { tenthuonghieu, trangthaithuonghieu = 0 } = req.body;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -30,8 +30,8 @@ const createBrand = async (req, res) => {
 
     try {
         await pool.query(
-            "INSERT INTO THUONGHIEU (tenthuonghieu) VALUES (?)",
-            [tenthuonghieu]
+            "INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu) VALUES (?, ?)",
+            [tenthuonghieu, trangthaithuonghieu]
         );
         return res.status(201).json({
             EM: "Tạo thương hiệu thành công",
@@ -61,7 +61,7 @@ const updateBrand = async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET tenthuonghieu = ?, updated_at = NOW() WHERE mathuonghieu = ?",
+            "UPDATE THUONGHIEU SET tenthuonghieu = ?, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
             [tenthuonghieu, mathuonghieu]
         );
 
@@ -92,7 +92,7 @@ const deleteBrand = async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET trangthaithuonghieu = 1, updated_at = NOW() WHERE mathuonghieu = ?",
+            "UPDATE THUONGHIEU SET trangthaithuonghieu = 1, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
             [mathuonghieu]
         );
 
