@@ -48,6 +48,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     congnghemanhinh: '',
     dophangiaimanhinh: '',
     pin: '',
+    trangthai: 0,
     mota: '',
     chiTietSanPham: [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
   };
@@ -117,6 +118,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         congnghemanhinh: product.congnghemanhinh || '',
         dophangiaimanhinh: product.dophangiaimanhinh || '',
         pin: product.pin || '',
+        trangthai: product.trangthai !== undefined ? product.trangthai : 0,  // set trạng thái
         mota: product.mota || '',
         chiTietSanPham: chiTietSanPhamArray
       });
@@ -445,7 +447,21 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                 disabled={isView}
               />
             </Grid>
-
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth disabled={isView}>
+                <InputLabel id="trangthai-label">Trạng thái</InputLabel>
+                <Select
+                  labelId="trangthai-label"
+                  name="trangthai"
+                  value={form.trangthai}
+                  label="Trạng thái"
+                  onChange={handleChange}
+                >
+                  <MenuItem value={0}>Hoạt động</MenuItem>
+                  <MenuItem value={1}>Không hoạt động</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
             <Grid item xs={12}>
               <TextField
                 fullWidth
