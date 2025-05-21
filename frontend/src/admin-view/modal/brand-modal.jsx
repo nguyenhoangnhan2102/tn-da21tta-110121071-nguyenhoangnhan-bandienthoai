@@ -34,16 +34,19 @@ const modalStyle = {
 const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
     const [form, setForm] = useState({
         tenthuonghieu: "",
+        trangthaithuonghieu: 0,
     });
 
     useEffect(() => {
         if (brand) {
             setForm({
                 tenthuonghieu: brand.tenthuonghieu || "",
+                trangthaithuonghieu: brand.trangthaithuonghieu || "",
             });
         } else {
             setForm({
                 tenthuonghieu: "",
+                trangthaithuonghieu: 0
             });
         }
     }, [brand, open]);
@@ -61,16 +64,17 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
 
     const handleSubmit = async () => {
         try {
+            const data = {
+                tenthuonghieu: form.tenthuonghieu,
+                trangthaithuonghieu: form.trangthaithuonghieu,
+            };
+
             if (brand) {
-                await brandService.updateBrand(brand.mathuonghieu, form.tenthuonghieu);
-                toast.success("Cập nhật loại sản phẩm thành công");
+                await brandService.updateBrand(brand.mathuonghieu, data);
+                toast.success("Cập nhật thành công!")
             } else {
-                const response = await brandService.createBrand(form.tenthuonghieu);
-                if (response.statusCode === 400) {
-                    toast.error("Danh mục này đã tồn tại");
-                } else {
-                    toast.success("Thêm loại sản phẩm thành công");
-                }
+                await brandService.createBrand(data);
+                toast.success("Tạo mới thành công!")
             }
             onSave(form);
             onClose();
@@ -102,6 +106,22 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
                         autoFocus: true
                     }}
                 />{" "}
+                <FormControl fullWidth margin="normal" disabled={isView}>
+                    <InputLabel id="select-trangthai-label">Trạng thái</InputLabel>
+                    <Select
+                        labelId="select-trangthai-label"
+                        label="Trạng thái"
+                        name="trangthaithuonghieu"
+                        value={form.trangthaithuonghieu}
+                        onChange={(e) => {
+                            if (isView) return;
+                            setForm(prev => ({ ...prev, trangthaithuonghieu: e.target.value }));
+                        }}
+                    >
+                        <MenuItem value={0}>Hoạt động</MenuItem>
+                        <MenuItem value={1}>Không hoạt động</MenuItem>
+                    </Select>
+                </FormControl>
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
                     {!isView ? (
                         <button

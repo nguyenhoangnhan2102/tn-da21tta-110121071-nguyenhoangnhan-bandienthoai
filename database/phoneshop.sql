@@ -62,9 +62,12 @@ CREATE TABLE `CHITIETSANPHAM` (
   `soluong` int(11) DEFAULT NULL,
   `giaban` decimal(18,2) DEFAULT NULL,
   `gianhap` decimal(18,2) DEFAULT NULL,
-  `khuyenmai` decimal(18,2) DEFAULT NULL,
+  `giagiam` decimal(18,2) DEFAULT NULL,
+  `khuyenmai` int(11) DEFAULT NULL,
   `trangthai` int(11) DEFAULT '0',
   `hinhanhchitiet` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ngaytao` datetime DEFAULT CURRENT_TIMESTAMP,
+  `ngaycapnhat` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`machitiet`),
   KEY `masanpham` (`masanpham`),
   CONSTRAINT `CHITIETSANPHAM_ibfk_1` FOREIGN KEY (`masanpham`) REFERENCES `SANPHAM` (`masanpham`)
@@ -126,6 +129,8 @@ CREATE TABLE `DONHANG` (
   `ghichu` text,
   `diachigiaohang` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `trangthaidonhang` int(11) DEFAULT '0',
+  `ngaytao` datetime DEFAULT CURRENT_TIMESTAMP,
+  `ngaycapnhat` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`madonhang`),
   KEY `manguoidung` (`manguoidung`),
   CONSTRAINT `DONHANG_ibfk_1` FOREIGN KEY (`manguoidung`) REFERENCES `NGUOIDUNG` (`manguoidung`)
@@ -189,7 +194,7 @@ CREATE TABLE `NGUOIDUNG` (
   `role` int(11) DEFAULT '0',
   PRIMARY KEY (`manguoidung`),
   UNIQUE KEY `email` (`email`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -198,6 +203,8 @@ CREATE TABLE `NGUOIDUNG` (
 
 LOCK TABLES `NGUOIDUNG` WRITE;
 /*!40000 ALTER TABLE `NGUOIDUNG` DISABLE KEYS */;
+INSERT INTO `NGUOIDUNG` VALUES
+(1,'Nhân Nguyễn Hoàng','duonglotan@gmail.com',NULL,NULL,NULL,1);
 /*!40000 ALTER TABLE `NGUOIDUNG` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -223,6 +230,8 @@ CREATE TABLE `SANPHAM` (
   `pin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `mota` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `trangthai` int(11) DEFAULT '0',
+  `ngaytao` datetime DEFAULT CURRENT_TIMESTAMP,
+  `ngaycapnhat` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`masanpham`),
   KEY `mathuonghieu` (`mathuonghieu`),
   CONSTRAINT `SANPHAM_ibfk_1` FOREIGN KEY (`mathuonghieu`) REFERENCES `THUONGHIEU` (`mathuonghieu`)
@@ -276,6 +285,8 @@ CREATE TABLE `THUONGHIEU` (
   `mathuonghieu` int(11) NOT NULL AUTO_INCREMENT,
   `tenthuonghieu` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `trangthaithuonghieu` int(11) DEFAULT '0',
+  `ngaytao` datetime DEFAULT CURRENT_TIMESTAMP,
+  `ngaycapnhat` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`mathuonghieu`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -302,4 +313,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-05-14 21:11:24
+-- Dump completed on 2025-05-21 19:36:33

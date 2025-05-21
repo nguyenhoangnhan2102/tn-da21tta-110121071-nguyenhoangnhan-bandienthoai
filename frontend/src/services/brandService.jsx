@@ -18,11 +18,10 @@ const brandService = {
     },
 
     // Tạo thương hiệu mới
-    createBrand: async (tenthuonghieu) => {
+    createBrand: async (data) => {
         try {
-            const response = await axiosInstance.post(apiBrand, { tenthuonghieu });
+            const response = await axiosInstance.post(apiBrand, data);
             if (response.data.EC === 1) {
-                toast.success(response.data.EM);
                 return true;
             } else {
                 toast.error(response.data.EM);
@@ -35,14 +34,10 @@ const brandService = {
         }
     },
 
-    // Cập nhật thương hiệu
-    updateBrand: async (mathuonghieu, tenthuonghieu) => {
+    updateBrand: async (mathuonghieu, data) => {
         try {
-            const response = await axiosInstance.put(`${apiBrand}/${mathuonghieu}`, {
-                tenthuonghieu,
-            });
+            const response = await axiosInstance.put(`${apiBrand}/${mathuonghieu}`, data);
             if (response.data.EC === 1) {
-                toast.success(response.data.EM);
                 return true;
             } else {
                 toast.error(response.data.EM);

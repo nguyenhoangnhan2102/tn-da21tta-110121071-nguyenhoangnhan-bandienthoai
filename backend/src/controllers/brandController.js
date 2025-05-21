@@ -33,8 +33,8 @@ const createBrand = async (req, res) => {
             "INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu) VALUES (?, ?)",
             [tenthuonghieu, trangthaithuonghieu]
         );
-        return res.status(201).json({
-            EM: "Tạo thương hiệu thành công",
+        return res.status(200).json({
+            EM: "Tạo thương hiệu thành công!",
             EC: 1,
             DT: [],
         });

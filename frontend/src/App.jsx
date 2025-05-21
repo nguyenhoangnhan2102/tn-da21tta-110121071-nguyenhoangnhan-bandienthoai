@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { SnackbarProvider } from "notistack";
 import "./App.css";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import GuardRoute from "./authentication/guardRoute";
 // import Navbar from "./share-view/navbar";
@@ -38,6 +40,17 @@ function App() {
             <Route path="/profile/*" element={<RouterUser />} />
             {/* <Route path="/admin/*" element={<RouterAdmin />} /> */}
           </Routes>
+          <ToastContainer
+            position="top-right"
+            autoClose={1000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+          />
         </Router>{" "}
       </SnackbarProvider>
     </div>
