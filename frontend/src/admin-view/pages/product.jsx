@@ -1,168 +1,221 @@
 import React, { useState, useEffect } from "react";
+import {
+  Button,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import DynamicTable from "../../share/dynamicTable-component";
-import { Button } from "@mui/material";
 import productService from "../../services/productService";
-import ProductDetailModal from "../modal/detailProduct-modal";
-import AddIcon from '@mui/icons-material/Add';
-import ProductModal from "../modal/product-modal";
 import ProductFormModal from "../modal/product-modal";
+import ProductDetailModal from "../modal/detailProduct-modal";
+import { toast } from "react-toastify";
 
 const API_IMG_URL = process.env.REACT_APP_URL_SERVER + "/images";
 
 const ProductComponent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterValue, setFilterValue] = useState({});
-  const [sortColumn, setSortColumn] = useState("id");
+  const [sortColumn, setSortColumn] = useState("masanpham");
   const [sortOrder, setSortOrder] = useState("asc");
-  const [product, setProduct] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [editting, setEditing] = useState(null);
+
+  const [products, setProducts] = useState([]);
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
-    fetchProduct();
+    fetchProducts();
   }, []);
 
-  const fetchProduct = async () => {
-    const response = await productService.getAllProducts();
-    console.log("response", response)
-    const mappedResponse = response.map((item) => ({
-      ...item,
-      id: item.masanpham,
-      trangthai: item.trangthai === 0 ? "Hoạt động" : "Không hoạt động",
-    }));
-    setProduct(mappedResponse || []);
+  const fetchProducts = async () => {
+    try {
+      const response = await productService.getAllProducts();
+      setProducts(response || []);
+    } catch (error) {
+      toast.error("Lỗi tải danh sách sản phẩm");
+    }
   };
 
-  // Hàm tìm kiếm dữ liệu
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
+  // Mở modal thêm/sửa sản phẩm
+  const openFormModal = (product = null) => {
+    setEditingProduct(product);
+    setShowFormModal(true);
   };
 
-  // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
-  // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
-  const filteredData = product.filter((item) => {
+  // Đóng modal thêm/sửa
+  const closeFormModal = () => {
+    setShowFormModal(false);
+    setEditingProduct(null);
+  };
+
+  // Mở modal xem chi tiết
+  const openDetailModal = (product) => {
+    setSelectedProduct(product);
+    setShowDetailModal(true);
+  };
+
+  // Đóng modal xem chi tiết
+  const closeDetailModal = () => {
+    setSelectedProduct(null);
+    setShowDetailModal(false);
+  };
+
+  // Mở modal xác nhận xóa
+  const openDeleteModal = (product) => {
+    setProductToDelete(product);
+    setDeleteModalOpen(true);
+  };
+
+  // Đóng modal xác nhận xóa
+  const closeDeleteModal = () => {
+    setProductToDelete(null);
+    setDeleteModalOpen(false);
+  };
+
+  // Xác nhận xóa sản phẩm
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
+    const success = await productService.deleteProduct(productToDelete.masanpham);
+    if (success) {
+      toast.success("Xóa sản phẩm thành công");
+      fetchProducts();
+    } else {
+      toast.error("Xóa sản phẩm thất bại");
+    }
+    closeDeleteModal();
+  };
+
+  // Tìm kiếm + lọc (nếu có)
+  const filteredProducts = products.filter((item) => {
     const searchLower = searchTerm.toLowerCase();
-
-    const matchSearch = item.tensanpham &&
-      item.tensanpham.toLowerCase().includes(searchLower);
-
+    const matchSearch = item.tensanpham?.toLowerCase().includes(searchLower);
     const matchFilter = Object.entries(filterValue).every(([key, value]) =>
       value ? item[key] === value : true
     );
     return matchSearch && matchFilter;
   });
 
-
-  // Sắp xếp dữ liệu
-  const sortedData = filteredData.sort((a, b) => {
+  // Sắp xếp
+  const sortedProducts = filteredProducts.sort((a, b) => {
     if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
     if (a[sortColumn] > b[sortColumn]) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
-  // const handleDeleteUser = async (id) => {
-  //   if (id) {
-  //     const response = await productService.deleteProducts(id);
-  //     if (response) {
-  //       fetchProduct();
-  //     }
-  //   }
-  // };
+  // Map thêm trường hiển thị trạng thái và id
+  const displayProducts = sortedProducts.map((item) => ({
+    ...item,
+    id: item.masanpham,
+    trangthaiText: item.trangthai === 0 ? "Hoạt động" : "Không hoạt động",
+  }));
 
-  //data của dữ liệu
   const columns = [
     { key: "masanpham", label: "ID" },
     { key: "tensanpham", label: "Tên" },
     { key: "hinhanh", label: "Hình ảnh", isImage: true },
     { key: "hedieuhanh", label: "Hệ điều hành" },
     { key: "tenthuonghieu", label: "Thương hiệu" },
-    { key: "trangthai", label: "Trạng thái" },
-    // { key: "cpu", label: "CPU" },
-    // { key: "gpu", label: "Tên" },
-    // { key: "cameratruoc", label: "Tên" },
-    // { key: "camerasau", label: "Tên" },
-    // { key: "congnghemanhinh", label: "Tên" },
-    // { key: "dophangiaimanhinh", label: "Tên" },
-    // { key: "pin", label: "Tên" },
+    { key: "trangthaiText", label: "Trạng thái" },
   ];
+
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>📋 Danh sách sản phẩm</h2>
+    <Box sx={{ padding: "2rem" }}>
+      <Typography variant="h4" gutterBottom>
+        📋 Danh sách sản phẩm
+      </Typography>
 
-      {/* Giao diện tìm kiếm */}
-      <input
-        type="text"
-        placeholder="Tìm kiếm..."
-        value={searchTerm}
-        onChange={handleSearch}
-        style={{ marginBottom: "1rem", padding: "0.5rem" }}
-      />
+      <Box sx={{ mb: 2 }}>
+        <input
+          type="text"
+          placeholder="Tìm kiếm sản phẩm..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ padding: "0.5rem", width: "300px" }}
+        />
+      </Box>
 
-      {/* Giao diện lọc động */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
-        }}
-      >
+      <Box sx={{ mb: 2, textAlign: "right" }}>
         <Button
           variant="contained"
-          color="primary"
-          onClick={() => {
-            setEditing(null);
-            setShowModal(true);
-          }}
+          startIcon={<AddIcon />}
+          onClick={() => openFormModal(null)}
         >
-          <AddIcon /> Thêm sản phẩm
+          Thêm sản phẩm
         </Button>
-      </div>
-      {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
+      </Box>
+
       <DynamicTable
         columns={columns}
-        data={sortedData}
+        data={displayProducts}
         onEdit={(id) => {
-          const selected = sortedData.find((u) => u.id === id);
-          console.log("selectedProduct", selected);
-          setEditing(selected);
-          setShowModal(true);
+          const p = displayProducts.find((x) => x.masanpham === id);
+          openFormModal(p);
+        }}
+        onView={(id) => {
+          const p = displayProducts.find((x) => x.masanpham === id);
+          openDetailModal(p);
+        }}
+        onDelete={(id) => {
+          const p = displayProducts.find((x) => x.masanpham === id);
+          openDeleteModal(p);
         }}
         showViewButton={true}
-        onView={(id) => {
-          const selected = sortedData.find((u) => u.id === id);
-          console.log("selectedProduct", selected);
-          setSelectedProduct(selected);
-          setShowViewModal(true);
-        }}
-
-      // onDelete={(id) => {
-      //   if (window.confirm("Bạn có chắc muốn xóa user này?")) {
-      //     handleDeleteUser(id);
-      //   }
-      // }}
-      />
-      <ProductDetailModal
-        open={showViewModal}
-        onClose={() => setShowViewModal(false)}
-        product={selectedProduct}
-        isView={true}
-        imageBaseUrl={API_IMG_URL}
       />
 
-      <ProductFormModal
-        open={showModal}
-        onClose={() => setShowModal(false)}
-        onSave={() => {
-          fetchProduct();
-          setShowModal(false); // 👈 Đóng modal sau khi lưu
-        }}
-        product={editting} // 👈 Thêm dòng này
-        isView={false}
-        imageBaseUrl={API_IMG_URL}
-      />
-    </div>
+      {/* Modal thêm/sửa sản phẩm */}
+      {showFormModal && (
+        <ProductFormModal
+          open={showFormModal}
+          onClose={closeFormModal}
+          onSave={() => {
+            fetchProducts();
+            closeFormModal();
+          }}
+          product={editingProduct}
+          isView={false}
+          imageBaseUrl={API_IMG_URL}
+        />
+      )}
+
+      {/* Modal xem chi tiết sản phẩm */}
+      {showDetailModal && (
+        <ProductDetailModal
+          open={showDetailModal}
+          onClose={closeDetailModal}
+          product={selectedProduct}
+          isView={true}
+          imageBaseUrl={API_IMG_URL}
+        />
+      )}
+
+      {/* Modal xác nhận xóa sản phẩm */}
+      <Dialog open={deleteModalOpen} onClose={closeDeleteModal}>
+        <DialogTitle>Xác nhận xóa sản phẩm</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Bạn có chắc muốn xóa sản phẩm{" "}
+            <strong>{productToDelete?.tensanpham}</strong> không?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleConfirmDelete} variant="contained" color="error">
+            Xóa
+          </Button>
+          <Button onClick={closeDeleteModal} variant="outlined" color="primary">
+            Hủy
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 };
 

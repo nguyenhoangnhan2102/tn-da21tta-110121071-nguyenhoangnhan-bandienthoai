@@ -53,6 +53,8 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     chiTietSanPham: [{ mau: '', dungluong: '', ram: '', soluong: '', gianhap: '', giaban: '', hinhanh: null }],
   };
 
+  console.log("product", product);
+
   const [form, setForm] = useState(initialFormState);
   const [previewImages, setPreviewImages] = useState([]);
   // const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -210,6 +212,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     formData.append('congnghemanhinh', form.congnghemanhinh);
     formData.append('dophangiaimanhinh', form.dophangiaimanhinh);
     formData.append('pin', form.pin);
+    formData.append('trangthai', form.trangthai);
     formData.append('mota', form.mota);
 
     // Hình ảnh sản phẩm chính
@@ -352,7 +355,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="Hệ điều hành"
@@ -362,19 +365,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                 disabled={isView}
               />
             </Grid>
-
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="RAM"
-                name="ram"
-                value={form.ram}
-                onChange={handleChange}
-                disabled={isView}
-              />
-            </Grid>
-
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="CPU"
@@ -385,7 +376,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
               />
             </Grid>
 
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={4}>
               <TextField
                 fullWidth
                 label="GPU"

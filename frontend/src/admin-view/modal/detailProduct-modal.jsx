@@ -4,7 +4,11 @@ import {
     Box,
     Typography,
     Grid,
-    TextField
+    TextField,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem
 } from '@mui/material';
 import productService from '../../services/productService';
 
@@ -23,27 +27,10 @@ const style = {
     overflowY: 'auto'
 };
 
-const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://localhost:3333/images" }) => {
-    const [data, setData] = useState(null);
+const ProductDetailModal = ({ open, onClose, product, imageBaseUrl }) => {
+    if (!product) return null;
 
-    useEffect(() => {
-        if (open && product?.masanpham) {
-            fetchData(product.masanpham);
-        }
-    }, [open, product?.masanpham]);
-
-    const fetchData = async (id) => {
-        try {
-            const response = await productService.getProductById(id);
-            setData(response || []);
-        } catch (error) {
-            console.error("Error fetching product:", error);
-        }
-    };
-
-    if (!data) return null;
-
-    const imageList = data.hinhanh?.split(',') || [];
+    const imageList = product.hinhanh?.split(',') || [];
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -77,7 +64,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Thương hiệu"
-                            value={data.tenthuonghieu || ''}
+                            value={product.tenthuonghieu || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -85,30 +72,30 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Tên sản phẩm"
-                            value={data.tensanpham || ''}
+                            value={product.tensanpham || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <TextField
                             fullWidth label="Hệ điều hành"
-                            value={data.hedieuhanh || ''}
+                            value={product.hedieuhanh || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <TextField
                             fullWidth
                             label="CPU"
-                            value={data.cpu || ''}
+                            value={product.cpu || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={4}>
                         <TextField
                             fullWidth
                             label="GPU"
-                            value={data.gpu || ''}
+                            value={product.gpu || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -116,7 +103,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Camera trước"
-                            value={data.cameratruoc || ''}
+                            value={product.cameratruoc || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -124,7 +111,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Camera sau"
-                            value={data.camerasau || ''}
+                            value={product.camerasau || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -132,7 +119,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Công nghệ màn hình"
-                            value={data.congnghemanhinh || ''}
+                            value={product.congnghemanhinh || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -140,7 +127,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Độ phân giải màn hình"
-                            value={data.dophangiaimanhinh || ''}
+                            value={product.dophangiaimanhinh || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
                     </Grid>
@@ -148,15 +135,29 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                         <TextField
                             fullWidth
                             label="Pin"
-                            value={data.pin || ''}
+                            value={product.pin || ''}
                             InputProps={{ readOnly: true }}
                             margin="dense" />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                        <FormControl fullWidth margin="dense">
+                            <InputLabel id="trangthai-label">Trạng thái</InputLabel>
+                            <Select
+                                labelId="trangthai-label"
+                                name="trangthai"
+                                value={product.trangthai}
+                                label="Trạng thái"
+                            >
+                                <MenuItem value={0}>Hoạt động</MenuItem>
+                                <MenuItem value={1}>Không hoạt động</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
                             fullWidth
                             label="Mô tả"
-                            value={data.mota || ''}
+                            value={product.mota || ''}
                             InputProps={{ readOnly: true }}
                             multiline
                             rows={3}
@@ -166,11 +167,11 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl = "http://loc
                 </Grid>
 
                 {/* Chi tiết phiên bản sản phẩm */}
-                {Array.isArray(data.chiTietSanPham) && data.chiTietSanPham.length > 0 && (
+                {Array.isArray(product.chiTietSanPham) && product.chiTietSanPham.length > 0 && (
                     <Box mt={3}>
                         <Typography variant="subtitle1">📦 Biến thể sản phẩm</Typography>
                         <Grid container spacing={2} mt={1}>
-                            {data.chiTietSanPham.map((detail, index) => (
+                            {product.chiTietSanPham.map((detail, index) => (
                                 <Grid item xs={12} key={index}>
                                     <Box
                                         p={2}

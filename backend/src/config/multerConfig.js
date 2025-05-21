@@ -39,8 +39,11 @@ const upload = multer({
   storage: storage,
   limits: { fileSize: 10 * 1024 * 1024 },  // Giới hạn kích thước tệp (10MB)
   fileFilter: (req, file, cb) => {
-    if (!file.mimetype.match(/^image\/(jpeg|png|jpg|gif)$/)) {
-      return cb(new Error('Chỉ cho phép tải lên hình ảnh!'));
+    // if (!file.mimetype.match(/^image\/(jpeg|png|jpg|gif)$/)) {
+    //   return cb(new Error('Chỉ cho phép tải lên hình ảnh!'));
+    // }
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Chỉ cho phép tải lên hình ảnh!"));
     }
     cb(null, true);
   },
