@@ -20,8 +20,8 @@ import AddIcon from '@mui/icons-material/Add';
 
 const BrandComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [sortColumn, setSortColumn] = useState("tenthuonghieu");
-    const [sortOrder, setSortOrder] = useState("asc");
+    // const [sortColumn, setSortColumn] = useState("tenthuonghieu");
+    // const [sortOrder, setSortOrder] = useState("asc");
     const [bands, setBands] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editting, setEditing] = useState(null);
@@ -97,21 +97,21 @@ const BrandComponent = () => {
         return matchSearch;
     });
 
-    const sortedData = filteredData.sort((a, b) => {
-        const aVal = a[sortColumn];
-        const bVal = b[sortColumn];
+    // const sortedData = filteredData.sort((a, b) => {
+    //     const aVal = a[sortColumn];
+    //     const bVal = b[sortColumn];
 
-        if (!isNaN(aVal) && !isNaN(bVal)) {
-            return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-        }
+    //     if (!isNaN(aVal) && !isNaN(bVal)) {
+    //         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
+    //     }
 
-        const aStr = aVal?.toString().toLowerCase() || "";
-        const bStr = bVal?.toString().toLowerCase() || "";
+    //     const aStr = aVal?.toString().toLowerCase() || "";
+    //     const bStr = bVal?.toString().toLowerCase() || "";
 
-        if (aStr < bStr) return sortOrder === "asc" ? -1 : 1;
-        if (aStr > bStr) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-    });
+    //     if (aStr < bStr) return sortOrder === "asc" ? -1 : 1;
+    //     if (aStr > bStr) return sortOrder === "asc" ? 1 : -1;
+    //     return 0;
+    // });
 
     const columns = [
         { key: "mathuonghieu", label: "ID" },
@@ -134,7 +134,7 @@ const BrandComponent = () => {
                 style={{ marginBottom: "1rem", width: "24%" }}
                 size="small"
             />
-            <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+            {/* <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
                 <FormControl size="small" style={{ minWidth: 180 }}>
                     <InputLabel>Sắp xếp theo</InputLabel>
                     <Select
@@ -161,8 +161,7 @@ const BrandComponent = () => {
                         <MenuItem value="desc">Giảm dần (Z→A)</MenuItem>
                     </Select>
                 </FormControl>
-            </div>
-
+            </div> */}
             <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
                 <Button
                     variant="contained"
@@ -178,9 +177,10 @@ const BrandComponent = () => {
 
             <DynamicTable
                 columns={columns}
-                data={sortedData}
+                // data={sortedData}
+                data={filteredData}
                 onEdit={(id) => {
-                    const selected = sortedData.find((u) => u.id === id);
+                    const selected = filteredData.find((u) => u.id === id);
                     setEditing(selected);
                     setShowModal(true);
                 }}
