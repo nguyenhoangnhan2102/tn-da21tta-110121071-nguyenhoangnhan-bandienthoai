@@ -1,22 +1,33 @@
 import React, { useState, useEffect } from "react";
 import DynamicTable from "../../share/dynamicTable-component";
-import { Button, FormControl, InputLabel, Select, MenuItem, TextField } from "@mui/material";
+import {
+    Button,
+    FormControl,
+    InputLabel,
+    Select,
+    MenuItem,
+    TextField,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    Typography,
+    DialogActions
+} from "@mui/material";
 import BrandModal from "../modal/brand-modal";
 import brandService from "../../services/brandService";
 import { toast } from "react-toastify";
 import AddIcon from '@mui/icons-material/Add';
-import DynamicSearchSort from "../../share/dynamicSearchSort";
 
 const BrandComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterValue, setFilterValue] = useState({});
     const [sortColumn, setSortColumn] = useState("tenthuonghieu");
     const [sortOrder, setSortOrder] = useState("asc");
-
     const [bands, setBands] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editting, setEditing] = useState(null);
-    const [filterList, setFilterList] = useState([]);
+    const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+    const [brandToDelete, setBrandToDelete] = useState(null);
+
 
     useEffect(() => {
         fetchData();
@@ -46,18 +57,6 @@ const BrandComponent = () => {
             });
 
             setBands(mappedResponse);
-
-            setFilterList([
-                {
-                    key: "trangthaithuonghieu",
-                    label: "Trạng thái",
-                    value: "",
-                    listSelect: [
-                        { id: 0, name: "Hoạt động" },
-                        { id: 1, name: "Ngưng hoạt động" }
-                    ]
-                }
-            ]);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -65,25 +64,37 @@ const BrandComponent = () => {
 
     const handleSearch = (e) => setSearchTerm(e.target.value);
 
-    const handleFilterChange = (updatedList) => {
-        const mapped = {};
-        updatedList.forEach((f) => {
-            mapped[f.key] = f.value;
-        });
-        setFilterValue(mapped);
+    const openDeleteModal = (brand) => {
+        setBrandToDelete(brand);
+        setDeleteModalOpen(true);
     };
+
+    const closeDeleteModal = () => {
+        setBrandToDelete(null);
+        setDeleteModalOpen(false);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!brandToDelete) return;
+        try {
+            const response = await brandService.deleteBrand(brandToDelete.mathuonghieu);
+            if (response) {
+                toast.success("Xóa thương hiệu thành công");
+                fetchData();
+            } else {
+                toast.error("Xóa thương hiệu thất bại");
+            }
+        } catch (error) {
+            toast.error("Đã xảy ra lỗi khi xóa");
+        }
+        closeDeleteModal();
+    };
+
 
     const filteredData = bands.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
-        const matchSearch = Object.values(item).some((val) =>
-            val?.toString().toLowerCase().includes(searchLower)
-        );
-
-        const matchFilter = Object.entries(filterValue).every(([key, value]) =>
-            value !== "" ? item[key]?.toString() === value.toString() : true
-        );
-
-        return matchSearch && matchFilter;
+        const matchSearch = item.tenthuonghieu?.toLowerCase().includes(searchLower);
+        return matchSearch;
     });
 
     const sortedData = filteredData.sort((a, b) => {
@@ -101,20 +112,6 @@ const BrandComponent = () => {
         if (aStr > bStr) return sortOrder === "asc" ? 1 : -1;
         return 0;
     });
-
-    const handleDelete = async (mathuonghieu) => {
-        try {
-            const response = await brandService.deleteBrand(mathuonghieu);
-            if (response) {
-                toast.success("Xóa thương hiệu thành công");
-                fetchData();
-            } else {
-                toast.error("Xóa thương hiệu thất bại");
-            }
-        } catch (error) {
-            console.error("Error deleting brand:", error);
-        }
-    };
 
     const columns = [
         { key: "mathuonghieu", label: "ID" },
@@ -188,9 +185,8 @@ const BrandComponent = () => {
                     setShowModal(true);
                 }}
                 onDelete={(id) => {
-                    if (window.confirm("Bạn có chắc muốn xóa thương hiệu này?")) {
-                        handleDelete(id);
-                    }
+                    const selected = bands.find((b) => b.id === id);
+                    openDeleteModal(selected);
                 }}
             />
 
@@ -204,6 +200,25 @@ const BrandComponent = () => {
                 brand={editting}
                 isView={false}
             />
+
+            <Dialog open={deleteModalOpen} onClose={closeDeleteModal}>
+                <DialogTitle>Xác nhận xóa thương hiệu</DialogTitle>
+                <DialogContent>
+                    <Typography>
+                        Bạn có chắc muốn xóa thương hiệu{" "}
+                        <strong>{brandToDelete?.tenthuonghieu}</strong> không?
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleConfirmDelete} variant="contained" color="error">
+                        Xóa
+                    </Button>
+                    <Button onClick={closeDeleteModal} variant="outlined" color="primary">
+                        Hủy
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
         </div>
     );
 };
