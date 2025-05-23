@@ -1,4 +1,6 @@
 const pool = require("../config/database");
+const moment = require("moment-timezone");
+
 
 const getAllBrand = async (req, res) => {
     try {
@@ -31,11 +33,15 @@ const createBrand = async (req, res) => {
         });
     }
 
+    const nowVN = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss");
+
     try {
         await pool.query(
-            "INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu) VALUES (?, ?)",
-            [tenthuonghieu, trangthaithuonghieu]
+            `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, ngaytao, ngaycapnhat)
+             VALUES (?, ?, ?, ?)`,
+            [tenthuonghieu, trangthaithuonghieu, nowVN, nowVN]
         );
+
         return res.status(200).json({
             EM: "Tạo thương hiệu thành công!",
             EC: 1,
@@ -62,10 +68,12 @@ const updateBrand = async (req, res) => {
         });
     }
 
+    const nowVN = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss");
+
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET tenthuonghieu = ?, trangthaithuonghieu = ?, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
-            [tenthuonghieu, trangthaithuonghieu, mathuonghieu]
+            "UPDATE THUONGHIEU SET tenthuonghieu = ?, trangthaithuonghieu = ?, ngaycapnhat = ? WHERE mathuonghieu = ?",
+            [tenthuonghieu, trangthaithuonghieu, nowVN, mathuonghieu]
         );
 
         if (result.affectedRows > 0) {
@@ -94,10 +102,12 @@ const updateBrand = async (req, res) => {
 const deleteBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
 
+    const nowVN = moment().tz("Asia/Ho_Chi_Minh").format("YYYY-MM-DD HH:mm:ss");
+
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET trangthaithuonghieu = 1, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
-            [mathuonghieu]
+            "UPDATE THUONGHIEU SET trangthaithuonghieu = 1, ngaycapnhat = ? WHERE mathuonghieu = ?",
+            [nowVN, mathuonghieu]
         );
 
         if (result.affectedRows > 0) {

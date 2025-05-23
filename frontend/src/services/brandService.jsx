@@ -24,7 +24,6 @@ const brandService = {
             if (response.data.EC === 1) {
                 return true;
             } else {
-                toast.error(response.data.EM);
                 return false;
             }
         } catch (error) {
@@ -40,7 +39,6 @@ const brandService = {
             if (response.data.EC === 1) {
                 return true;
             } else {
-                toast.error(response.data.EM);
                 return false;
             }
         } catch (error) {
@@ -55,10 +53,8 @@ const brandService = {
         try {
             const response = await axiosInstance.delete(`${apiBrand}/${mathuonghieu}`);
             if (response.data.EC === 1) {
-                toast.success(response.data.EM);
                 return true;
             } else {
-                toast.error(response.data.EM);
                 return false;
             }
         } catch (error) {
