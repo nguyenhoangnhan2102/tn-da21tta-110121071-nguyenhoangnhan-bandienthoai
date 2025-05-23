@@ -2,7 +2,10 @@ const pool = require("../config/database");
 
 const getAllBrand = async (req, res) => {
     try {
-        const [rows] = await pool.query("SELECT * FROM THUONGHIEU WHERE trangthaithuonghieu = 0");
+        const [rows] = await pool.query(`
+            SELECT * FROM THUONGHIEU 
+            ORDER BY ngaycapnhat DESC, ngaytao DESC
+        `);
         return res.status(200).json({
             EM: "Lấy tất cả thương hiệu thành công",
             EC: 1,
@@ -49,7 +52,7 @@ const createBrand = async (req, res) => {
 
 const updateBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
-    const { tenthuonghieu } = req.body;
+    const { tenthuonghieu, trangthaithuonghieu } = req.body;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -61,8 +64,8 @@ const updateBrand = async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET tenthuonghieu = ?, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
-            [tenthuonghieu, mathuonghieu]
+            "UPDATE THUONGHIEU SET tenthuonghieu = ?, trangthaithuonghieu = ?, ngaycapnhat = NOW() WHERE mathuonghieu = ?",
+            [tenthuonghieu, trangthaithuonghieu, mathuonghieu]
         );
 
         if (result.affectedRows > 0) {
@@ -86,6 +89,7 @@ const updateBrand = async (req, res) => {
         });
     }
 };
+
 
 const deleteBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
@@ -123,4 +127,4 @@ module.exports = {
     createBrand,
     updateBrand,
     deleteBrand,
-}
+};

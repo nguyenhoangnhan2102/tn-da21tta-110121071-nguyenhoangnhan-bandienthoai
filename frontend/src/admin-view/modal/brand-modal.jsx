@@ -36,20 +36,22 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
         tenthuonghieu: "",
         trangthaithuonghieu: 0,
     });
+    console.log("brand", brand)
 
     useEffect(() => {
         if (brand) {
             setForm({
                 tenthuonghieu: brand.tenthuonghieu || "",
-                trangthaithuonghieu: brand.trangthaithuonghieu || "",
+                trangthaithuonghieu: brand.trangthaithuonghieu || 0,
             });
         } else {
             setForm({
                 tenthuonghieu: "",
-                trangthaithuonghieu: 0
+                trangthaithuonghieu: 0,
             });
         }
     }, [brand, open]);
+
 
     const handleChange = (e) => {
         if (isView) return;
@@ -63,6 +65,7 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
     };
 
     const handleSubmit = async () => {
+        console.log("form", form.trangthaithuonghieu);
         try {
             const data = {
                 tenthuonghieu: form.tenthuonghieu,

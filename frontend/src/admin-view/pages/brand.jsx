@@ -9,8 +9,11 @@ import AddIcon from '@mui/icons-material/Add';
 const BrandComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [filterValue, setFilterValue] = useState({});
-    const [sortColumn, setSortColumn] = useState("id");
-    const [sortOrder, setSortOrder] = useState("asc");
+
+    // ✅ Tạm tắt logic sắp xếp frontend
+    // const [sortColumn, setSortColumn] = useState("ngaycapnhat");
+    // const [sortOrder, setSortOrder] = useState("asc");
+
     const [bands, setBands] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editting, setEditing] = useState(null);
@@ -23,11 +26,10 @@ const BrandComponent = () => {
         try {
             const response = await brandService.getAllBrand();
             console.log("response", response);
-            // Map lại để mỗi item có thêm trường id = mathuonghieu
             const mappedResponse = response.map((item) => ({
                 ...item,
                 id: item.mathuonghieu,
-                trangthaithuonghieu: item.trangthaithuonghieu === 0 ? "Hoạt động" : "Ngưng hoạt động",
+                trangthaithuonghieuText: item.trangthaithuonghieu === 0 ? "Hoạt động" : "Ngưng hoạt động",
             }));
             setBands(mappedResponse);
         } catch (error) {
@@ -35,16 +37,12 @@ const BrandComponent = () => {
         }
     }
 
-
-    // Hàm tìm kiếm dữ liệu
     const handleSearch = (e) => {
         setSearchTerm(e.target.value);
     };
 
-    // Hàm lọc dữ liệu theo từ khóa tìm kiếm và bộ lọc
     const filteredData = bands.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
-
         const matchSearch = item.tenthuonghieu &&
             item.tenthuonghieu.toLowerCase().includes(searchLower);
 
@@ -54,19 +52,22 @@ const BrandComponent = () => {
         return matchSearch && matchFilter;
     });
 
-    // Sắp xếp dữ liệu
-    const sortedData = filteredData.sort((a, b) => {
-        if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
-        if (a[sortColumn] > b[sortColumn]) return sortOrder === "asc" ? 1 : -1;
-        return 0;
-    });
+    // ✅ Tắt sorting thủ công ở frontend
+    // const sortedData = filteredData.sort((a, b) => {
+    //     if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
+    //     if (a[sortColumn] > b[sortColumn]) return sortOrder === "asc" ? 1 : -1;
+    //     return 0;
+    // });
+
+    // ✅ Dữ liệu giữ nguyên theo thứ tự đã sắp xếp từ backend
+    const sortedData = filteredData;
 
     const handleDelete = async (mathuonghieu) => {
         try {
             const response = await brandService.deleteBrand(mathuonghieu);
             if (response) {
                 toast.success("Xóa thương hiệu thành công");
-                fetchData(); // Cập nhật lại danh sách sau khi xóa
+                fetchData();
             } else {
                 toast.error("Xóa thương hiệu thất bại");
             }
@@ -75,18 +76,16 @@ const BrandComponent = () => {
         }
     }
 
-    //data của dữ liệu
     const columns = [
         { key: "mathuonghieu", label: "ID" },
         { key: "tenthuonghieu", label: "Tên thương hiệu" },
-        { key: "trangthaithuonghieu", label: "Trạng thái" },
+        { key: "trangthaithuonghieuText", label: "Trạng thái" },
     ];
 
     return (
         <div style={{ padding: "2rem" }}>
             <h2>📋 Danh sách sản phẩm</h2>
 
-            {/* Giao diện tìm kiếm */}
             <input
                 type="text"
                 placeholder="Tìm kiếm..."
@@ -94,13 +93,7 @@ const BrandComponent = () => {
                 onChange={handleSearch}
                 style={{ marginBottom: "1rem", padding: "0.5rem" }}
             />
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginBottom: "1rem",
-                }}
-            >
+            <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
                 <Button
                     variant="contained"
                     color="primary"
@@ -112,7 +105,7 @@ const BrandComponent = () => {
                     <AddIcon />Thêm thương hiệu
                 </Button>
             </div>
-            {/* Hiển thị table với dữ liệu đã lọc và sắp xếp */}
+
             <DynamicTable
                 columns={columns}
                 data={sortedData}
@@ -133,9 +126,9 @@ const BrandComponent = () => {
                 onClose={() => setShowModal(false)}
                 onSave={() => {
                     fetchData();
-                    setShowModal(false); // 👈 Đóng modal sau khi lưu
+                    setShowModal(false);
                 }}
-                brand={editting} // 👈 Thêm dòng này
+                brand={editting}
                 isView={false}
             />
         </div>
