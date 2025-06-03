@@ -1,74 +1,74 @@
-// Footer.tsx
-import React from 'react';
-
 const Footer = () => {
     return (
-        <div className="my-5">
-            <footer className="text-center text-lg-start text-white" style={{ backgroundColor: '#3e4551' }}>
-                <div className="container p-4 pb-0">
-                    {/* Section: Links */}
-                    <section>
-                        <div className="row">
-                            <div className="col-lg-4 col-md-6 mb-4 mb-md-0">
-                                <h5 className="text-uppercase">FOOTER CONTENT</h5>
+        <>
+            <footer className="text-center text-lg-start bg-body-tertiary text-muted">
+                <section className="d-flex justify-content-center justify-content-lg-between p-4 border-bottom">
+                    <div className="me-5 d-none d-lg-block">
+                        <span>Vui lòng liên hệ với chúng tôi nếu bạn có thắc mắc</span>
+                    </div>
+                    <div>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-twitter"></i>
+                        </a>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-google"></i>
+                        </a>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-instagram"></i>
+                        </a>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-linkedin"></i>
+                        </a>
+                        <a href="" className="me-4 text-reset">
+                            <i className="fab fa-github"></i>
+                        </a>
+                    </div>
+                </section>
+                <section className="">
+                    <div className="container text-center text-md-start mt-5">
+                        <div className="row mt-3">
+                            <div className="col-md-3 col-lg-4 col-xl-3 mx-auto mb-4">
+                                <h6 className="text-uppercase fw-bold mb-4 fst-italic">
+                                    <i className="fa-solid fa-phone me-2"></i>Shopphone
+                                </h6>
                                 <p>
-                                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Molestiae modi cum ipsam ad,
-                                    illo possimus laborum ut reiciendis obcaecati. Ducimus, quas. Corrupti, pariatur eaque?
-                                    Reiciendis assumenda iusto sapiente inventore animi?
+                                    Chào mừng đến với SHOPPHONE. Nơi bạn có thể tìm bất cứ sản phẩm điện thoại thịnh hành nhất!!!
                                 </p>
                             </div>
-
-                            {[...Array(4)].map((_, i) => (
-                                <div key={i} className="col-lg-2 col-md-6 mb-4 mb-md-0">
-                                    <h5 className="text-uppercase">Links</h5>
-                                    <ul className="list-unstyled mb-0">
-                                        <li><a href="#!" className="text-white">Link 1</a></li>
-                                        <li><a href="#!" className="text-white">Link 2</a></li>
-                                        <li><a href="#!" className="text-white">Link 3</a></li>
-                                        <li><a href="#!" className="text-white">Link 4</a></li>
-                                    </ul>
-                                </div>
-                            ))}
+                            <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
+                                <h6 className="text-uppercase fw-bold mb-4">
+                                    Dịch vụ
+                                </h6>
+                                <p>
+                                    Giao hàng tận nơi
+                                </p>
+                                <p>
+                                    Bảo hành 12 tháng
+                                </p>
+                                <p>
+                                    Hoàn trả 100%
+                                </p>
+                            </div>
+                            <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
+                                <h6 className="text-uppercase fw-bold mb-4">Liên hệ</h6>
+                                <p><i className="fas fa-home me-3"></i> Phường 4, TP. Trà Vinh, tỉnh Trà Vinh</p>
+                                <p><i className="fas fa-envelope me-4"></i>Shopphone@gmail.com</p>
+                                <p><i className="fas fa-phone me-3"></i> + 01 234 567 88</p>
+                                <p><i className="fas fa-print me-3"></i> + 01 234 567 89</p>
+                            </div>
                         </div>
-                    </section>
-
-                    <hr className="mb-4" />
-
-                    {/* Section: CTA */}
-                    <section>
-                        <p className="d-flex justify-content-center align-items-center">
-                            <span className="me-3">Register for free</span>
-                            <button type="button" className="btn btn-outline-light btn-rounded">
-                                Sign up!
-                            </button>
-                        </p>
-                    </section>
-
-                    <hr className="mb-4" />
-
-                    {/* Section: Social media */}
-                    <section className="mb-4 text-center">
-                        {[
-                            { icon: 'facebook-f' },
-                            { icon: 'twitter' },
-                            { icon: 'google' },
-                            { icon: 'instagram' },
-                            { icon: 'linkedin-in' },
-                            { icon: 'github' },
-                        ].map(({ icon }, i) => (
-                            <a key={i} className="btn btn-outline-light btn-floating m-1" href="#!" role="button">
-                                <i className={`fab fa-${icon}`}></i>
-                            </a>
-                        ))}
-                    </section>
-                </div>
-
-                <div className="text-center p-3" style={{ backgroundColor: 'rgba(0, 0, 0, 0.2)' }}>
-                    © 2020 Copyright: <a className="text-white" href="https://mdbootstrap.com/">MDBootstrap.com</a>
+                    </div>
+                </section>
+                <div className="text-center p-4" style={{ backgroundColor: "rgba(0, 0, 0, 0.05)" }}>
+                    ©2025 Copyright:
+                    <label className="text-reset fw-bold ms-1">Nguyễn Hoàng Nhân - DA21TTA - 110121071</label>
                 </div>
             </footer>
-        </div>
-    );
-};
+        </>
+    )
+}
 
 export default Footer;

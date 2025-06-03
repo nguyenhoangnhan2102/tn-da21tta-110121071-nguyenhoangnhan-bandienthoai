@@ -1,94 +1,55 @@
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 20px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #ddd;
-    flex-wrap: wrap;
-
-    &__logo {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        flex: 1 1 auto;
-
-        &-img {
-            height: 40px;
-            width: 40px;
-            object-fit: contain;
-        }
-
-        &-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-        }
-    }
-
-    &__search {
-        display: flex;
-        flex: 2 1 400px;
-        max-width: 500px;
-        margin: 10px auto;
-
-        input {
-            flex: 1;
-            padding: 8px 12px;
-            border: 1px solid #ccc;
-            border-right: none;
-            border-radius: 4px 0 0 4px;
-            outline: none;
-        }
-
-        button {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: #fff;
-            border: 1px solid #007bff;
-            border-radius: 0 4px 4px 0;
-            cursor: pointer;
-        }
-    }
-
-    &__auth {
-        display: flex;
-        gap: 10px;
-        flex: 1 1 auto;
-        justify-content: flex-end;
-
-        .login,
-        .register {
-            padding: 8px 12px;
-            border: 1px solid #007bff;
-            background-color: #fff;
-            color: #007bff;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 500;
-        }
-
-        .register {
-            background-color: #007bff;
-            color: #fff;
-        }
-    }
+.navbar-container {
+    background-color: #FFD400;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .header {
-        flex-direction: column;
-        align-items: stretch;
-        text-align: center;
+.navbar-logo {
+    cursor: pointer;
+    font-family: "Titillium Web", sans-serif;
+}
 
-        &__auth {
-            justify-content: center;
-            margin-top: 10px;
-        }
+.btn-login {
+    background-color: #FFD400;
+    font-family: "Karla", sans-serif;
+    color: black;
+    border: none;
+}
 
-        &__search {
-            width: 100%;
-        }
-    }
+.btn-login:hover {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: black;
+}
+
+li {
+    list-style: none;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.navbar-content {
+    width: 86%;
+}
+
+.username {
+    display: flex;
+    align-items: center;
+}
+
+
+.button-login {
+    color: black;
+    padding: 10px;
+}
+
+.button-login:hover {
+    padding: 10px;
+    border-radius: 32px;
+    background-color: rgb(227, 248, 106);
 }
