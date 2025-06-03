@@ -17,6 +17,8 @@ import NavBarAdmin from "./admin-view/components/navBarAdmin";
 import HeaderAdmin from "./admin-view/components/headerAdmin";
 
 import { Grid } from "@mui/material";
+import Header from "./web-view/share/header";
+import Footer from "./web-view/share/footer";
 
 function App() {
   return (
@@ -60,9 +62,11 @@ function App() {
 // Giao diện cơ bản
 const MainLayout = () => (
   <>
+    <Header />
     <Routes>
       <Route path="/*" element={<RouterView />} />
     </Routes>
+    <Footer />
   </>
 );
 
