@@ -1,0 +1,58 @@
+.home-container {
+    padding: 20px;
+
+    h2 {
+        margin-bottom: 20px;
+    }
+
+    .product-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .product-card {
+        width: 250px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        h4 {
+            margin: 10px 0 5px 0;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .dungluong-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin: 5px 0;
+            justify-content: center;
+
+            li {
+                list-style: none;
+                background-color: #f0f0f0;
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+        }
+
+        .price {
+            font-weight: bold;
+            color: #e91e63;
+            margin-top: 8px;
+        }
+    }
+}

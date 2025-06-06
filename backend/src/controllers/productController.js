@@ -24,9 +24,16 @@ const getAllProducts = async (req, res) => {
 
         const productMap = productRows.map(product => {
             const chiTietSanPham = detailRows.filter(detail => detail.masanpham === product.masanpham);
+
+            // Lấy danh sách dung lượng duy nhất
+            const dsDungLuong = [
+                ...new Set(chiTietSanPham.map(detail => detail.dungluong))
+            ];
+
             return {
                 ...product,
-                chiTietSanPham
+                chiTietSanPham,
+                dsDungLuong,
             };
         });
 
