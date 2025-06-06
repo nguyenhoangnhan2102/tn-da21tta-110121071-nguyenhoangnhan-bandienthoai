@@ -22,9 +22,34 @@
 
         img {
             width: 100%;
-            height: 200px;
+            height: 250px;
             object-fit: cover;
             border-radius: 6px;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+
+            img {
+                width: 100%;
+                height: 250px;
+                object-fit: cover;
+                border-radius: 6px;
+            }
+
+            .discount-badge {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                background-color: red;
+                color: white;
+                font-weight: bold;
+                padding: 4px 6px;
+                border-radius: 4px;
+                font-size: 13px;
+                z-index: 2;
+            }
         }
 
         h4 {
@@ -34,18 +59,30 @@
         }
 
         .dungluong-list {
-            display: flex;
-            gap: 6px;
+            margin-top: 8px;
+            padding: 0; // ← thêm dòng này
+            list-style: none; // ← thêm dòng này
+            display: flex; // ← giúp nằm ngang
             flex-wrap: wrap;
-            margin: 5px 0;
-            justify-content: center;
+            gap: 6px;
 
             li {
-                list-style: none;
-                background-color: #f0f0f0;
+                cursor: pointer;
                 padding: 4px 8px;
                 border-radius: 4px;
-                font-size: 14px;
+                background: #eee;
+                color: #000;
+                transition: all 0.2s;
+
+                &.active {
+                    background: #1976d2;
+                    color: #fff;
+                }
+
+                &:hover {
+                    background-color: #1565c0;
+                    color: white;
+                }
             }
         }
 

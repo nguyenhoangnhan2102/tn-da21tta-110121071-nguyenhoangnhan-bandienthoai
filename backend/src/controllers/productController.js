@@ -271,7 +271,7 @@ const updateProduct = async (req, res) => {
         const detailImages = req.files['hinhanhchitiet'] || [];
         for (let i = 0; i < chiTietSanPham.length; i++) {
             const detail = chiTietSanPham[i];
-            const detailImage = detailImages[i]?.filename || null;
+            const detailImage = detailImages[i]?.filename || chiTietSanPham[i]?.hinhanhchitiet || null;
 
             await connection.query(
                 `INSERT INTO CHITIETSANPHAM

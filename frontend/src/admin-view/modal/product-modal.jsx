@@ -168,7 +168,12 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       // Tự động tính giagiam khi giaban hoặc khuyenmai thay đổi
       const giaban = parseFloat(field === 'giaban' ? value : detail.giaban || 0);
       const khuyenmai = parseFloat(field === 'khuyenmai' ? value : detail.khuyenmai || 0);
-      detail.giagiam = (giaban * khuyenmai) / 100;
+
+      if (!isNaN(giaban) && !isNaN(khuyenmai) && khuyenmai > 0) {
+        detail.giagiam = giaban - (giaban * khuyenmai / 100);
+      } else {
+        detail.giagiam = 0;
+      }
 
       newDetails[index] = detail;
       return { ...prev, chiTietSanPham: newDetails };
@@ -201,62 +206,39 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
 
   const handleSubmit = async () => {
     const formData = new FormData();
-
-    formData.append('mathuonghieu', form.mathuonghieu);
-    formData.append('tensanpham', form.tensanpham);
-    formData.append('hedieuhanh', form.hedieuhanh);
-    formData.append('cpu', form.cpu);
-    formData.append('gpu', form.gpu);
-    formData.append('cameratruoc', form.cameratruoc);
-    formData.append('camerasau', form.camerasau);
-    formData.append('congnghemanhinh', form.congnghemanhinh);
-    formData.append('dophangiaimanhinh', form.dophangiaimanhinh);
-    formData.append('pin', form.pin);
-    formData.append('trangthai', form.trangthai);
-    formData.append('mota', form.mota);
-
-    // Hình ảnh sản phẩm chính
-    form.hinhanh.forEach((file) => {
-      if (file instanceof File) {
-        formData.append('hinhanh', file);
+    Object.entries(form).forEach(([key, val]) => {
+      if (key === 'hinhanh') {
+        val.forEach(file => file instanceof File && formData.append('hinhanh', file));
+      } else if (key !== 'chiTietSanPham') {
+        formData.append(key, val);
       }
     });
 
-    // Chi tiết sản phẩm
     form.chiTietSanPham.forEach((detail, index) => {
+      const imgName = typeof detail.hinhanhchitiet === 'string' ?
+        detail.hinhanhchitiet.split('/').pop() : null;
       formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
       formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
       formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
       formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
       formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
       formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
-      formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai || 0);
-      formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam || 0);
-
-      if (detail.hinhanhchitiet instanceof File) {
+      formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai);
+      formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam);
+      if (detail.hinhanhchitiet instanceof File)
         formData.append('hinhanhchitiet', detail.hinhanhchitiet);
-      }
+      else
+        formData.append(`chiTietSanPham[${index}][hinhanhchitiet]`, imgName);
     });
 
     try {
-      let success = false;
-
-      if (product) {
-        // Nếu có sản phẩm → cập nhật
-        success = await productService.updateProduct(product.masanpham, formData);
-        toast.success("Cập nhật thành công!");
-      } else {
-        // Nếu chưa có → tạo mới
-        success = await productService.createProduct(formData);
-        toast.success("Tạo mới thành công!");
-      }
-      console.log("Success?", success); // 👈 Thêm dòng này
-      if (success) {
-        onSave(form);
-        onClose();
-      }
-    } catch (error) {
-      console.error("Lỗi khi lưu sản phẩm:", error);
+      const success = product
+        ? await productService.updateProduct(product.masanpham, formData)
+        : await productService.createProduct(formData);
+      toast.success(product ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
+      if (success) { onSave(form); onClose(); }
+    } catch (err) {
+      console.error('Lỗi khi gửi form:', err);
     }
   };
 
@@ -528,10 +510,23 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                     <TextField fullWidth label="Số lượng" value={detail.soluong} onChange={(e) => handleDetailChange(index, 'soluong', e.target.value)} disabled={isView} />
                   </Grid>
                   <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="Giá nhập" type="number" value={detail.gianhap} onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value)} disabled={isView} />
+                    <TextField
+                      fullWidth
+                      label="Giá nhập"
+                      value={Number(detail.gianhap).toLocaleString('vi-VN') + "đ"}
+                      onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value.replace(/[.,\s₫]/g, ''))}
+                      disabled={isView}
+                    />
+
                   </Grid>
                   <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="Giá bán" type="number" value={detail.giaban} onChange={(e) => handleDetailChange(index, 'giaban', e.target.value)} disabled={isView} />
+                    <TextField
+                      fullWidth
+                      label="Giá bán"
+                      value={Number(detail.giaban).toLocaleString('vi-VN') + "đ"}
+                      onChange={(e) => handleDetailChange(index, 'giaban', e.target.value.replace(/[.,\s₫]/g, ''))}
+                      disabled={isView}
+                    />
                   </Grid>
                   <Grid item xs={12} sm={2}>
                     <TextField
@@ -547,8 +542,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                     <TextField
                       fullWidth
                       label="Giá giảm"
-                      type="number"
-                      value={detail.giagiam}
+                      value={Number(detail.giagiam).toLocaleString('vi-VN') + "đ"}
                       disabled
                       InputLabelProps={{ shrink: true }}
                     />
