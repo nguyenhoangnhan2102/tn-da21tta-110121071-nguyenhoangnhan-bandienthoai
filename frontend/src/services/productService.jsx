@@ -5,7 +5,7 @@ const apiUrl = process.env.REACT_APP_URL_SERVER;
 const apiProduct = apiUrl + `/product`;
 
 const productService = {
-    // Lấy tất cả sản phẩm (trạng thái = 0)
+    // Lấy tất cả sản phẩm
     getAllProducts: async () => {
         try {
             const response = await axiosInstance.get(apiProduct);
@@ -29,18 +29,20 @@ const productService = {
         }
     },
 
-    // Tạo sản phẩm mới (bao gồm chi tiết màu - dung lượng)
+    // Tạo sản phẩm mới (bao gồm các biến thể dung lượng và màu sắc)
     createProduct: async (formData) => {
         try {
             const response = await axiosInstance.post(apiProduct, formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data', // Chỉ định loại dữ liệu gửi lên
+                    'Content-Type': 'multipart/form-data',
                 },
             });
 
             if (response.data.EC === 1) {
+                toast.success(response.data.EM);
                 return true;
             } else {
+                toast.error(response.data.EM);
                 return false;
             }
         } catch (error) {
@@ -50,6 +52,7 @@ const productService = {
         }
     },
 
+    // Cập nhật sản phẩm
     updateProduct: async (masanpham, formData) => {
         try {
             const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, formData, {
@@ -57,10 +60,11 @@ const productService = {
                     'Content-Type': 'multipart/form-data',
                 },
             });
-            console.log("update response:", response); // 👈 THÊM DÒNG NÀY
             if (response.data.EC === 0) {
+                toast.success(response.data.EM);
                 return true;
             } else {
+                toast.error(response.data.EM);
                 return false;
             }
         } catch (error) {

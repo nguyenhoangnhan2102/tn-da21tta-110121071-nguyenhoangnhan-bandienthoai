@@ -206,41 +206,57 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
 
   const handleSubmit = async () => {
     const formData = new FormData();
+
+    // Ảnh đại diện
+    form.hinhanh.forEach((item) => {
+      if (item instanceof File) {
+        formData.append('hinhanh', item);
+      } else {
+        formData.append('old_hinhanh', item); // giữ lại ảnh cũ
+      }
+    });
+
+    // Các trường còn lại
     Object.entries(form).forEach(([key, val]) => {
-      if (key === 'hinhanh') {
-        val.forEach(file => file instanceof File && formData.append('hinhanh', file));
-      } else if (key !== 'chiTietSanPham') {
+      if (key !== 'hinhanh' && key !== 'chiTietSanPham') {
         formData.append(key, val);
       }
     });
 
+    // Chi tiết sản phẩm
     form.chiTietSanPham.forEach((detail, index) => {
-      const imgName = typeof detail.hinhanhchitiet === 'string' ?
-        detail.hinhanhchitiet.split('/').pop() : null;
-      formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
-      formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
-      formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
-      formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
-      formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
-      formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
-      formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai);
-      formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam);
-      if (detail.hinhanhchitiet instanceof File)
+      formData.append(`chiTietDungLuong[${index}][mau]`, detail.mau);
+      formData.append(`chiTietDungLuong[${index}][dungluong]`, detail.dungluong);
+      formData.append(`chiTietDungLuong[${index}][ram]`, detail.ram);
+      formData.append(`chiTietDungLuong[${index}][soluong]`, detail.soluong);
+      formData.append(`chiTietDungLuong[${index}][gianhap]`, detail.gianhap);
+      formData.append(`chiTietDungLuong[${index}][giaban]`, detail.giaban);
+      formData.append(`chiTietDungLuong[${index}][khuyenmai]`, detail.khuyenmai);
+      formData.append(`chiTietDungLuong[${index}][giagiam]`, detail.giagiam);
+
+      if (detail.hinhanhchitiet instanceof File) {
         formData.append('hinhanhchitiet', detail.hinhanhchitiet);
-      else
-        formData.append(`chiTietSanPham[${index}][hinhanhchitiet]`, imgName);
+      } else if (detail.hinhanhchitiet) {
+        formData.append(`chiTietDungLuong[${index}][old_hinhanhchitiet]`, detail.hinhanhchitiet.split('/').pop());
+      }
     });
 
     try {
       const success = product
         ? await productService.updateProduct(product.masanpham, formData)
         : await productService.createProduct(formData);
+
       toast.success(product ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
-      if (success) { onSave(form); onClose(); }
+      if (success) {
+        onSave(form);
+        onClose();
+      }
     } catch (err) {
       console.error('Lỗi khi gửi form:', err);
+      toast.error('Có lỗi xảy ra khi lưu sản phẩm');
     }
   };
+
 
   return (
     <>
