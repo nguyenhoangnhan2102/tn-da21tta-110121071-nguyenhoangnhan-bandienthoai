@@ -286,6 +286,7 @@ const createProduct = async (req, res) => {
                     khuyenmai,
                     trangthai,
                     soluong,
+                    hinhanhchitiet,
                 } = chitietdungluong[j];
 
                 const detailImage = req.files['hinhanhchitiet']?.find(file =>
@@ -304,8 +305,8 @@ const createProduct = async (req, res) => {
                         giagiam,
                         khuyenmai || 0,
                         trangthai || 0,
-                        soluong,
-                        detailImage
+                        soluong || 0, // 💡 cần ép kiểu nếu frontend gửi chuỗi
+                        detailImage,
                     ]
                 );
             }

@@ -341,8 +341,8 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
           gianhap: parseFloat(mauItem.gianhap || "0"),
           khuyenmai: parseFloat(mauItem.khuyenmai || "0"),
           giagiam: parseFloat(mauItem.giagiam || "0"),
-          trangthai: parseInt(mauItem.trangthai || "0"),
           trangthai: mauItem.trangthai || 0,
+          soluong: parseInt(mauItem.soluong || "0"),
           hinhanhchitiet: imageKey, // tên để backend map file
         });
       });
