@@ -9,7 +9,7 @@ const getAllProducts = async (req, res) => {
         //     LEFT JOIN THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
         //     WHERE sp.trangthai = 0
         //     ORDER BY sp.masanpham DESC
-        // `);
+        // `);  
 
         const [productRows] = await pool.query(`
             SELECT sp.*, th.tenthuonghieu 
@@ -74,9 +74,14 @@ const getProductById = async (req, res) => {
             SELECT * FROM CHITIETSANPHAM WHERE masanpham = ? AND trangthai = 0
         `, [masanpham]);
 
+        const dsDungLuong = [...new Set(detailRows.map(item => item.dungluong))];
+        const dsMauSac = [...new Set(detailRows.map(item => item.mau))];
+
         const result = {
             ...productRows[0],
-            chiTietSanPham: detailRows
+            chiTietSanPham: detailRows,
+            dsDungLuong,
+            dsMauSac,
         };
 
         return res.status(200).json({
