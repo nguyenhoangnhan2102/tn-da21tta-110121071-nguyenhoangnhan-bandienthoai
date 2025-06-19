@@ -207,51 +207,180 @@ const getProductById = async (req, res) => {
 //     }
 // };
 
+// const createProduct = async (req, res) => {
+//     const {
+//         mathuonghieu,
+//         tensanpham,
+//         hedieuhanh,
+//         cpu,
+//         gpu,
+//         cameratruoc,
+//         camerasau,
+//         congnghemanhinh,
+//         dophangiaimanhinh,
+//         pin,
+//         mota
+//     } = req.body;
+
+//     let chiTietDungLuong;
+//     try {
+//         chiTietDungLuong = JSON.parse(req.body.chiTietDungLuong);
+//         if (!Array.isArray(chiTietDungLuong)) {
+//             throw new Error("Không phải mảng");
+//         }
+//     } catch (err) {
+//         return res.status(400).json({
+//             EM: "Dữ liệu chiTietDungLuong không hợp lệ",
+//             EC: -1,
+//             DT: []
+//         });
+//     }
+
+//     const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
+//     const productImages = uploadedImages.join(",");
+
+//     const connection = await pool.getConnection();
+//     try {
+//         await connection.beginTransaction();
+
+//         // 1. Tạo sản phẩm
+//         const [productResult] = await connection.query(
+//             `INSERT INTO SANPHAM
+//             (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
+//             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//             [
+//                 mathuonghieu,
+//                 tensanpham,
+//                 productImages,
+//                 hedieuhanh,
+//                 cpu,
+//                 gpu,
+//                 cameratruoc,
+//                 camerasau,
+//                 congnghemanhinh,
+//                 dophangiaimanhinh,
+//                 pin,
+//                 mota,
+//             ]
+//         );
+
+//         const masanpham = productResult.insertId;
+
+//         // 2. Thêm các dung lượng và màu sắc
+//         for (let i = 0; i < chiTietDungLuong.length; i++) {
+//             const { dungluong, ram, chitietdungluong } = chiTietDungLuong[i];
+
+//             const [dlResult] = await connection.query(
+//                 `INSERT INTO DUNGLUONG (masanpham, dungluong, ram) VALUES (?, ?, ?)`,
+//                 [masanpham, dungluong, ram]
+//             );
+
+//             const madungluong = dlResult.insertId;
+
+//             for (let j = 0; j < chitietdungluong.length; j++) {
+//                 const {
+//                     mau,
+//                     giaban,
+//                     gianhap,
+//                     giagiam,
+//                     khuyenmai,
+//                     trangthai,
+//                     soluong,
+//                     hinhanhchitiet,
+//                 } = chitietdungluong[j];
+
+//                 const detailImage = req.files['hinhanhchitiet']?.find(file =>
+//                     file.originalname.includes(`${dungluong}-${mau}`)
+//                 )?.filename || null;
+
+//                 await connection.query(
+//                     `INSERT INTO CHITIETSANPHAM
+//                     (madungluong, mau, giaban, gianhap, giagiam, khuyenmai, trangthai, soluong, hinhanhchitiet)
+//                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//                     [
+//                         madungluong,
+//                         mau,
+//                         giaban,
+//                         gianhap,
+//                         giagiam,
+//                         khuyenmai || 0,
+//                         trangthai || 0,
+//                         soluong || 0, // 💡 cần ép kiểu nếu frontend gửi chuỗi
+//                         detailImage,
+//                     ]
+//                 );
+//             }
+//         }
+//         console.log('req.files', req.files);
+//         console.log('req.body', req.body);
+//         await connection.commit();
+//         return res.status(201).json({
+//             EM: "Tạo sản phẩm thành công",
+//             EC: 0,
+//             DT: { masanpham }
+//         });
+
+//     } catch (error) {
+//         await connection.rollback();
+//         return res.status(500).json({
+//             EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
+//             EC: -1,
+//             DT: []
+//         });
+//     } finally {
+//         connection.release();
+//     }
+// };
+
 const createProduct = async (req, res) => {
-    const {
-        mathuonghieu,
-        tensanpham,
-        hedieuhanh,
-        cpu,
-        gpu,
-        cameratruoc,
-        camerasau,
-        congnghemanhinh,
-        dophangiaimanhinh,
-        pin,
-        mota
-    } = req.body;
-
-    let chiTietDungLuong;
     try {
-        chiTietDungLuong = JSON.parse(req.body.chiTietDungLuong);
-        if (!Array.isArray(chiTietDungLuong)) {
-            throw new Error("Không phải mảng");
+        const {
+            mathuonghieu,
+            tensanpham,
+            hedieuhanh,
+            cpu,
+            gpu,
+            cameratruoc,
+            camerasau,
+            congnghemanhinh,
+            dophangiaimanhinh,
+            pin,
+            trangthai,
+            mota,
+        } = req.body;
+
+        // Validate cơ bản
+        if (!mathuonghieu || !tensanpham) {
+            return res.status(400).json({
+                DT: null,
+                EC: 1,
+                EM: "Thiếu thông tin bắt buộc (thương hiệu, tên sản phẩm)",
+            });
         }
-    } catch (err) {
-        return res.status(400).json({
-            EM: "Dữ liệu chiTietDungLuong không hợp lệ",
-            EC: -1,
-            DT: []
+
+        const dungluongList = JSON.parse(req.body.dungluongList || "[]");
+
+        const detailImages = req.files?.["hinhanhchitiet"] || [];
+        const mainImages = req.files?.["hinhanh"] || [];
+
+        const detailImageMap = {};
+        detailImages.forEach((file) => {
+            detailImageMap[file.originalname] = file.filename;
         });
-    }
 
-    const uploadedImages = req.files['hinhanh']?.map(file => file.filename) || [];
-    const productImages = uploadedImages.join(",");
+        const mainImagePaths = mainImages.map((file) => file.filename);
 
-    const connection = await pool.getConnection();
-    try {
-        await connection.beginTransaction();
-
-        // 1. Tạo sản phẩm
-        const [productResult] = await connection.query(
-            `INSERT INTO SANPHAM
-            (mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        // Thêm sản phẩm vào bảng SANPHAM
+        const [productResult] = await pool.execute(
+            `INSERT INTO SANPHAM (
+                mathuonghieu, tensanpham, hinhanh, hedieuhanh, cpu, gpu,
+                cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh,
+                pin, trangthai, mota
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 mathuonghieu,
                 tensanpham,
-                productImages,
+                JSON.stringify(mainImagePaths),
                 hedieuhanh,
                 cpu,
                 gpu,
@@ -260,76 +389,59 @@ const createProduct = async (req, res) => {
                 congnghemanhinh,
                 dophangiaimanhinh,
                 pin,
+                trangthai,
                 mota,
             ]
         );
 
         const masanpham = productResult.insertId;
 
-        // 2. Thêm các dung lượng và màu sắc
-        for (let i = 0; i < chiTietDungLuong.length; i++) {
-            const { dungluong, ram, chitietdungluong } = chiTietDungLuong[i];
-
-            const [dlResult] = await connection.query(
+        // Thêm từng dung lượng vào bảng DUNGLUONG
+        for (const dl of dungluongList) {
+            const [dlResult] = await pool.execute(
                 `INSERT INTO DUNGLUONG (masanpham, dungluong, ram) VALUES (?, ?, ?)`,
-                [masanpham, dungluong, ram]
+                [masanpham, dl.dungluong, dl.ram]
             );
-
             const madungluong = dlResult.insertId;
 
-            for (let j = 0; j < chitietdungluong.length; j++) {
-                const {
-                    mau,
-                    giaban,
-                    gianhap,
-                    giagiam,
-                    khuyenmai,
-                    trangthai,
-                    soluong,
-                    hinhanhchitiet,
-                } = chitietdungluong[j];
-
-                const detailImage = req.files['hinhanhchitiet']?.find(file =>
-                    file.originalname.includes(`${dungluong}-${mau}`)
-                )?.filename || null;
-
-                await connection.query(
-                    `INSERT INTO MAUSAC_DUNGLUONG
-                    (madungluong, mau, giaban, gianhap, giagiam, khuyenmai, trangthai, soluong, hinhanhchitiet)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            // Thêm từng màu vào bảng CHITIETSANPHAM
+            for (const ms of dl.colors) {
+                const imageName = detailImageMap[ms.hinhanhchitiet] || ms.hinhanhchitiet;
+                await pool.execute(
+                    `INSERT INTO CHITIETSANPHAM (
+                        madungluong, mau, hinhanhchitiet, soluong,
+                        giaban, gianhap, khuyenmai, giagiam
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
                     [
                         madungluong,
-                        mau,
-                        giaban,
-                        gianhap,
-                        giagiam,
-                        khuyenmai || 0,
-                        trangthai || 0,
-                        soluong || 0, // 💡 cần ép kiểu nếu frontend gửi chuỗi
-                        detailImage,
+                        ms.mau,
+                        imageName,
+                        ms.soluong,
+                        ms.giaban,
+                        ms.gianhap,
+                        ms.khuyenmai,
+                        ms.giagiam,
                     ]
                 );
             }
         }
 
-        await connection.commit();
         return res.status(201).json({
-            EM: "Tạo sản phẩm thành công",
+            DT: { masanpham },
             EC: 0,
-            DT: { masanpham }
+            EM: "Tạo sản phẩm thành công",
         });
-
     } catch (error) {
-        await connection.rollback();
+        console.error("Lỗi tạo sản phẩm:", error);
         return res.status(500).json({
-            EM: `Lỗi khi tạo sản phẩm: ${error.message}`,
+            DT: null,
             EC: -1,
-            DT: []
+            EM: "Lỗi hệ thống, vui lòng thử lại",
         });
-    } finally {
-        connection.release();
     }
 };
+
+
 
 // Cập nhật sản phẩm
 const updateProduct = async (req, res) => {

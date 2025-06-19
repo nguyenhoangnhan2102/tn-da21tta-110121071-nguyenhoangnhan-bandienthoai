@@ -37,12 +37,7 @@ const productService = {
                     'Content-Type': 'multipart/form-data', // Chỉ định loại dữ liệu gửi lên
                 },
             });
-
-            if (response.data.EC === 1) {
-                return true;
-            } else {
-                return false;
-            }
+            return response.data;
         } catch (error) {
             toast.error("Lỗi khi tạo sản phẩm");
             console.error("createProduct error:", error.message);

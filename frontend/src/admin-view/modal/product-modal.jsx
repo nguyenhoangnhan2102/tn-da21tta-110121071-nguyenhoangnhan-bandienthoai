@@ -50,7 +50,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     pin: '',
     trangthai: 0,
     mota: '',
-    chiTietDungLuong: [
+    chiTietSanPham: [
       {
         dungluong: '',
         ram: '',
@@ -69,8 +69,6 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       }
     ]
   };
-
-  console.log("product", product);
 
   const [form, setForm] = useState(initialFormState);
   const [previewImages, setPreviewImages] = useState([]);
@@ -158,13 +156,13 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
   };
 
   const handleDungLuongChange = (dlIndex, field, value) => {
-    const updated = [...form.chiTietDungLuong];
+    const updated = [...form.chiTietSanPham];
     updated[dlIndex][field] = value;
-    setForm({ ...form, chiTietDungLuong: updated });
+    setForm({ ...form, chiTietSanPham: updated });
   };
 
   const handleMauChange = (dlIndex, msIndex, field, value) => {
-    const updated = [...form.chiTietDungLuong];
+    const updated = [...form.chiTietSanPham];
     updated[dlIndex].mausac[msIndex][field] = value;
 
     // Nếu field là 'giaban' hoặc 'khuyenmai' thì tính giá giảm
@@ -177,21 +175,21 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       }
     }
 
-    setForm({ ...form, chiTietDungLuong: updated });
+    setForm({ ...form, chiTietSanPham: updated });
   };
 
   const addMau = (dlIndex) => {
-    const updated = [...form.chiTietDungLuong];
+    const updated = [...form.chiTietSanPham];
     updated[dlIndex].mausac.push({
       mau: '', giaban: '', gianhap: '', giagiam: '', khuyenmai: '', trangthai: 0, soluong: '', hinhanhchitiet: null
     });
-    setForm({ ...form, chiTietDungLuong: updated });
+    setForm({ ...form, chiTietSanPham: updated });
   };
 
   const addDungLuong = () => {
     setForm((prev) => ({
       ...prev,
-      chiTietDungLuong: [...prev.chiTietDungLuong, {
+      chiTietSanPham: [...prev.chiTietSanPham, {
         dungluong: '',
         ram: '',
         mausac: [{
@@ -221,154 +219,69 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
     }));
   };
 
-  const handleDetailChange = (index, field, value) => {
-    setForm((prev) => {
-      const newDetails = [...prev.chiTietSanPham];
-      const detail = { ...newDetails[index], [field]: value };
-
-      // Tự động tính giagiam khi giaban hoặc khuyenmai thay đổi
-      const giaban = parseFloat(field === 'giaban' ? value : detail.giaban || 0);
-      const khuyenmai = parseFloat(field === 'khuyenmai' ? value : detail.khuyenmai || 0);
-
-      if (!isNaN(giaban) && !isNaN(khuyenmai) && khuyenmai > 0) {
-        detail.giagiam = giaban - (giaban * khuyenmai / 100);
-      } else {
-        detail.giagiam = 0;
-      }
-
-      newDetails[index] = detail;
-      return { ...prev, chiTietSanPham: newDetails };
-    });
-  };
-
-  const addDetail = () => {
-    setForm((prev) => ({
-      ...prev,
-      chiTietSanPham: [...prev.chiTietSanPham, {
-        mau: '',
-        dungluong: '',
-        ram: '',
-        soluong: '',
-        gianhap: '',
-        giaban: '',
-        khuyenmai: '',
-        hinhanh: null,
-        giagiam: '',
-      }]
-    }));
-  };
-
-  const removeDetail = (index) => {
-    setForm((prev) => ({
-      ...prev,
-      chiTietSanPham: prev.chiTietSanPham.filter((_, i) => i !== index),
-    }));
-  };
-
-  // const handleSubmit = async () => {
-  //   const formData = new FormData();
-  //   Object.entries(form).forEach(([key, val]) => {
-  //     if (key === 'hinhanh') {
-  //       val.forEach(file => file instanceof File && formData.append('hinhanh', file));
-  //     } else if (key !== 'chiTietSanPham') {
-  //       formData.append(key, val);
-  //     }
-  //   });
-
-  //   form.chiTietSanPham.forEach((detail, index) => {
-  //     const imgName = typeof detail.hinhanhchitiet === 'string' ?
-  //       detail.hinhanhchitiet.split('/').pop() : null;
-  //     formData.append(`chiTietSanPham[${index}][mau]`, detail.mau);
-  //     formData.append(`chiTietSanPham[${index}][dungluong]`, detail.dungluong);
-  //     formData.append(`chiTietSanPham[${index}][ram]`, detail.ram);
-  //     formData.append(`chiTietSanPham[${index}][soluong]`, detail.soluong);
-  //     formData.append(`chiTietSanPham[${index}][gianhap]`, detail.gianhap);
-  //     formData.append(`chiTietSanPham[${index}][giaban]`, detail.giaban);
-  //     formData.append(`chiTietSanPham[${index}][khuyenmai]`, detail.khuyenmai);
-  //     formData.append(`chiTietSanPham[${index}][giagiam]`, detail.giagiam);
-  //     if (detail.hinhanhchitiet instanceof File)
-  //       formData.append('hinhanhchitiet', detail.hinhanhchitiet);
-  //     else
-  //       formData.append(`chiTietSanPham[${index}][hinhanhchitiet]`, imgName);
-  //   });
-
-  //   try {
-  //     const success = product
-  //       ? await productService.updateProduct(product.masanpham, formData)
-  //       : await productService.createProduct(formData);
-  //     toast.success(product ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
-  //     if (success) { onSave(form); onClose(); }
-  //   } catch (err) {
-  //     console.error('Lỗi khi gửi form:', err);
-  //   }
-  // };
   const handleSubmit = async () => {
     const formData = new FormData();
 
-    // Thêm thông tin cơ bản
-    Object.entries(form).forEach(([key, val]) => {
-      if (key === 'hinhanh') {
-        if (Array.isArray(val)) {
-          val.forEach(file => {
-            if (file instanceof File) formData.append('hinhanh', file);
-          });
-        }
-      } else if (key !== 'chiTietDungLuong') {
-        formData.append(key, val);
+    // 1. Ảnh đại diện (ảnh chính)
+    form.hinhanh.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("hinhanh", file);
       }
     });
 
-    // Xử lý chi tiết sản phẩm (dung lượng + màu sắc)
-    const chiTietDungLuongToSend = [];
-
-    form.chiTietDungLuong.forEach((dlItem, dlIndex) => {
-      const chiTiet = {
-        dungluong: dlItem.dungluong,
-        ram: dlItem.ram,
-        chitietdungluong: [],
-      };
-
-      dlItem.mausac.forEach((mauItem, msIndex) => {
-        const imageKey = `hinhanhchitiet_${dlIndex}_${msIndex}`;
-
-        if (mauItem.hinhanhchitiet instanceof File) {
-          formData.append('hinhanhchitiet', mauItem.hinhanhchitiet);
-        }
-
-        chiTiet.chitietdungluong.push({
-          mau: mauItem.mau,
-          giaban: parseFloat(mauItem.giaban || "0"),
-          gianhap: parseFloat(mauItem.gianhap || "0"),
-          khuyenmai: parseFloat(mauItem.khuyenmai || "0"),
-          giagiam: parseFloat(mauItem.giagiam || "0"),
-          trangthai: mauItem.trangthai || 0,
-          soluong: parseInt(mauItem.soluong || "0"),
-          hinhanhchitiet: imageKey, // tên để backend map file
-        });
-      });
-
-      chiTietDungLuongToSend.push(chiTiet);
+    // 2. Các trường cơ bản
+    [
+      "mathuonghieu", "tensanpham", "hedieuhanh", "cpu", "gpu",
+      "cameratruoc", "camerasau", "congnghemanhinh", "dophangiaimanhinh",
+      "pin", "trangthai", "mota"
+    ].forEach((key) => {
+      formData.append(key, form[key]);
     });
 
-    formData.append('chiTietDungLuong', JSON.stringify(chiTietDungLuongToSend));
+    // 3. Chuẩn bị chi tiết sản phẩm
+    const dungluongList = form.chiTietSanPham.map((dl) => {
+      const colors = dl.mausac.map((ms) => {
+        // Ảnh chi tiết - nếu là file thì thêm vào formData
+        if (ms.hinhanhchitiet instanceof File) {
+          const fileName = `${ms.mau}_${Date.now()}_${ms.hinhanhchitiet.name}`;
+          formData.append("hinhanhchitiet", ms.hinhanhchitiet, fileName);
+          return {
+            ...ms,
+            hinhanhchitiet: fileName, // Gửi tên ảnh vào JSON để backend nhận biết
+          };
+        } else {
+          return {
+            ...ms,
+            hinhanhchitiet: ms.hinhanhchitiet, // Trường hợp cập nhật, giữ nguyên chuỗi
+          };
+        }
+      });
+
+      return {
+        dungluong: dl.dungluong,
+        ram: dl.ram,
+        colors,
+      };
+    });
+
+    // 4. Thêm danh sách dung lượng và màu sắc (dưới dạng JSON)
+    formData.append("dungluongList", JSON.stringify(dungluongList));
 
     try {
       const success = product
         ? await productService.updateProduct(product.masanpham, formData)
         : await productService.createProduct(formData);
 
-      toast.success(product ? 'Cập nhật thành công!' : 'Tạo mới thành công!');
+      toast.success(product ? 'Cập nhật thành công!' : 'Tạo sản phẩm thành công!');
       if (success) {
         onSave(form);
         onClose();
       }
-      console.log("success", success)
     } catch (err) {
-      console.error('Lỗi khi gửi form:', err);
-      toast.error("Gửi form thất bại!");
+      console.error("Lỗi khi gửi form:", err);
+      toast.error("Đã có lỗi xảy ra.");
     }
   };
-
 
   return (
     <>
@@ -578,116 +491,8 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                 rows={3}
               />
             </Grid>
-
-
-            {/* Chi tiết sản phẩm */}
-            {/* <Grid item xs={12}>
-              <Typography variant="subtitle1" mt={2} mb={1}>Chi tiết sản phẩm</Typography>
-              {form.chiTietSanPham.map((detail, index) => (
-                <Grid container spacing={2} key={index} alignItems="center" mb={2}>
-                  <Grid item xs={12}>
-                    <Button variant="contained" component="label" disabled={isView}>
-                      Tải ảnh chi tiết
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={(e) => handleDetailChange(index, 'hinhanhchitiet', e.target.files[0])}
-                      />
-                    </Button>
-                    {detail.hinhanhchitiet && (
-                      <Box mt={2} position="relative" width={100} height={100} borderRadius={2} overflow="hidden" border="1px solid #ccc">
-                        <img
-                          src={
-                            typeof detail.hinhanhchitiet === "string"
-                              ? detail.hinhanhchitiet // ảnh từ server
-                              : URL.createObjectURL(detail.hinhanhchitiet) // ảnh vừa chọn
-                          }
-                          alt={`detail-${index}`}
-                          style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                        />
-                        {!isView && (
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDetailChange(index, 'hinhanhchitiet', null)} // Xóa ảnh
-                            sx={{
-                              position: 'absolute',
-                              top: 2,
-                              right: 2,
-                              bgcolor: 'rgba(0,0,0,0.6)',
-                              color: 'white',
-                              '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' },
-                            }}
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
-                        )}
-                      </Box>
-                    )}
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="Màu" value={detail.mau} onChange={(e) => handleDetailChange(index, 'mau', e.target.value)} disabled={isView} />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="Dung lượng" value={detail.dungluong} onChange={(e) => handleDetailChange(index, 'dungluong', e.target.value)} disabled={isView} />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="RAM" value={detail.ram} onChange={(e) => handleDetailChange(index, 'ram', e.target.value)} disabled={isView} />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField fullWidth label="Số lượng" value={detail.soluong} onChange={(e) => handleDetailChange(index, 'soluong', e.target.value)} disabled={isView} />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField
-                      fullWidth
-                      label="Giá nhập"
-                      value={Number(detail.gianhap).toLocaleString('vi-VN') + "đ"}
-                      onChange={(e) => handleDetailChange(index, 'gianhap', e.target.value.replace(/[.,\s₫]/g, ''))}
-                      disabled={isView}
-                    />
-
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField
-                      fullWidth
-                      label="Giá bán"
-                      value={Number(detail.giaban).toLocaleString('vi-VN') + "đ"}
-                      onChange={(e) => handleDetailChange(index, 'giaban', e.target.value.replace(/[.,\s₫]/g, ''))}
-                      disabled={isView}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField
-                      fullWidth
-                      label="Khuyến mãi"
-                      type="number"
-                      value={detail.khuyenmai}
-                      onChange={(e) => handleDetailChange(index, 'khuyenmai', e.target.value)}
-                      disabled={isView}
-                    />
-                  </Grid>
-                  <Grid item xs={12} sm={2}>
-                    <TextField
-                      fullWidth
-                      label="Giá giảm"
-                      value={Number(detail.giagiam).toLocaleString('vi-VN') + "đ"}
-                      disabled
-                      InputLabelProps={{ shrink: true }}
-                    />
-                  </Grid>
-                  {!isView && (
-                    <Grid>
-                      <IconButton onClick={() => removeDetail(index)} disabled={form.chiTietSanPham.length === 1}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Grid>
-                  )}
-                </Grid>
-              ))}
-              {!isView && <Button startIcon={<AddIcon />} onClick={addDetail}>Thêm chi tiết</Button>}
-            </Grid> */}
             <Typography variant="subtitle1" mt={2} mb={1}>Chi tiết sản phẩm</Typography>
-            {form.chiTietDungLuong.map((dlItem, dlIndex) => (
+            {form.chiTietSanPham.map((dlItem, dlIndex) => (
               <Box key={dlIndex} border="1px solid #ddd" p={2} mb={2} borderRadius={2}>
                 <Grid container spacing={2}>
                   <Grid item xs={6}>
@@ -699,8 +504,6 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                       onChange={(e) => handleDungLuongChange(dlIndex, 'ram', e.target.value)} />
                   </Grid>
                 </Grid>
-
-                {/* Danh sách màu của dung lượng này */}
                 <Typography variant="subtitle2" mt={2}>Các màu sắc:</Typography>
                 {dlItem.mausac.map((ms, msIndex) => (
                   <Grid container spacing={2} key={msIndex} alignItems="center" mt={1}>
@@ -790,11 +593,6 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
           </Box>
         </Box>
       </Modal>
-      {/* <CreateProductDetailModal
-      open={detailModalOpen}
-      onClose={() => setDetailModalOpen(false)}
-      onSave={handleSaveDetail}
-    /> */}
     </>
   );
 };
