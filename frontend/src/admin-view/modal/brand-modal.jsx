@@ -9,15 +9,10 @@ import {
     Select,
     MenuItem,
     TextField,
-    Menu,
-    InputAdornment,
-    ListItemText,
-    Autocomplete,
-    CircularProgress,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import brandService from "../../services/brandService";
-// Style for the modal box
+
 const modalStyle = {
     position: "absolute",
     top: "50%",
@@ -36,7 +31,9 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
         tenthuonghieu: "",
         trangthaithuonghieu: 0,
     });
-    console.log("brand", brand)
+
+    const [logoFile, setLogoFile] = useState(null);
+    const [logoPreview, setLogoPreview] = useState(null);
 
     useEffect(() => {
         if (brand) {
@@ -44,45 +41,67 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
                 tenthuonghieu: brand.tenthuonghieu || "",
                 trangthaithuonghieu: brand.trangthaithuonghieu || 0,
             });
+            setLogoFile(null);
+            setLogoPreview(null);
         } else {
             setForm({
                 tenthuonghieu: "",
                 trangthaithuonghieu: 0,
             });
+            setLogoFile(null);
+            setLogoPreview(null);
         }
     }, [brand, open]);
 
-
     const handleChange = (e) => {
         if (isView) return;
-
         const { name, value } = e.target;
+        setForm((prev) => ({ ...prev, [name]: value }));
+    };
 
-        setForm((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
+    const handleFileChange = (e) => {
+        if (isView) return;
+        const file = e.target.files[0];
+        setLogoFile(file);
+        if (file) {
+            const previewUrl = URL.createObjectURL(file);
+            setLogoPreview(previewUrl);
+        } else {
+            setLogoPreview(null);
+        }
     };
 
     const handleSubmit = async () => {
-        console.log("form", form.trangthaithuonghieu);
         try {
-            const data = {
-                tenthuonghieu: form.tenthuonghieu,
-                trangthaithuonghieu: form.trangthaithuonghieu,
-            };
+            if (!form.tenthuonghieu) {
+                toast.warning("Vui lòng nhập tên thương hiệu");
+                return;
+            }
 
             if (brand) {
-                await brandService.updateBrand(brand.mathuonghieu, data);
-                toast.success("Cập nhật thành công!")
+                // Chỉnh sửa (không cập nhật logo ở đây)
+                await brandService.updateBrand(brand.mathuonghieu, form);
+                toast.success("Cập nhật thành công!");
             } else {
-                await brandService.createBrand(data);
-                toast.success("Tạo mới thành công!")
+                // Tạo mới
+                const formData = new FormData();
+                formData.append("tenthuonghieu", form.tenthuonghieu);
+                formData.append("trangthaithuonghieu", form.trangthaithuonghieu);
+                if (logoFile) {
+                    formData.append("logo", logoFile);
+                }
+
+                const result = await brandService.createBrand(formData);
+                if (!result?.success) return; // createBrand đã có toast
+
+                toast.success("Tạo mới thành công!");
             }
+
             onSave(form);
             onClose();
         } catch (error) {
             console.error("Error saving brand:", error);
+            toast.error("Đã xảy ra lỗi");
         }
     };
 
@@ -95,20 +114,66 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
         >
             <Box sx={modalStyle}>
                 <Typography id="modal-title" variant="h6" component="h2">
-                    {isView ? "Xem chi tiết danh mục" : brand ? "Cập nhật danh mục" : "Thêm thương hiệu mới"}
+                    {isView ? "Xem chi tiết thương hiệu" : brand ? "Cập nhật thương hiệu" : "Thêm thương hiệu mới"}
                 </Typography>
+
                 <TextField
                     fullWidth
                     margin="normal"
-                    label="Tên danh mục"
+                    label="Tên thương hiệu"
                     name="tenthuonghieu"
                     value={form.tenthuonghieu}
                     onChange={handleChange}
                     disabled={isView}
-                    inputProps={{
-                        autoFocus: true
-                    }}
-                />{" "}
+                />
+
+                {!brand && (
+                    <>
+                        <Box my={2}>
+                            <input
+                                accept="image/*"
+                                id="upload-logo"
+                                type="file"
+                                style={{ display: "none" }}
+                                onChange={handleFileChange}
+                                disabled={isView}
+                            />
+                            <label htmlFor="upload-logo">
+                                <Button
+                                    variant="outlined"
+                                    component="span"
+                                    startIcon={<i className="fa-solid fa-image"></i>}
+                                    disabled={isView}
+                                    sx={{
+                                        textTransform: "none",
+                                        borderRadius: "8px",
+                                        paddingX: 2,
+                                        paddingY: 1,
+                                        fontSize: "0.95rem",
+                                    }}
+                                >
+                                    Ảnh
+                                </Button>
+                            </label>
+
+                            {logoPreview && (
+                                <Box mt={2}>
+                                    <img
+                                        src={logoPreview}
+                                        alt="Logo Preview"
+                                        style={{
+                                            maxHeight: "120px",
+                                            border: "1px solid #ccc",
+                                            padding: "4px",
+                                            borderRadius: "8px",
+                                        }}
+                                    />
+                                </Box>
+                            )}
+                        </Box>
+                    </>
+                )}
+
                 <FormControl fullWidth margin="normal" disabled={isView}>
                     <InputLabel id="select-trangthai-label">Trạng thái</InputLabel>
                     <Select
@@ -116,28 +181,23 @@ const BrandModal = ({ brand, onSave, open, onClose, isView }) => {
                         label="Trạng thái"
                         name="trangthaithuonghieu"
                         value={form.trangthaithuonghieu}
-                        onChange={(e) => {
-                            if (isView) return;
-                            setForm(prev => ({ ...prev, trangthaithuonghieu: e.target.value }));
-                        }}
+                        onChange={(e) => setForm(prev => ({ ...prev, trangthaithuonghieu: e.target.value }))}
                     >
                         <MenuItem value={0}>Hoạt động</MenuItem>
                         <MenuItem value={1}>Không hoạt động</MenuItem>
                     </Select>
                 </FormControl>
+
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
-                    {!isView ? (
+                    {!isView && (
                         <button
                             className="btn btn-primary admin-btn"
                             onClick={handleSubmit}
                         >
                             <i className="fa-solid fa-floppy-disk mr-5"></i> Lưu
                         </button>
-                    ) : (
-                        false
                     )}
-
-                    <button className="btn btn-danger admin-btn " onClick={onClose}>
+                    <button className="btn btn-danger admin-btn" onClick={onClose}>
                         <i className="fa-solid fa-ban mr-5"> </i> Huỷ
                     </button>
                 </Box>

@@ -20,14 +20,12 @@ import AddIcon from '@mui/icons-material/Add';
 
 const BrandComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
-    // const [sortColumn, setSortColumn] = useState("tenthuonghieu");
-    // const [sortOrder, setSortOrder] = useState("asc");
     const [bands, setBands] = useState([]);
     const [showModal, setShowModal] = useState(false);
     const [editting, setEditing] = useState(null);
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [brandToDelete, setBrandToDelete] = useState(null);
-
+    const [statusFilter, setStatusFilter] = useState("all");
 
     useEffect(() => {
         fetchData();
@@ -35,28 +33,29 @@ const BrandComponent = () => {
 
     const fetchData = async () => {
         try {
-            const response = await brandService.getAllBrand();
-            const mappedResponse = response.map((item) => {
-                const formatDateTime = (isoString) =>
-                    new Date(isoString).toLocaleString("vi-VN", {
-                        hour12: false,
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                        day: "2-digit",
-                        month: "2-digit",
-                        year: "numeric",
-                    });
-                return {
-                    ...item,
-                    id: item.mathuonghieu,
-                    trangthaithuonghieuText: item.trangthaithuonghieu === 0 ? "Hoạt động" : "Ngưng hoạt động",
-                    ngaytao: formatDateTime(item.ngaytao),
-                    ngaycapnhat: formatDateTime(item.ngaycapnhat),
-                };
-            });
+            const response = await brandService.getAllBrand(); // đã là { active: [], inactive: [] }
 
-            setBands(mappedResponse);
+            const formatDateTime = (isoString) =>
+                new Date(isoString).toLocaleString("vi-VN", {
+                    hour12: false,
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    second: "2-digit",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                });
+
+            const mapBrandList = (list) => list.map((item) => ({
+                ...item,
+                id: item.mathuonghieu,
+                trangthaithuonghieuText: item.trangthaithuonghieu === 0 ? "Hoạt động" : "Ngưng hoạt động",
+                ngaytao: formatDateTime(item.ngaytao),
+                ngaycapnhat: formatDateTime(item.ngaycapnhat),
+            }));
+
+            const allBrands = [...mapBrandList(response.active), ...mapBrandList(response.inactive)];
+            setBands(allBrands);
         } catch (error) {
             console.error("Error fetching data:", error);
         }
@@ -90,41 +89,22 @@ const BrandComponent = () => {
         closeDeleteModal();
     };
 
-
     const filteredData = bands.filter((item) => {
         const searchLower = searchTerm.toLowerCase();
         const matchSearch = item.tenthuonghieu?.toLowerCase().includes(searchLower);
         return matchSearch;
     });
 
-    // const sortedData = filteredData.sort((a, b) => {
-    //     const aVal = a[sortColumn];
-    //     const bVal = b[sortColumn];
-
-    //     if (!isNaN(aVal) && !isNaN(bVal)) {
-    //         return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-    //     }
-
-    //     const aStr = aVal?.toString().toLowerCase() || "";
-    //     const bStr = bVal?.toString().toLowerCase() || "";
-
-    //     if (aStr < bStr) return sortOrder === "asc" ? -1 : 1;
-    //     if (aStr > bStr) return sortOrder === "asc" ? 1 : -1;
-    //     return 0;
-    // });
-
     const columns = [
         { key: "mathuonghieu", label: "ID" },
         { key: "tenthuonghieu", label: "Tên thương hiệu" },
         { key: "trangthaithuonghieuText", label: "Trạng thái" },
-        { key: "ngaytao", label: "Ngày tạo" },
-        { key: "ngaycapnhat", label: "Ngày cập nhật" },
+        { key: "logo", label: "Logo" },
     ];
 
     return (
         <div style={{ padding: "2rem" }}>
             <h2>📋 Danh sách thương hiệu</h2>
-
             <TextField
                 fullWidth
                 label="Tìm kiếm..."
@@ -134,34 +114,6 @@ const BrandComponent = () => {
                 style={{ marginBottom: "1rem", width: "24%" }}
                 size="small"
             />
-            {/* <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                <FormControl size="small" style={{ minWidth: 180 }}>
-                    <InputLabel>Sắp xếp theo</InputLabel>
-                    <Select
-                        value={sortColumn}
-                        onChange={(e) => setSortColumn(e.target.value)}
-                        label="Sắp xếp theo"
-                    >
-                        {columns.map((col) => (
-                            <MenuItem key={col.key} value={col.key}>
-                                {col.label}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </FormControl>
-
-                <FormControl size="small" style={{ minWidth: 120 }}>
-                    <InputLabel>Thứ tự</InputLabel>
-                    <Select
-                        value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value)}
-                        label="Thứ tự"
-                    >
-                        <MenuItem value="asc">Tăng dần (A→Z)</MenuItem>
-                        <MenuItem value="desc">Giảm dần (Z→A)</MenuItem>
-                    </Select>
-                </FormControl>
-            </div> */}
             <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "1rem" }}>
                 <Button
                     variant="contained"
@@ -218,7 +170,6 @@ const BrandComponent = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </div>
     );
 };

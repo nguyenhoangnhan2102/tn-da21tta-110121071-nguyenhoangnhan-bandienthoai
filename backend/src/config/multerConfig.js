@@ -39,7 +39,7 @@ const multer = require("multer");
 const path = require("path");
 const appRoot = require("app-root-path");
 
-// Cấu hình nơi lưu ảnh và tên file
+// Cấu hình lưu trữ
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, appRoot + "/src/public/images/");
@@ -49,7 +49,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Lọc file chỉ cho ảnh
 const imageFilter = (req, file, cb) => {
   if (!file.mimetype.startsWith("image/")) {
     return cb(new Error("Chỉ cho phép tải lên hình ảnh!"), false);
@@ -57,16 +56,15 @@ const imageFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-// Khởi tạo multer chung
 const upload = multer({
-  storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Giới hạn 10MB
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
   fileFilter: imageFilter,
 });
 
-// Export các middleware upload linh hoạt
+// ✅ Middleware đúng chuẩn
 module.exports = {
   uploadSingle: (fieldName) => upload.single(fieldName),
   uploadMultiple: (fieldName, maxCount = 10) => upload.array(fieldName, maxCount),
-  uploadFields: (fields) => upload.fields(fields), // Ví dụ: [{ name: "avatar" }, { name: "gallery", maxCount: 5 }]
+  uploadFields: (fields) => upload.fields(fields),
 };

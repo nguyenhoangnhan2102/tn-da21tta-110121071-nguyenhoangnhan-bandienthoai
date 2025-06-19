@@ -4,15 +4,25 @@ const moment = require("moment-timezone");
 
 const getAllBrand = async (req, res) => {
     try {
-        const [rows] = await pool.query(`
+        const [activeBrands] = await pool.query(`
             SELECT * FROM THUONGHIEU 
             WHERE trangthaithuonghieu = 0
             ORDER BY ngaycapnhat DESC, ngaytao DESC
         `);
+
+        const [inactiveBrands] = await pool.query(`
+            SELECT * FROM THUONGHIEU 
+            WHERE trangthaithuonghieu = 1
+            ORDER BY ngaycapnhat DESC, ngaytao DESC
+        `);
+
         return res.status(200).json({
             EM: "Lấy tất cả thương hiệu thành công",
             EC: 1,
-            DT: rows,
+            DT: {
+                active: activeBrands,
+                inactive: inactiveBrands,
+            },
         });
     } catch (error) {
         return res.status(500).json({
@@ -25,7 +35,6 @@ const getAllBrand = async (req, res) => {
 
 const createBrand = async (req, res) => {
     const { tenthuonghieu, trangthaithuonghieu = 0 } = req.body;
-    const logo = req.file?.filename || null;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -39,9 +48,9 @@ const createBrand = async (req, res) => {
 
     try {
         await pool.query(
-            `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, logo, ngaytao, ngaycapnhat)
+            `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, ngaytao, ngaycapnhat)
        VALUES (?, ?, ?, ?, ?)`,
-            [tenthuonghieu, trangthaithuonghieu, logo, nowVN, nowVN]
+            [tenthuonghieu, trangthaithuonghieu, nowVN, nowVN]
         );
 
         return res.status(201).json({
