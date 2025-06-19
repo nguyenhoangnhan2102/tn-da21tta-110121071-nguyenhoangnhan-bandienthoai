@@ -6,6 +6,7 @@ const getAllBrand = async (req, res) => {
     try {
         const [rows] = await pool.query(`
             SELECT * FROM THUONGHIEU 
+            WHERE trangthaithuonghieu = 0
             ORDER BY ngaycapnhat DESC, ngaytao DESC
         `);
         return res.status(200).json({
@@ -24,6 +25,7 @@ const getAllBrand = async (req, res) => {
 
 const createBrand = async (req, res) => {
     const { tenthuonghieu, trangthaithuonghieu = 0 } = req.body;
+    const logo = req.file?.filename || null;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -37,12 +39,12 @@ const createBrand = async (req, res) => {
 
     try {
         await pool.query(
-            `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, ngaytao, ngaycapnhat)
-             VALUES (?, ?, ?, ?)`,
-            [tenthuonghieu, trangthaithuonghieu, nowVN, nowVN]
+            `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, logo, ngaytao, ngaycapnhat)
+       VALUES (?, ?, ?, ?, ?)`,
+            [tenthuonghieu, trangthaithuonghieu, logo, nowVN, nowVN]
         );
 
-        return res.status(200).json({
+        return res.status(201).json({
             EM: "Tạo thương hiệu thành công!",
             EC: 1,
             DT: [],
@@ -56,9 +58,10 @@ const createBrand = async (req, res) => {
     }
 };
 
+
 const updateBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
-    const { tenthuonghieu, trangthaithuonghieu } = req.body;
+    const { tenthuonghieu, trangthaithuonghieu, logo } = req.body;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -72,8 +75,10 @@ const updateBrand = async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET tenthuonghieu = ?, trangthaithuonghieu = ?, ngaycapnhat = ? WHERE mathuonghieu = ?",
-            [tenthuonghieu, trangthaithuonghieu, nowVN, mathuonghieu]
+            `UPDATE THUONGHIEU 
+             SET tenthuonghieu = ?, trangthaithuonghieu = ?, logo = ?, ngaycapnhat = ?
+             WHERE mathuonghieu = ?`,
+            [tenthuonghieu, trangthaithuonghieu, logo, nowVN, mathuonghieu]
         );
 
         if (result.affectedRows > 0) {
@@ -99,6 +104,7 @@ const updateBrand = async (req, res) => {
 };
 
 
+
 const deleteBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
 
@@ -106,7 +112,9 @@ const deleteBrand = async (req, res) => {
 
     try {
         const [result] = await pool.query(
-            "UPDATE THUONGHIEU SET trangthaithuonghieu = 1, ngaycapnhat = ? WHERE mathuonghieu = ?",
+            `UPDATE THUONGHIEU 
+             SET trangthaithuonghieu = 1, ngaycapnhat = ?
+             WHERE mathuonghieu = ?`,
             [nowVN, mathuonghieu]
         );
 
@@ -131,6 +139,7 @@ const deleteBrand = async (req, res) => {
         });
     }
 };
+
 
 module.exports = {
     getAllBrand,
