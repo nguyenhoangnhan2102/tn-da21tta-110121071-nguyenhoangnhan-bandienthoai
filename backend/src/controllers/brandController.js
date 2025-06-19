@@ -49,7 +49,7 @@ const createBrand = async (req, res) => {
     try {
         await pool.query(
             `INSERT INTO THUONGHIEU (tenthuonghieu, trangthaithuonghieu, ngaytao, ngaycapnhat)
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?)`,
             [tenthuonghieu, trangthaithuonghieu, nowVN, nowVN]
         );
 
@@ -70,7 +70,7 @@ const createBrand = async (req, res) => {
 
 const updateBrand = async (req, res) => {
     const { mathuonghieu } = req.params;
-    const { tenthuonghieu, trangthaithuonghieu, logo } = req.body;
+    const { tenthuonghieu, trangthaithuonghieu } = req.body;
 
     if (!tenthuonghieu) {
         return res.status(400).json({
@@ -85,9 +85,9 @@ const updateBrand = async (req, res) => {
     try {
         const [result] = await pool.query(
             `UPDATE THUONGHIEU 
-             SET tenthuonghieu = ?, trangthaithuonghieu = ?, logo = ?, ngaycapnhat = ?
+             SET tenthuonghieu = ?, trangthaithuonghieu = ?, ngaycapnhat = ?
              WHERE mathuonghieu = ?`,
-            [tenthuonghieu, trangthaithuonghieu, logo, nowVN, mathuonghieu]
+            [tenthuonghieu, trangthaithuonghieu, nowVN, mathuonghieu]
         );
 
         if (result.affectedRows > 0) {

@@ -99,7 +99,8 @@ const BrandComponent = () => {
         { key: "mathuonghieu", label: "ID" },
         { key: "tenthuonghieu", label: "Tên thương hiệu" },
         { key: "trangthaithuonghieuText", label: "Trạng thái" },
-        { key: "logo", label: "Logo" },
+        { key: "ngaytao", label: "Ngày tạo" },
+        { key: "ngaycapnhat", label: "Ngày cập nhật" },
     ];
 
     return (
@@ -140,6 +141,9 @@ const BrandComponent = () => {
                     const selected = bands.find((b) => b.id === id);
                     openDeleteModal(selected);
                 }}
+                getRowStyle={(row) =>
+                    row.trangthaithuonghieu === 1 ? { opacity: 0.7 } : {}
+                }
             />
 
             <BrandModal
@@ -157,7 +161,7 @@ const BrandComponent = () => {
                 <DialogTitle>Xác nhận xóa thương hiệu</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Bạn có chắc muốn xóa thương hiệu{" "}
+                        Bạn có chắc muốn xóa mềm thương hiệu{" "}
                         <strong>{brandToDelete?.tenthuonghieu}</strong> không?
                     </Typography>
                 </DialogContent>

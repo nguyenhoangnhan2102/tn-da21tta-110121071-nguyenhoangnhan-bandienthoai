@@ -21,7 +21,8 @@ const DynamicTable = ({
   onEdit,
   onDelete,
   hideDeleteButton = false,
-  showViewButton = false
+  showViewButton = false,
+  getRowStyle,
 }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -45,7 +46,7 @@ const DynamicTable = ({
       <TableBody>
         {Array.isArray(data) && data.length > 0 ? (
           paginatedData.map((row, index) => (
-            <TableRow key={index}>
+            <TableRow key={index} style={getRowStyle ? getRowStyle(row) : {}}>
               {columns.map((col) => (
                 <TableCell key={col.key} sx={{ padding: "0px 16px" }}>
                   {typeof col.render === "function" ? (
