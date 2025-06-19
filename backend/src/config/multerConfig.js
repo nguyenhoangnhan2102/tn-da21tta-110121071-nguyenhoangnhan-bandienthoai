@@ -1,70 +1,31 @@
-// // multerConfig.js
-
-// const multer = require("multer");
-// const path = require("path");
-// const appRoot = require("app-root-path"); // Ensure appRoot is correctly set in your environment
-
-// // Disk storage configuration
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, appRoot + "/src/public/images/");
-//   },
-//   filename: function (req, file, cb) {
-//     cb(
-//       null,
-//       file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-//     );
-//   },
-// });
-
-// const upload = multer({
-//   storage: storage,
-//   limits: { fileSize: 10 * 1024 * 1024 },  // Giới hạn kích thước tệp (10MB)
-//   fileFilter: (req, file, cb) => {
-//     if (!file.mimetype.startsWith("image/")) {
-//       return cb(new Error("Chỉ cho phép tải lên hình ảnh!"));
-//     }
-//     cb(null, true);
-//   },
-// });
-
-// const multipleUpload = upload.fields([
-//   { name: 'hinhanh', maxCount: 5 }
-// ]);
-
-// module.exports = multipleUpload;
-
-
+// multerConfig.js
+// config/multerConfig.js
 const multer = require("multer");
 const path = require("path");
 const appRoot = require("app-root-path");
 
-// Cấu hình lưu trữ
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, appRoot + "/src/public/images/");
+  destination: (req, file, cb) => {
+    cb(null, path.join(appRoot.path, "/src/public/images/"));
   },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now() + path.extname(file.originalname));
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    cb(null, `${file.fieldname}-${Date.now()}${ext}`);
   },
 });
-
-const imageFilter = (req, file, cb) => {
-  if (!file.mimetype.startsWith("image/")) {
-    return cb(new Error("Chỉ cho phép tải lên hình ảnh!"), false);
-  }
-  cb(null, true);
-};
 
 const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: imageFilter,
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith("image/")) {
+      return cb(new Error("Chỉ cho phép tải hình ảnh!"), false);
+    }
+    cb(null, true);
+  },
 });
 
-// ✅ Middleware đúng chuẩn
-module.exports = {
-  uploadSingle: (fieldName) => upload.single(fieldName),
-  uploadMultiple: (fieldName, maxCount = 10) => upload.array(fieldName, maxCount),
-  uploadFields: (fields) => upload.fields(fields),
-};
+const uploadMultiple = upload.fields({ name: "hinhanh", maxCount: 5 });
+
+module.exports = uploadMultiple;
+

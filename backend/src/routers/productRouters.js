@@ -1,13 +1,13 @@
+// routes/productRoutes.js
 const express = require("express");
 const router = express.Router();
-const { uploadMultiple } = require("../config/multerConfig")
-
 const productController = require("../controllers/productController");
+const uploadMultiple = require("../config/multerConfig");
 
 router.get("/", productController.getAllProducts);
 router.get("/:id", productController.getProductById);
 router.post("/", uploadMultiple, productController.createProduct);
 router.put("/:id", uploadMultiple, productController.updateProduct);
-router.delete("/:masanpham", productController.deleteProduct);
+router.delete("/:id", productController.deleteProduct); // đồng bộ param
 
 module.exports = router;
