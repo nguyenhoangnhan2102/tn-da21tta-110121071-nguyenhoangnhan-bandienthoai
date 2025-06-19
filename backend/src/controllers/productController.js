@@ -74,13 +74,13 @@ const createProduct = async (req, res) => {
             mota,
         } = req.body;
 
-        const filenames = req.files.map(file => file.filename).join(",");
+        const filenames = req.files?.hinhanh?.map(file => file.filename).join(",") || "";
 
         const [result] = await pool.query(
             `INSERT INTO SANPHAM (
                 mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh, soluong, giatien,
                 cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 mathuonghieu, tensanpham, filenames, mau, dungluong, ram, hedieuhanh, soluong, giatien,
                 cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota

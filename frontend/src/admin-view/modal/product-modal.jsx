@@ -13,11 +13,12 @@ import {
   MenuItem,
   FormHelperText,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
-import brandService from '../../services/brandService';
 import productService from '../../services/productService';
 import { toast } from 'react-toastify';
+import { ReactSortable } from 'react-sortablejs';
+import brandService from '../../services/brandService';
+
 // import CreateProductDetailModal from './detailProductCreate-modal';
 
 const modalStyle = {
@@ -105,11 +106,13 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
       });
 
       if (product) {
-        await brandService.updateBrand(product.masanpham, formData);
-        toast.success("Cập nhật thành công!")
+        await productService.updateProduct(product.masanpham, formData);
+        toast.success("Cập nhật thành công!");
+        onClose();
       } else {
-        await brandService.createBrand(formData);
+        await productService.createProduct(formData);
         toast.success("Tạo mới thành công!")
+        onClose();
       }
     } catch (error) {
       console.error(error);
@@ -140,17 +143,54 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
           {files.length > 0 && (
             <Grid item xs={12}>
               <Typography variant="subtitle2">Ảnh đã chọn:</Typography>
-              <Box display="flex" gap={2} flexWrap="wrap" mt={1}>
+              <ReactSortable
+                list={files}
+                setList={setFiles}
+                animation={150}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 8,
+                  overflowX: 'auto', // cho phép cuộn ngang nếu vượt chiều rộng
+                  padding: 4,
+                }}
+              >
                 {files.map((file, index) => (
-                  <Box key={index} sx={{ position: 'relative' }}>
+                  <Box
+                    key={file.name + file.size}
+                    sx={{
+                      position: 'relative',
+                      width: 100,
+                      height: 100,
+                      borderRadius: 1,
+                      overflow: 'hidden',
+                      border: '1px solid #ccc',
+                      flex: '0 0 auto', // ảnh không bị co lại
+                    }}
+                  >
                     <img
                       src={URL.createObjectURL(file)}
                       alt={`preview-${index}`}
-                      style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 4 }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
+                    <IconButton
+                      size="small"
+                      sx={{
+                        position: 'absolute',
+                        top: 2,
+                        right: 2,
+                        backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                        '&:hover': { backgroundColor: 'rgba(255, 0, 0, 0.7)', color: '#fff' },
+                      }}
+                      onClick={() => {
+                        setFiles((prev) => prev.filter((_, i) => i !== index));
+                      }}
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
                   </Box>
                 ))}
-              </Box>
+              </ReactSortable>
             </Grid>
           )}
 

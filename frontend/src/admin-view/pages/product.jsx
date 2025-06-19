@@ -40,6 +40,7 @@ const ProductComponent = () => {
     try {
       const response = await productService.getAllProducts();
       setProducts(response || []);
+      console.log("response".response)
     } catch (error) {
       toast.error("Lỗi tải danh sách sản phẩm");
     }
