@@ -62,6 +62,46 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
   const [form, setForm] = useState(initialFormState);
   const [brands, setBrands] = useState([]);
   const [files, setFiles] = useState([]);
+  console.log("product", product);
+  useEffect(() => {
+    fetchBrands();
+
+    if (product) {
+      setForm({
+        mathuonghieu: product.mathuonghieu || '',
+        tensanpham: product.tensanpham || '',
+        mau: product.mau || '',
+        dungluong: product.dungluong || '',
+        ram: product.ram || '',
+        hedieuhanh: product.hedieuhanh || '',
+        soluong: product.soluong || '',
+        giatien: product.giatien || '',
+        cpu: product.cpu || '',
+        gpu: product.gpu || '',
+        cameratruoc: product.cameratruoc || '',
+        camerasau: product.camerasau || '',
+        congnghemanhinh: product.congnghemanhinh || '',
+        dophangiaimanhinh: product.dophangiaimanhinh || '',
+        pin: product.pin || '',
+        mota: product.mota || '',
+      });
+
+      // Load ảnh cũ
+      if (product.hinhanh) {
+        const imageFilenames = product.hinhanh.split(',');
+        const imageFiles = imageFilenames.map(filename => ({
+          name: filename,
+          preview: `${imageBaseUrl}/${filename}`, // sử dụng url ảnh từ server
+          isOld: true, // flag để biết là ảnh cũ
+        }));
+        setFiles(imageFiles);
+      }
+    } else {
+      setForm(initialFormState);
+      setFiles([]);
+    }
+  }, [product]);
+
 
   useEffect(() => {
     fetchBrands();
@@ -102,18 +142,21 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
         formData.append(key, form[key]);
       }
       files.forEach((file) => {
-        formData.append("hinhanh", file);
+        if (!file.isOld) {
+          formData.append("hinhanh", file); // chỉ gửi file mới
+        }
       });
 
       if (product) {
-        await productService.updateProduct(product.masanpham, formData);
+        const res = await productService.updateProduct(product.masanpham, formData);
+        console.log(res);
         toast.success("Cập nhật thành công!");
-        onClose();
       } else {
         await productService.createProduct(formData);
         toast.success("Tạo mới thành công!")
-        onClose();
       }
+      onSave(form);
+      onClose();
     } catch (error) {
       console.error(error);
       toast.error("Đã xảy ra lỗi khi tạo sản phẩm");
@@ -169,7 +212,7 @@ const ProductFormModal = ({ open, onClose, onSave, isView, product, imageBaseUrl
                     }}
                   >
                     <img
-                      src={URL.createObjectURL(file)}
+                      src={file.preview || URL.createObjectURL(file)}
                       alt={`preview-${index}`}
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />

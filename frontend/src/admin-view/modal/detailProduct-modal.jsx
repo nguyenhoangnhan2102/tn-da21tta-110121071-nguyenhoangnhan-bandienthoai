@@ -31,7 +31,7 @@ const ProductDetailModal = ({ open, onClose, product, imageBaseUrl }) => {
     if (!product) return null;
 
     const imageList = product.hinhanh?.split(',') || [];
-
+    console.log("product", product)
     return (
         <Modal open={open} onClose={onClose}>
             <Box sx={style}>

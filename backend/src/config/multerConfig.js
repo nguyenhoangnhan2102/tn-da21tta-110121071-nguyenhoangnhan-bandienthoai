@@ -25,7 +25,7 @@ const upload = multer({
   },
 });
 
-const uploadMultiple = upload.fields([{ name: "hinhanh", maxCount: 5 }]);
+const uploadMultiple = upload.fields([{ name: "hinhanh" }]);
 
 module.exports = uploadMultiple;
 
