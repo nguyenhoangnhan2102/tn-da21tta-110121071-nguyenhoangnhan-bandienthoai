@@ -234,6 +234,20 @@ export default function ModalProduct({ open, onClose, onSave }) {
           value={form.pin}
           onChange={handleChange}
         />
+        <FormControl fullWidth margin="normal">
+          <InputLabel id="trangthai-label">Trạng thái</InputLabel>
+          <Select
+            labelId="trangthai-label"
+            label="Trạng thái"
+            name="trangthai"
+            value={form.trangthai}
+            onChange={handleChange}
+          >
+            <MenuItem value={0}>Hoạt động</MenuItem>
+            <MenuItem value={1}>Không hoạt động</MenuItem>
+          </Select>
+        </FormControl>
+
 
         {/* MÔ TẢ */}
         <TextField

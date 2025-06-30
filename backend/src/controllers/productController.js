@@ -56,28 +56,29 @@ const getProductById = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         const {
-            mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
+            mathuonghieu, tensanpham, mau, dungluong, ram, hedieuhanh,
             soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
             camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
         } = req.body;
 
         const filenames = Array.isArray(req.files?.hinhanh)
-            ? req.files.hinhanh.map(file => file.filename)
-            : [];
+            ? req.files.hinhanh.map(file => file.filename).join(",")
+            : "";
 
         const [result] = await pool.query(
             `INSERT INTO SANPHAM (
-                mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
-                soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
-                camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
+      soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
+      camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 mathuonghieu, tensanpham, filenames, mau, dungluong, ram, hedieuhanh,
                 soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
                 camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
             ]
         );
-
+        console.log("BODY:", req.body);
+        console.log("FILES:", req.files);
         const insertedId = result.insertId;
 
         // Truy vấn lại sản phẩm vừa chèn
