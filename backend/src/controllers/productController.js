@@ -56,39 +56,35 @@ const getProductById = async (req, res) => {
 const createProduct = async (req, res) => {
     try {
         const {
-            mathuonghieu,
-            tensanpham,
-            mau,
-            dungluong,
-            ram,
-            hedieuhanh,
-            soluong,
-            giatien,
-            cpu,
-            gpu,
-            cameratruoc,
-            camerasau,
-            congnghemanhinh,
-            dophangiaimanhinh,
-            pin,
-            mota,
+            mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
+            soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
+            camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
         } = req.body;
 
-        const filenames = req.files?.hinhanh?.map(file => file.filename).join(",") || "";
+        const filenames = Array.isArray(req.files?.hinhanh)
+            ? req.files.hinhanh.map(file => file.filename)
+            : [];
 
         const [result] = await pool.query(
             `INSERT INTO SANPHAM (
-                mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh, soluong, giatien,
-                cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
+                soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
+                camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                mathuonghieu, tensanpham, filenames, mau, dungluong, ram, hedieuhanh, soluong, giatien,
-                cpu, gpu, cameratruoc, camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota
+                mathuonghieu, tensanpham, filenames, mau, dungluong, ram, hedieuhanh,
+                soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
+                camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
             ]
         );
 
+        const insertedId = result.insertId;
+
+        // Truy vấn lại sản phẩm vừa chèn
+        const [rows] = await pool.query(`SELECT * FROM SANPHAM WHERE masanpham = ?`, [insertedId]);
+
         return res.status(201).json({
-            DT: { id: result.insertId },
+            DT: rows[0] || null,
             EC: 0,
             EM: "Tạo sản phẩm thành công"
         });
@@ -101,7 +97,6 @@ const createProduct = async (req, res) => {
         });
     }
 };
-
 
 // PUT cập nhật sản phẩm
 const updateProduct = async (req, res) => {

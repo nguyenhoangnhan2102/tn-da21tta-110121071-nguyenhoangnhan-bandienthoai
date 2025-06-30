@@ -128,6 +128,27 @@ const ProductComponent = () => {
     { key: "trangthaiText", label: "Trạng thái" },
   ];
 
+  const handleSave = async (product) => {
+    try {
+      const productData = {
+        ...product
+      };
+      if (selectedProduct) {
+        await productService.updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
+        toast.success("Cập nhật thành công!!!")
+
+      } else {
+        await productService.createProduct(productData); // Gọi API tạo mới
+        toast.success("Tạo mới thành công!!!")
+      }
+      setSelectedProduct(null);
+      setShowFormModal(false);
+      fetchProducts(); // Lấy lại danh sách 
+    } catch (error) {
+      console.error("Error saving hotel:", error);
+    }
+  };
+
   return (
     <Box sx={{ padding: "2rem" }}>
       <Typography variant="h4" gutterBottom>
@@ -177,10 +198,7 @@ const ProductComponent = () => {
         <ProductFormModal
           open={showFormModal}
           onClose={closeFormModal}
-          onSave={() => {
-            fetchProducts();
-            closeFormModal();
-          }}
+          onSave={handleSave}
           product={editingProduct}
           isView={false}
           imageBaseUrl={API_IMG_URL}
