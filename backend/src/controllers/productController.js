@@ -176,7 +176,6 @@ const updateProduct = async (req, res) => {
             EM: 'Lỗi server khi cập nhật sản phẩm',
         });
     }
-
 };
 
 // DELETE mềm sản phẩm (đặt trangthai = 1)
