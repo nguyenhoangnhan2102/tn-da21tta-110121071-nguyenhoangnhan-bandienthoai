@@ -14,7 +14,7 @@ import {
   Stack,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import brandService from "../../services/brandService";
+import { getAllManufacturer } from "../../services/manufacturerService";
 
 const modalStyle = {
   position: "absolute",
@@ -61,7 +61,7 @@ export default function ModalProduct({ open, onClose, onSave }) {
   useEffect(() => {
     (async () => {
       try {
-        const res = await brandService.getAllBrand();
+        const res = await getAllManufacturer();
         setBrands(res?.active ?? []);
       } catch (err) {
         console.error(err);

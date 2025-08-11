@@ -3,8 +3,8 @@ import { useRoutes, Navigate } from "react-router-dom";
 import DashboardAdmin from "./pages/DashboardAdmin";
 import Profile from "./components/profile";
 import UserComponent from "./pages/user";
-import BrandComponent from "./pages/brand";
 import ProductComponent from "./pages/product";
+import Manufacturer from "./pages/manufacturer";
 
 const RouterAdmin = () => {
   const element = useRoutes([
@@ -25,8 +25,8 @@ const RouterAdmin = () => {
       element: <ProductComponent />,
     },
     {
-      path: "/brand",
-      element: <BrandComponent />,
+      path: "/manufacturer",
+      element: <Manufacturer />,
     },
     {
       path: "*",

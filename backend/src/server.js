@@ -42,12 +42,12 @@ app.use(bodyParser.json());
 
 //api
 const userRoute = require("./routers/userRouters.js");
-const brandRouters = require("./routers/brandRouters.js");
+const manufacturerRouter = require("./routers/manufacturerRouters.js");
 const productRouters = require("./routers/productRouters.js");
 
 //router
 app.use("/user", userRoute);
-app.use("/brand", brandRouters);
+app.use("/manufactureres", manufacturerRouter);
 app.use("/product", productRouters);
 
 // Socket.IO logic

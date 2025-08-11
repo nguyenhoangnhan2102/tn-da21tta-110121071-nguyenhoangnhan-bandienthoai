@@ -10,6 +10,11 @@ import {
   DialogActions,
 } from "@mui/material";
 import { toast } from 'react-toastify';
+import productService from "../../services/productService";
+import { uploadSingleFile } from "../../services/fileService";
+import ModalProduct from "../modal/product-modal";
+import ProductDetailModal from "../modal/detailProduct-modal";
+import { getAllManufacturer } from "../../services/manufacturerService";
 
 const imgURL = process.env.REACT_APP_IMG_URL;
 
@@ -95,11 +100,11 @@ const ProductComponent = () => {
         hinhanhchinh: imageUrl, // Cập nhật đường dẫn ảnh mới
       };
       if (selectedProduct) {
-        await updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
+        await productService.updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
         toast.success("Cập nhật thành công!!!")
 
       } else {
-        await createProduct(productData); // Gọi API tạo mới
+        await productService.createProduct(productData); // Gọi API tạo mới
         toast.success("Tạo mới thành công!!!")
       }
       setSelectedProduct(null);
@@ -122,7 +127,7 @@ const ProductComponent = () => {
 
   const handleDeleteProduct = async () => {
     try {
-      const response = await deleteProduct(selectedProduct.masanpham);
+      const response = await productService.deleteProduct(selectedProduct.masanpham);
       if (response.EC === 1) {
         toast.success("Xóa thành công!");
         getAllProductData();
