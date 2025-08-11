@@ -1,293 +1,402 @@
-/* ModalProduct.jsx */
-import React, { useEffect, useState, useMemo } from "react";
+/* eslint-disable no-unused-vars */
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
   TextField,
   Modal,
   Typography,
-  InputLabel,
-  MenuItem,
+  Input,
   FormControl,
+  InputLabel,
   Select,
-  Chip,
-  Stack,
+  MenuItem,
 } from "@mui/material";
 import { toast } from "react-toastify";
-import { getAllManufacturer } from "../../services/manufacturerService";
+import ModalManufacturer from "./manufacturer-modal";
+import { createManufacturer, getAllManufacturer } from "../../services/manufacturerService";
 
 const modalStyle = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 1100,
-  maxHeight: "95vh",
+  width: 600,
+  maxHeight: "95vh", // Đặt chiều cao tối đa để tránh vượt quá màn hình
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
-  overflowY: "auto",
+  overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc khi cần
 };
+const imgURL = process.env.REACT_APP_IMG_URL;
 
-const initForm = {
-  mathuonghieu: "",
-  tensanpham: "",
-  mau: "",
-  dungluong: "",
-  ram: "",
-  hedieuhanh: "",
-  soluong: 0,
-  gianhap: 0,
-  giaban: 0,
-  giagiam: 0,
-  khuyenmai: "",
-  cpu: "",
-  gpu: "",
-  cameratruoc: "",
-  camerasau: "",
-  congnghemanhinh: "",
-  dophangiaimanhinh: "",
-  pin: "",
-  mota: "",
-  trangthai: 0,
-};
+const ModalProduct = ({ product, onSave, open, onClose }) => {
+  const [listManufacturer, setListManufacturer] = useState([]);
+  const [selectedManufacturer, setSelectedManufacturer] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [form, setForm] = useState({
+    mathuonghieu: "",
+    tensanpham: "",
+    giasanpham: "",
+    soluongsanpham: "",
+    hedieuhanh: "",
+    cpu: "",
+    gpu: "",
+    ram: "",
+    dungluong: "",
+    cameratruoc: "",
+    camerasau: "",
+    congnghemanhinh: "",
+    dophangiaimanhinh: "",
+    pin: "",
+    motasanpham: "",
+    hinhanhchinh: "",
+    tenthuonghieu: "",
+    trangthai: "",
+  });
 
-export default function ModalProduct({ open, onClose, onSave }) {
-  const [form, setForm] = useState(initForm);
-  const [images, setImages] = useState([]);             // ⬅️ chứa File[]
-  const [brands, setBrands] = useState([]);
-
-  /* ─────────────────────────────────── Lấy danh sách brand ─────────────────────────────────── */
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await getAllManufacturer();
-        setBrands(res?.active ?? []);
-      } catch (err) {
-        console.error(err);
-        toast.error("Không lấy được danh sách thương hiệu");
-      }
-    })();
-  }, []);
+    if (product) {
+      setForm(product);
+    } else {
+      setForm({
+        mathuonghieu: "",
+        tensanpham: "",
+        giasanpham: "",
+        soluongsanpham: "",
+        hedieuhanh: "",
+        cpu: "",
+        gpu: "",
+        ram: "",
+        dungluong: "",
+        cameratruoc: "",
+        camerasau: "",
+        congnghemanhinh: "",
+        dophangiaimanhinh: "",
+        pin: "",
+        motasanpham: "",
+        hinhanhchinh: "",
+        tenthuonghieu: "",
+        trangthai: 0,
+      });
+    }
+    getAllManufacturerData();
+  }, [product]);
 
-  /* ─────────────────────────────────── Handlers ─────────────────────────────────── */
+  const getAllManufacturerData = async () => {
+    try {
+      const response = await getAllManufacturer();
+      if (response) {
+        setListManufacturer(response.DT.activeManufacturer || []); // Đảm bảo rằng `DT` luôn là một mảng
+      } else {
+        console.error("Failed to fetch");
+      }
+    } catch (error) {
+      console.error("Error occurred", error);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e) => {
-    setImages(Array.from(e.target.files));              // có thể chọn lại để thay
+    const file = e.target.files[0];
+    setForm((prev) => ({ ...prev, hinhanhchinh: file })); // Cập nhật ảnh mới và xóa ảnh cũ
   };
+
+  const imageSrc = form.hinhanhchinh instanceof File
+    ? URL.createObjectURL(form.hinhanhchinh)
+    : `${imgURL}${form.hinhanhchinh}`;
 
   const handleSubmit = () => {
-    /* Front-end validate nhanh */
-    if (!form.tensanpham.trim()) {
-      toast.warning("Tên sản phẩm không được để trống");
-      return;
-    }
-    if (images.length === 0) {
-      toast.warning("Vui lòng chọn ít nhất 1 ảnh");
-      return;
-    }
-
-    /* Chuẩn bị FormData khớp API */
-    const fd = new FormData();
-    Object.entries(form).forEach(([k, v]) => fd.append(k, v));
-    images.forEach((file) => fd.append("hinhanh", file));     // ⬅️ nhiều file
-
-    onSave(fd);   // callback từ cha (thường sẽ gọi service POST)
-    setForm(initForm);
-    setImages([]);
+    onSave(form);
+    setForm({
+      mathuonghieu: "",
+      tensanpham: "",
+      giasanpham: "",
+      soluongsanpham: "",
+      hedieuhanh: "",
+      cpu: "",
+      gpu: "",
+      ram: "",
+      dungluong: "",
+      cameratruoc: "",
+      camerasau: "",
+      congnghemanhinh: "",
+      dophangiaimanhinh: "",
+      pin: "",
+      motasanpham: "",
+      hinhanhchinh: "",
+      tenthuonghieu: "",
+      trangthai: 0,
+    });
   };
 
-  /* ─────────────────────────────────── Helpers ─────────────────────────────────── */
-  const imagePreviews = useMemo(
-    () => images.map((file) => URL.createObjectURL(file)),
-    [images]
-  );
+  const handleSave = async (manufacturer) => {
+    try {
 
-  /* ─────────────────────────────────── UI ─────────────────────────────────── */
+      const manufacturerData = {
+        ...manufacturer,
+      };
+
+      await createManufacturer(manufacturerData); // Gọi API tạo mới
+      toast.success("Tạo mới thành công!!!")
+
+      setSelectedManufacturer(null);
+      setOpenModal(false);
+      getAllManufacturerData(); // Lấy lại danh sách 
+    } catch (error) {
+      console.error("Error saving hotel:", error);
+    }
+  };
+
+  const handleCreate = () => {
+    setSelectedManufacturer(null);
+    setOpenModal(true);
+  };
+
   return (
-    <Modal open={open} onClose={onClose} aria-labelledby="modal-product-title">
-      <Box sx={modalStyle}>
-        <Typography id="modal-product-title" variant="h6" mb={2}>
-          Tạo mới sản phẩm
-        </Typography>
+    <>
+      <Modal
+        open={open}
+        onClose={onClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      // hideBackdrop
+      >
+        <Box sx={modalStyle}>
+          <Typography makhachhang="modal-title" variant="h6" component="h2">
+            {product ? "Cập nhật" : "Tạo mới"}
+          </Typography>
 
-        {/* TÊN + THƯƠNG HIỆU + MÀU */}
-        <TextField
-          label="Tên sản phẩm"
-          fullWidth
-          margin="normal"
-          name="tensanpham"
-          value={form.tensanpham}
-          onChange={handleChange}
-        />
-
-        <Stack direction="row" spacing={2} mb={2}>
-          <FormControl fullWidth margin="normal">
-            <InputLabel id="brand-label">Thương hiệu</InputLabel>
-            <Select
-              labelId="brand-label"
-              label="Thương hiệu"
-              name="mathuonghieu"
-              value={form.mathuonghieu}
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Tên"
+            name="tensanpham"
+            value={form.tensanpham}
+            onChange={handleChange}
+          />
+          <div className="d-flex gap-2 align-items-center">
+            <FormControl fullWidth margin="normal">
+              <InputLabel makhachhang="select-mathuonghieu-label">Thương hiệu</InputLabel>
+              <Select
+                labelId="select-mathuonghieu-label"
+                name="mathuonghieu"
+                label="Thương hiệu"
+                value={form.mathuonghieu}
+                onChange={handleChange}
+              >
+                {listManufacturer.map((manufacturer) => (
+                  <MenuItem key={manufacturer.mathuonghieu} value={manufacturer.mathuonghieu}>
+                    {manufacturer.tenthuonghieu}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ height: '100%' }}>
+              <i className="fa-solid fa-plus"></i>
+            </button>
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Hệ điều hành"
+              type="text"
+              name="hedieuhanh"
+              value={form.hedieuhanh}
               onChange={handleChange}
-            >
-              {brands.map((b) => (
-                <MenuItem key={b.mathuonghieu} value={b.mathuonghieu}>
-                  {b.tenthuonghieu}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Giá"
+              type="number"
+              name="giasanpham"
+              value={form.giasanpham}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Số lượng"
+              type="number"
+              name="soluongsanpham"
+              value={form.soluongsanpham}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="CPU"
+              type="text"
+              name="cpu"
+              value={form.cpu}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="GPU"
+              type="text"
+              name="gpu"
+              value={form.gpu}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="RAM"
+              type="text"
+              name="ram"
+              value={form.ram}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Dung lượng"
+              type="text"
+              name="dungluong"
+              value={form.dungluong}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Pin"
+              type="text"
+              name="pin"
+              value={form.pin}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Camera trước"
+              type="text"
+              name="cameratruoc"
+              value={form.cameratruoc}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Camera sau"
+              type="text"
+              name="camerasau"
+              value={form.camerasau}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Công nghệ màn hình"
+              type="text"
+              name="congnghemanhinh"
+              value={form.congnghemanhinh}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Độ phân giải màn hình"
+              type="text"
+              name="dophangiaimanhinh"
+              value={form.dophangiaimanhinh}
+              onChange={handleChange}
+            />
+          </div>
           <TextField
             fullWidth
             margin="normal"
-            label="Màu sắc"
-            name="mau"
-            value={form.mau}
+            label="Mô tả"
+            type="text"
+            name="motasanpham"
+            value={form.motasanpham}
             onChange={handleChange}
+            multiline
+            rows={4}
           />
-        </Stack>
-
-        {/* GIÁ & SỐ LƯỢNG */}
-        <Stack direction="row" spacing={2} mb={2}>
-          <TextField
-            label="Giá nhập"
-            type="number"
-            fullWidth
-            margin="normal"
-            name="gianhap"
-            value={form.gianhap}
-            onChange={handleChange}
+          {product && (
+            <FormControl fullWidth margin="normal">
+              <InputLabel makhachhang="trangthai-label">Trạng thái</InputLabel>
+              <Select
+                labelId="trangthai-label"
+                name="trangthai"
+                label="Trạng thái"
+                value={form.trangthai}
+                onChange={handleChange}
+              >
+                <MenuItem value={0}>Hoạt động</MenuItem>
+                <MenuItem value={1}>Không hoạt động</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+          <img
+            src={product && form.hinhanhchinh ? imageSrc : ""}
+            alt={form.tensanpham}
+            width="100px"
+            height="100px"
+            style={product ? {} : { display: "none" }} // Ẩn ảnh nếu không phải cập nhật
           />
-          <TextField
-            label="Giá bán"
-            type="number"
-            fullWidth
-            margin="normal"
-            name="giaban"
-            value={form.giaban}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Giá giảm"
-            type="number"
-            fullWidth
-            margin="normal"
-            name="giagiam"
-            value={form.giagiam}
-            onChange={handleChange}
-          />
-        </Stack>
+          <Box sx={{ marginTop: 1, marginBottom: 1 }}>
+            <input
+              type="file"
+              makhachhang="hinhanhchinh"
+              name="hinhanhchinh"
+              accept="hinhanhchinh/*"
+              onChange={handleFileChange}
+              required
+              style={{
+                width: "100%",
+                padding: "16.5px 14px",
+                fontSize: "1rem",
+                lineHeight: "1.4375em",
+                backgroundColor: "#fff",
+                border: "1px solid rgba(0, 0, 0, 0.23)",
+                borderRadius: "4px",
+                color: "rgba(0, 0, 0, 0.87)",
+                boxSizing: "border-box",
+                transition: "border-color 0.3s, box-shadow 0.3s",
+              }}
+              onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
+              onBlur={(e) =>
+                (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
+              }
+            />
+          </Box>
 
-        <Stack direction="row" spacing={2} mb={2}>
-
-          <TextField
-            label="Khuyến mãi"
-            type="number"
-            fullWidth
-            margin="normal"
-            name="khuyenmai"
-            value={form.khuyenmai}
-            onChange={handleChange}
-          />
-          <TextField
-            label="Số lượng"
-            type="number"
-            fullWidth
-            margin="normal"
-            name="soluong"
-            value={form.soluong}
-            onChange={handleChange}
-          />
-        </Stack>
-
-        {/* THÔNG SỐ KỸ THUẬT (CPU, GPU,…) */}
-        <Stack direction="row" spacing={2} mb={2}>
-          <TextField label="CPU" fullWidth margin="normal" name="cpu" value={form.cpu} onChange={handleChange} />
-          <TextField label="GPU" fullWidth margin="normal" name="gpu" value={form.gpu} onChange={handleChange} />
-        </Stack>
-
-        <Stack direction="row" spacing={2} mb={2}>
-          <TextField label="RAM" fullWidth margin="normal" name="ram" value={form.ram} onChange={handleChange} />
-          <TextField label="Dung lượng" fullWidth margin="normal" name="dungluong" value={form.dungluong} onChange={handleChange} />
-        </Stack>
-
-        <Stack direction="row" spacing={2} mb={2}>
-          <TextField label="Camera trước" fullWidth margin="normal" name="cameratruoc" value={form.cameratruoc} onChange={handleChange} />
-          <TextField label="Camera sau" fullWidth margin="normal" name="camerasau" value={form.camerasau} onChange={handleChange} />
-        </Stack>
-
-        <Stack direction="row" spacing={2} mb={2}>
-          <TextField label="Công nghệ MH" fullWidth margin="normal" name="congnghemanhinh" value={form.congnghemanhinh} onChange={handleChange} />
-          <TextField label="Độ phân giải MH" fullWidth margin="normal" name="dophangiaimanhinh" value={form.dophangiaimanhinh} onChange={handleChange} />
-        </Stack>
-
-        <TextField
-          label="Pin"
-          fullWidth
-          margin="normal"
-          name="pin"
-          value={form.pin}
-          onChange={handleChange}
-        />
-        <FormControl fullWidth margin="normal">
-          <InputLabel id="trangthai-label">Trạng thái</InputLabel>
-          <Select
-            labelId="trangthai-label"
-            label="Trạng thái"
-            name="trangthai"
-            value={form.trangthai}
-            onChange={handleChange}
-          >
-            <MenuItem value={0}>Hoạt động</MenuItem>
-            <MenuItem value={1}>Không hoạt động</MenuItem>
-          </Select>
-        </FormControl>
-
-
-        {/* MÔ TẢ */}
-        <TextField
-          label="Mô tả"
-          multiline
-          rows={3}
-          fullWidth
-          margin="normal"
-          name="mota"
-          value={form.mota}
-          onChange={handleChange}
-        />
-
-        {/* UPLOAD NHIỀU ẢNH */}
-        <Box mt={2}>
-          <input
-            type="file"
-            name="hinhanh"
-            accept="image/*"
-            multiple
-            onChange={handleFileChange}
-            style={{ marginBottom: 8 }}
-          />
-          <Stack direction="row" spacing={1} flexWrap="wrap">
-            {imagePreviews.map((src, i) => (
-              <img key={i} src={src} alt="preview" width={80} height={80} style={{ objectFit: "cover", borderRadius: 4 }} />
-            ))}
-          </Stack>
+          <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
+            <button className="btn btn-primary admin-btn" onClick={handleSubmit}>
+              <i className="fa-regular fa-floppy-disk" style={{ marginRight: '5px' }}></i>Lưu
+            </button>
+            <button className="btn btn-danger admin-btn" onClick={onClose} style={{ width: '15%' }}>
+              <i className="fa-solid fa-x" style={{ marginRight: '5px' }}></i>
+              Huỷ
+            </button>
+          </Box>
         </Box>
-
-        {/* ACTIONS */}
-        <Box mt={3} display="flex" justifyContent="flex-end" gap={1}>
-          <Button variant="contained" color="primary" onClick={handleSubmit}>
-            Lưu
-          </Button>
-          <Button variant="outlined" color="error" onClick={onClose}>
-            Hủy
-          </Button>
-        </Box>
-      </Box>
-    </Modal>
+      </Modal >
+      <ModalManufacturer
+        manufacturer={selectedManufacturer}
+        open={openModal}
+        onSave={handleSave}
+        onClose={() => setOpenModal(false)}
+      />
+    </>
   );
-}
+};
+
+export default ModalProduct;

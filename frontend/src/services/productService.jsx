@@ -8,60 +8,39 @@ const productService = {
     // Lấy tất cả sản phẩm (trạng thái = 0)
     getAllProducts: async () => {
         try {
-            const response = await axiosInstance.get(apiProduct);
-            return response.data.DT;
+            const response = await axiosInstance.get(`${apiProduct}`);
+            return response.data;
         } catch (error) {
-            toast.error("Lỗi khi lấy danh sách sản phẩm");
-            console.error("getAllProducts error:", error.message);
-            return [];
+            console.error("There was a problem with the fetch operation:", error);
         }
     },
 
     // Lấy sản phẩm theo masanpham
-    getProductById: async (masanpham) => {
+    getProductById: async (product) => {
         try {
-            const response = await axiosInstance.get(`${apiProduct}/${masanpham}`);
-            return response.data.DT;
+            const response = await axiosInstance.get(`${apiProduct}/${product.masanpham}`);
+            return response.data;
         } catch (error) {
-            toast.error("Lỗi khi lấy chi tiết sản phẩm");
-            console.error("getProductById error:", error.message);
-            return null;
+            console.error("There was a problem with the fetch operation:", error);
         }
     },
 
     // Tạo sản phẩm mới (bao gồm chi tiết màu - dung lượng)
-    createProduct: async (formData) => {
+    createProduct: async (product) => {
         try {
-            const response = await axiosInstance.post(apiProduct, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Chỉ định loại dữ liệu gửi lên
-                },
-            });
+            const response = await axiosInstance.post(`${apiProduct}`, product);
             return response.data;
         } catch (error) {
-            toast.error("Lỗi khi tạo sản phẩm");
-            console.error("createProduct error:", error.message);
-            return false;
+            throw error;
         }
     },
 
-    updateProduct: async (masanpham, formData) => {
+    updateProduct: async (masanpham, product) => {
         try {
-            const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            });
-            console.log("update response:", response); // 👈 THÊM DÒNG NÀY
-            if (response.data.EC === 0) {
-                return true;
-            } else {
-                return false;
-            }
+            const response = await axiosInstance.put(`${apiProduct}/${masanpham}`, product);
+            return response.data;
         } catch (error) {
-            toast.error("Lỗi khi cập nhật sản phẩm");
-            console.error("updateProduct error:", error.message);
-            return false;
+            throw error;
         }
     },
 
@@ -69,17 +48,10 @@ const productService = {
     deleteProduct: async (masanpham) => {
         try {
             const response = await axiosInstance.delete(`${apiProduct}/${masanpham}`);
-            if (response.data.EC === 1) {
-                toast.success(response.data.EM);
-                return true;
-            } else {
-                toast.error(response.data.EM);
-                return false;
-            }
+            return response.data;
         } catch (error) {
-            toast.error("Lỗi khi xóa sản phẩm");
-            console.error("deleteProduct error:", error.message);
-            return false;
+            console.error(`Lỗi xóa sản phẩm có makhachhang = ${masanpham}:`, error);
+            throw error;
         }
     },
 };

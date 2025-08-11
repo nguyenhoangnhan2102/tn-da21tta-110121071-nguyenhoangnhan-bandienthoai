@@ -10,11 +10,11 @@ import {
   DialogActions,
 } from "@mui/material";
 import { toast } from 'react-toastify';
-import productService from "../../services/productService";
 import { uploadSingleFile } from "../../services/fileService";
 import ModalProduct from "../modal/product-modal";
 import ProductDetailModal from "../modal/detailProduct-modal";
 import { getAllManufacturer } from "../../services/manufacturerService";
+import productService from "../../services/productService";
 
 const imgURL = process.env.REACT_APP_IMG_URL;
 

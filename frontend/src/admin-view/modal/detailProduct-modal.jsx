@@ -1,252 +1,305 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-    Modal,
     Box,
+    Modal,
     Typography,
-    Grid,
-    TextField,
+    MenuItem,
+    Select,
     FormControl,
     InputLabel,
-    Select,
-    MenuItem
-} from '@mui/material';
-import productService from '../../services/productService';
+    Checkbox,
+    ListItemText,
+    TextField,
+} from "@mui/material";
+import productService from "../../services/productService";
 
-const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: '90%',
-    maxWidth: 1000,
-    bgcolor: 'background.paper',
+const modalStyle = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: 600,
+    maxHeight: "90vh",
+    bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
-    borderRadius: 2,
-    maxHeight: '98vh',
-    overflowY: 'auto'
+    overflowY: "auto",
 };
+const imgURL = process.env.REACT_APP_IMG_URL;
+const ProductDetailModal = ({ product, open, onClose }) => {
+    const [form, setForm] = useState({
+        tensanpham: "",
+        mathuonghieu: "",
+        tenthuonghieu: "",
+        giasanpham: "",
+        soluongsanpham: "",
+        hedieuhanh: "",
+        cpu: "",
+        gpu: "",
+        ram: "",
+        dungluong: "",
+        cameratruoc: "",
+        camerasau: "",
+        congnghemanhinh: "",
+        dophangiaimanhinh: "",
+        pin: "",
+        motasanpham: "",
+        hinhanhchinh: "",
+        danhsachmausac: "",
+        danhsachmausacsanpham: "",
+        danhsachhinhanh: "",
+    });
 
-const ProductDetailModal = ({ open, onClose, product, imageBaseUrl }) => {
-    if (!product) return null;
+    const [products, setProducts] = useState([]);
+    useEffect(() => {
+        fetchProducts();
+        if (product) {
+            setForm({
+                ...product,
+                danhsachhinhanh: product.danhsachhinhanh
+                    ? product.danhsachhinhanh.split(',') // Chuyển thành mảng
+                    : [],
+            });
+        }
+    }, [product]);
 
-    const imageList = product.hinhanh?.split(',') || [];
-    console.log("product", product)
+    const fetchProducts = async () => {
+        try {
+            const data = await productService.getDetailProduct();
+            setProducts(data);
+        } catch (error) {
+            console.error("Error fetching products:", error);
+        }
+    };
+
     return (
-        <Modal open={open} onClose={onClose}>
-            <Box sx={style}>
-                <Typography variant="h6" gutterBottom>
-                    🛍 Chi tiết sản phẩm
+        <Modal
+            open={open}
+            onClose={onClose}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+        >
+            <Box sx=
+                {{
+                    ...modalStyle,
+                    maxHeight: '95vh',
+                    height: '95vh',
+                }}>
+                <Typography makhachhang="modal-title" variant="h6" component="h2">
+                    Chi tiết
                 </Typography>
 
-                {/* Ảnh sản phẩm */}
-                <Grid container spacing={2} mb={2}>
-                    {imageList.map((img, idx) => (
-                        <Grid item key={idx}>
-                            <img
-                                src={`${imageBaseUrl}/${img}`}
-                                alt={`product-${idx}`}
-                                style={{
-                                    width: 100,
-                                    height: 100,
-                                    objectFit: 'cover',
-                                    borderRadius: 4,
-                                    border: '1px solid #ccc'
-                                }}
-                            />
-                        </Grid>
-                    ))}
-                </Grid>
-
-                {/* Thông tin sản phẩm */}
-                <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6}>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        makhachhang="product-text-field"
+                        value={form.tensanpham}
+                        label="Tên"
+                        //disabled
+                        sx={{
+                            '& .MuiInputBase-input': {
+                                height: '10px', // Chỉnh độ cao của input
+                            },
+                        }}
+                    />
+                </FormControl>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
                         <TextField
-                            fullWidth
+                            makhachhang="product-text-field"
+                            value={form.tenthuonghieu}
                             label="Thương hiệu"
-                            value={product.tenthuonghieu || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Tên sản phẩm"
-                            value={product.tensanpham || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth label="Hệ điều hành"
-                            value={product.hedieuhanh || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            label="CPU"
-                            value={product.cpu || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={4}>
-                        <TextField
-                            fullWidth
-                            label="GPU"
-                            value={product.gpu || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Camera trước"
-                            value={product.cameratruoc || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Camera sau"
-                            value={product.camerasau || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Công nghệ màn hình"
-                            value={product.congnghemanhinh || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Độ phân giải màn hình"
-                            value={product.dophangiaimanhinh || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <TextField
-                            fullWidth
-                            label="Pin"
-                            value={product.pin || ''}
-                            InputProps={{ readOnly: true }}
-                            margin="dense" />
-                    </Grid>
-                    <Grid item xs={12} sm={6}>
-                        <FormControl fullWidth margin="dense">
-                            <InputLabel id="trangthai-label">Trạng thái</InputLabel>
-                            <Select
-                                labelId="trangthai-label"
-                                name="trangthai"
-                                value={product.trangthai}
-                                label="Trạng thái"
-                            >
-                                <MenuItem value={0}>Hoạt động</MenuItem>
-                                <MenuItem value={1}>Không hoạt động</MenuItem>
-                            </Select>
-                        </FormControl>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            fullWidth
-                            label="Mô tả"
-                            value={product.mota || ''}
-                            InputProps={{ readOnly: true }}
-                            multiline
-                            rows={3}
-                            margin="dense"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
                         />
-                    </Grid>
-                </Grid>
-
-                {/* Chi tiết phiên bản sản phẩm */}
-                {Array.isArray(product.chiTietSanPham) && product.chiTietSanPham.length > 0 && (
-                    <Box mt={3}>
-                        <Typography variant="subtitle1">📦 Biến thể sản phẩm</Typography>
-                        <Grid container spacing={2} mt={1}>
-                            {product.chiTietSanPham.map((detail, index) => (
-                                <Grid item xs={12} key={index}>
-                                    <Box
-                                        p={2}
-                                        mb={2}
-                                        border="1px solid #ccc"
-                                        borderRadius={2}
-                                    >
-                                        {/* Hình ảnh nằm riêng một dòng */}
-                                        {detail.hinhanhchitiet && (
-                                            <Box mb={2}>
-                                                <img
-                                                    src={`${imageBaseUrl}/${detail.hinhanhchitiet}`}
-                                                    alt={`variant-${index}`}
-                                                    style={{ width: 120, height: 120, objectFit: 'cover', borderRadius: 4, border: '1px solid #ccc' }}
-                                                />
-                                            </Box>
-                                        )}
-
-                                        {/* Thông tin nằm ngang một dòng */}
-                                        <Box
-                                            display="flex"
-                                            flexDirection="row"
-                                            flexWrap="wrap"
-                                            alignItems="center"
-                                            gap={2}
-                                        >
-                                            <TextField
-                                                label="Màu"
-                                                value={detail.mau}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Dung lượng"
-                                                value={detail.dungluong}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="RAM"
-                                                value={detail.ram}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Số lượng"
-                                                value={detail.soluong}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Giá nhập"
-                                                value={(parseInt(detail.gianhap)).toLocaleString("vi-VN") + " đ"}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Giá bán"
-                                                value={(parseInt(detail.giaban)).toLocaleString("vi-VN") + " đ"}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Khuyến mãi (%)"
-                                                value={detail.khuyenmai + "%"}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                            <TextField
-                                                label="Giá giảm"
-                                                value={(parseInt(detail.giagiam)).toLocaleString("vi-VN") + " đ"}
-                                                InputProps={{ readOnly: true }}
-                                                size="small" />
-                                        </Box>
-                                    </Box>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
-                )}
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.hedieuhanh}
+                            label="Hệ điều hành"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                </div>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.giasanpham}
+                            label="Giá"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                    color: 'black', // Đổi màu chữ thành đen
+                                },
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.soluongsanpham}
+                            label="Số lượng"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                </div>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.cpu}
+                            label="CPU"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                    color: 'black', // Đổi màu chữ thành đen
+                                },
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.gpu}
+                            label="GPU"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.pin}
+                            label="Pin"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                </div>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.cameratruoc}
+                            label="Camera trước"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                    color: 'black', // Đổi màu chữ thành đen
+                                },
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.camerasau}
+                            label="Camera sau"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                </div>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.congnghemanhinh}
+                            label="Công nghệ màn hình"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                    color: 'black', // Đổi màu chữ thành đen
+                                },
+                            }}
+                        />
+                    </FormControl>
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            makhachhang="product-text-field"
+                            value={form.dophangiaimanhinh}
+                            label="Độ phân giải màn hình"
+                            //disabled
+                            sx={{
+                                '& .MuiInputBase-input': {
+                                    height: '10px', // Chỉnh độ cao của input
+                                },
+                            }}
+                        />
+                    </FormControl>
+                </div>
+                <FormControl fullWidth margin="normal">
+                    <TextField
+                        makhachhang="product-text-field"
+                        value={form.motasanpham}
+                        label="Mô tả"
+                        multiline
+                        rows={4} // Số dòng tối thiểu hiển thị
+                        sx={{
+                            '& .MuiInputBase-input': {
+                                height: 'auto', // Để textarea tự điều chỉnh chiều cao
+                                resize: 'vertical', // Cho phép thay đổi chiều cao
+                            },
+                        }}
+                    />
+                </FormControl>
+                <div className="d-flex align-items-center mb-3">
+                    <p className="col-2">Ảnh chính</p>
+                    <div className="d-flex align-items-center justify-content-center col-10">
+                        {form.hinhanhchinh && product?.hinhanhchinh && (
+                            <img
+                                src={`${imgURL}/${product.hinhanhchinh}`}
+                                alt={product.tensanpham}
+                                style={{ width: "80px", height: "80px" }}
+                            />
+                        )}
+                    </div>
+                </div>
+                <div className="d-flex align-items-center justify-content-between text-center mb-3">
+                    <label>Màu</label>
+                    {Array.isArray(form.danhsachmausacsanpham) &&
+                        form.danhsachmausacsanpham.map((img, index) => (
+                            <img
+                                key={index}
+                                src={`${imgURL}/${img}`}
+                                alt={`Màu sản phẩm ${index + 1}`}
+                                style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                            />
+                        ))}
+                </div>
             </Box>
-        </Modal>
+        </Modal >
     );
 };
 
