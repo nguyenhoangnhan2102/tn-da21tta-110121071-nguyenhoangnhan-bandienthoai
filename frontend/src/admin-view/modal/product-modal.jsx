@@ -37,20 +37,20 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
   const [form, setForm] = useState({
     mathuonghieu: "",
     tensanpham: "",
-    giasanpham: "",
-    soluongsanpham: "",
+    hinhanhchinh: "",
+    mau: "",
+    dungluong: "",
+    ram: "",
     hedieuhanh: "",
+    soluong: "",
+    gianhap: "",
+    giaban: "",
+    giagiam: "",
+    khuyenmai: "",
     cpu: "",
     gpu: "",
-    ram: "",
-    dungluong: "",
-    cameratruoc: "",
-    camerasau: "",
-    congnghemanhinh: "",
-    dophangiaimanhinh: "",
     pin: "",
-    motasanpham: "",
-    hinhanhchinh: "",
+    mota: "",
     tenthuonghieu: "",
     trangthai: "",
   });
@@ -62,20 +62,20 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
       setForm({
         mathuonghieu: "",
         tensanpham: "",
-        giasanpham: "",
-        soluongsanpham: "",
+        hinhanhchinh: "",
+        mau: "",
+        dungluong: "",
+        ram: "",
         hedieuhanh: "",
+        soluong: "",
+        gianhap: "",
+        giaban: "",
+        giagiam: "",
+        khuyenmai: "",
         cpu: "",
         gpu: "",
-        ram: "",
-        dungluong: "",
-        cameratruoc: "",
-        camerasau: "",
-        congnghemanhinh: "",
-        dophangiaimanhinh: "",
         pin: "",
-        motasanpham: "",
-        hinhanhchinh: "",
+        mota: "",
         tenthuonghieu: "",
         trangthai: 0,
       });
@@ -115,20 +115,20 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
     setForm({
       mathuonghieu: "",
       tensanpham: "",
-      giasanpham: "",
-      soluongsanpham: "",
+      hinhanhchinh: "",
+      mau: "",
+      dungluong: "",
+      ram: "",
       hedieuhanh: "",
+      soluong: "",
+      gianhap: "",
+      giaban: "",
+      giagiam: "",
+      khuyenmai: "",
       cpu: "",
       gpu: "",
-      ram: "",
-      dungluong: "",
-      cameratruoc: "",
-      camerasau: "",
-      congnghemanhinh: "",
-      dophangiaimanhinh: "",
       pin: "",
-      motasanpham: "",
-      hinhanhchinh: "",
+      mota: "",
       tenthuonghieu: "",
       trangthai: 0,
     });
@@ -278,53 +278,13 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               onChange={handleChange}
             />
           </div>
-          <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Camera trước"
-              type="text"
-              name="cameratruoc"
-              value={form.cameratruoc}
-              onChange={handleChange}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Camera sau"
-              type="text"
-              name="camerasau"
-              value={form.camerasau}
-              onChange={handleChange}
-            />
-          </div>
-          <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Công nghệ màn hình"
-              type="text"
-              name="congnghemanhinh"
-              value={form.congnghemanhinh}
-              onChange={handleChange}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Độ phân giải màn hình"
-              type="text"
-              name="dophangiaimanhinh"
-              value={form.dophangiaimanhinh}
-              onChange={handleChange}
-            />
-          </div>
           <TextField
             fullWidth
             margin="normal"
             label="Mô tả"
             type="text"
             name="motasanpham"
-            value={form.motasanpham}
+            value={form.mota}
             onChange={handleChange}
             multiline
             rows={4}
