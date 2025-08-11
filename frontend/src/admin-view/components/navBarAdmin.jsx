@@ -146,6 +146,28 @@ const NavBarAdmin = () => {
             {/* Quản lý sản phẩm */}
             <ListItem
               button
+              component={Link}
+              to="/admin/product"
+              sx={{
+                borderRadius: "12px",
+                color: "#1f1f1f",
+                cursor: "pointer",
+                userSelect: "none",
+                backgroundColor:
+                  location.pathname === "/admin/product"
+                    ? "#8aad51"
+                    : "transparent", // Kiểm tra nếu đang ở trang này
+                "&:hover": { backgroundColor: "#8aad51" },
+              }}
+            >
+              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
+                {" "}
+                <PersonIcon />
+              </ListItemIcon>
+              <ListItemText primary="Quản lý sản phẩm" />
+            </ListItem>
+            {/* <ListItem
+              button
               onClick={() => toggleSection("sanPham")}
               sx={{
                 borderRadius: "12px",
@@ -190,7 +212,7 @@ const NavBarAdmin = () => {
                   </ListItem>{" "}
                 </List>
               </List>
-            </Collapse>
+            </Collapse> */}
 
             {/* Quản lý đơn hàng */}
             <ListItem

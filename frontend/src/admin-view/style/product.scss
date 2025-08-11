@@ -1,0 +1,15 @@
+.table-title>th {
+    background: rgb(174, 173, 171);
+    color: black;
+}
+
+.table tbody tr:hover {
+    background-color: #f5f5f5;
+    /* Màu nền khi hover */
+    transition: background-color 0.3s;
+    /* Hiệu ứng mượt */
+}
+
+i {
+    font-size: 15px;
+}

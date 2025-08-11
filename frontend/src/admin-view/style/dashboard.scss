@@ -1,0 +1,264 @@
+.active {
+    background: unset !important;
+    color: red !important;
+}
+
+.nav-link {
+    cursor: pointer;
+}
+
+.banner-img {
+    width: 100%;
+    height: 500px;
+    background: url("https://statics.vincom.com.vn/xu-huong/phim-marvel-doctor-strange-2022.jpg");
+    background-size: cover;
+    /* background-position: center; */
+    background-repeat: no-repeat;
+    object-fit: cover;
+    background-attachment: fixed;
+}
+
+.red-boder {
+    border-top: 2px solid #de1002;
+}
+
+.page-container {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.main {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.login-div {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.login-div {
+    width: 100%;
+    height: 80vh;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+}
+
+.login-form {
+    width: 35%;
+}
+
+.form-cus {
+    font-size: 14px !important;
+    padding: 9px !important;
+    border-radius: 0px !important;
+}
+
+.btn-cus {
+    width: 100%;
+    background: white !important;
+    border-radius: 0px !important;
+    border: 1px solid black !important;
+    color: #212529 !important;
+    font-size: 14px !important;
+    padding: 9px !important;
+}
+
+// .btn-cus:hover {
+//     width        : 100%;
+//     background   : black !important;
+//     border-radius: 0px !important;
+//     border       : 1px solid black !important;
+//     color        : white !important;
+//     font-size    : 14px !important;
+//     padding      : 9px !important;
+// }
+
+.form-control:focus {
+    outline: none !important;
+    box-shadow: unset !important;
+    border: 1px solid black !important;
+}
+
+/* Admin */
+// .admin-header {
+//     width: 100%;
+//     height: 70px;
+//     background-color: #cbcbcb;
+// }
+
+.admin-footer {
+    width: 96%;
+    height: 50px;
+    background-color: #cbcbcb;
+    margin-left: 2%;
+}
+
+// .admin-content {
+//     width: 100%;
+//     min-height: 88vh;
+//     padding: 30px;
+//     padding-left: 45px;
+// }
+
+.container-admin-content {
+    width: 100%;
+    min-height: 80vh;
+    padding: 40px;
+    background-color: #f8f9fa
+}
+
+.sidebar {
+    background-color: #ffffff;
+    color: white;
+    width: 150px;
+    height: 100vh;
+    position: fixed;
+    transition: all 0.3s ease;
+}
+
+.sidebar h2 b {
+    color: black;
+    font-size: 22px;
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-left: 5px;
+}
+
+hr {
+    border: 2px solid black;
+}
+
+.sidebar ul {
+    list-style: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    padding: 15px;
+    transition: background 0.3s;
+}
+
+.sidebar ul li a {
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    display: block;
+}
+
+.sidebar ul li:hover {
+    background-color: #ccc8c8;
+}
+
+.main-content {
+    margin-left: 140px;
+    /* padding : 20px; */
+}
+
+h2 {
+    margin-top: 15px;
+    margin-bottom: 15px;
+    font-size: 1.5em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table,
+th,
+td {
+    border: 1px solid #ddd;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    /* z-index      : 10; */
+}
+
+tr {
+    background-color: white;
+    border-top: 2px solid #EEEEEE;
+}
+
+.admin_container {
+    font-family: "Titillium Web",
+        sans-serif;
+}
+
+.group-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mrl-90 {
+    margin-left: 94%;
+    margin-top: 10px;
+}
+
+.btn-header-table {
+    display: flex;
+    justify-content: right;
+    width: 100%;
+    padding-top: 10px;
+}
+
+.content-delete {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.disabled-row {
+    opacity: 0.6;
+}
+
+.disabled-text {
+    color: #6c757d;
+    /* Màu xám cho văn bản */
+}
+
+.disabled-row {
+    background-color: #f1f1f1;
+    color: #ccc;
+}
+
+.disabled-row button {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.status-pending {
+    color: rgb(91, 91, 89);
+}
+
+.status-delivered {
+    color: green;
+}
+
+.status-cancelled {
+    color: red;
+}
+
+.btn-status {
+    height: 60px;
+}

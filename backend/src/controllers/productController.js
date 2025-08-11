@@ -54,50 +54,97 @@ const getProductById = async (req, res) => {
 
 // POST tạo mới sản phẩm
 const createProduct = async (req, res) => {
+    const {
+        mathuonghieu,
+        tensanpham,
+        hinhanhchinh,
+        mau,
+        dungluong,
+        ram,
+        hedieuhanh,
+        soluong,
+        gianhap,
+        giaban,
+        giagiam,
+        khuyenmai,
+        cpu,
+        gpu,
+        pin,
+        mota,
+        trangthai,
+    } = req.body;
+
     try {
-        const {
-            mathuonghieu, tensanpham, mau, dungluong, ram, hedieuhanh,
-            soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
-            camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
-        } = req.body;
-
-        const filenames = Array.isArray(req.files?.hinhanh)
-            ? req.files.hinhanh.map(file => file.filename).join(",")
-            : "";
-
-        const [result] = await pool.query(
+        const [result] = await connection.query(
             `INSERT INTO SANPHAM (
-      mathuonghieu, tensanpham, hinhanh, mau, dungluong, ram, hedieuhanh,
-      soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
-      camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                mathuonghieu, 
+                tensanpham,
+                hinhanhchinh,
+                mau,
+                dungluong,
+                ram,
+                hedieuhanh,
+                soluong,
+                gianhap,
+                giaban,
+                giagiam,
+                khuyenmai,
+                cpu,
+                gpu,
+                pin,
+                mota,
+                trangthai
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                mathuonghieu, tensanpham, filenames, mau, dungluong, ram, hedieuhanh,
-                soluong, gianhap, giaban, giagiam, khuyenmai, cpu, gpu, cameratruoc,
-                camerasau, congnghemanhinh, dophangiaimanhinh, pin, mota, trangthai
+                mathuonghieu,
+                tensanpham,
+                hinhanhchinh,
+                mau,
+                dungluong,
+                ram,
+                hedieuhanh,
+                soluong,
+                gianhap,
+                giaban,
+                giagiam,
+                khuyenmai,
+                cpu,
+                gpu,
+                pin,
+                mota,
+                trangthai,
             ]
         );
-        console.log("BODY:", req.body);
-        console.log("FILES:", req.files);
-        const insertedId = result.insertId;
-
-        // Truy vấn lại sản phẩm vừa chèn
-        const [rows] = await pool.query(`SELECT * FROM SANPHAM WHERE masanpham = ?`, [insertedId]);
 
         return res.status(201).json({
-            DT: rows[0] || null,
-            EC: 0,
-            EM: "Tạo sản phẩm thành công"
+            message: "Sản phẩm đã được tạo thành công",
+            product: {
+                masanpham: result.insertId,
+                mathuonghieu,
+                tensanpham,
+                hinhanhchinh,
+                mau,
+                dungluong,
+                ram,
+                hedieuhanh,
+                soluong,
+                gianhap,
+                giaban,
+                giagiam,
+                khuyenmai,
+                cpu,
+                gpu,
+                pin,
+                mota,
+                trangthai,
+            }
         });
-    } catch (error) {
-        console.error("Error createProduct:", error);
-        return res.status(500).json({
-            DT: null,
-            EC: 1,
-            EM: "Lỗi khi tạo sản phẩm"
-        });
+    } catch (err) {
+        console.error("Error creating product:", err.message);
+        res.status(500).json({ message: err.message });
     }
 };
+
 
 // PUT cập nhật sản phẩm
 const updateProduct = async (req, res) => {

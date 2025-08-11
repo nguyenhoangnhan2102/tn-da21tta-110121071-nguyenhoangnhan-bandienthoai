@@ -1,240 +1,356 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import '../style/product.scss';
 import {
-  Button,
-  Box,
+  Typography,
   Dialog,
+  Button,
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
 } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import DynamicTable from "../../share/dynamicTable-component";
-import productService from "../../services/productService";
-import ProductFormModal from "../modal/product-modal";
-import ProductDetailModal from "../modal/detailProduct-modal";
-import { toast } from "react-toastify";
+import { toast } from 'react-toastify';
 
-const API_IMG_URL = process.env.REACT_APP_URL_SERVER + "/images";
+const imgURL = process.env.REACT_APP_IMG_URL;
 
 const ProductComponent = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterValue, setFilterValue] = useState({});
-  const [sortColumn, setSortColumn] = useState("masanpham");
-  const [sortOrder, setSortOrder] = useState("asc");
-
   const [products, setProducts] = useState([]);
-  const [showFormModal, setShowFormModal] = useState(false);
-  const [editingProduct, setEditingProduct] = useState(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [manufacturers, setListManufacturer] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [oldImgUrl, setImgUrl] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
+  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [isDelete, checkDelete] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  const [selectedManufacturer, setSelectedManufacturer] = useState("");
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const productsPerPage = 10;
 
   useEffect(() => {
-    fetchProducts();
+    getAllProductData();
+    getAllManufacturerData();
   }, []);
 
-  const fetchProducts = async () => {
+  const getAllProductData = async () => {
     try {
       const response = await productService.getAllProducts();
-      setProducts(response || []);
-      console.log("response".response)
-    } catch (error) {
-      toast.error("Lỗi tải danh sách sản phẩm");
+      if (response.EC === 1) {
+        const sortedProducts = response.DT.activeProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setProducts(sortedProducts);
+      } else {
+        console.error("Lỗi tìm kiếm sản phẩm");
+      }
+    } catch (err) {
+      console.error("Đã xảy ra lỗi", err);
     }
   };
 
-  // Mở modal thêm/sửa sản phẩm
-  const openFormModal = (product = null) => {
-    setEditingProduct(product);
-    setShowFormModal(true);
+  const getAllManufacturerData = async () => {
+    try {
+      const response = await getAllManufacturer();
+      if (response.EC === 1) {
+        setListManufacturer(response.DT.activeManufacturer);
+        console.log("setListManufacturer", response.DT.activeManufacturer)
+
+      } else {
+        console.error("Failed to fetch");
+      }
+    } catch (err) {
+      console.error("Error occurred", err);
+    }
   };
 
-  // Đóng modal thêm/sửa
-  const closeFormModal = () => {
-    setShowFormModal(false);
-    setEditingProduct(null);
-  };
-
-  // Mở modal xem chi tiết
-  const openDetailModal = (product) => {
-    setSelectedProduct(product);
-    setShowDetailModal(true);
-  };
-
-  // Đóng modal xem chi tiết
-  const closeDetailModal = () => {
+  const handleCreate = () => {
     setSelectedProduct(null);
-    setShowDetailModal(false);
+    setOpenModal(true);
   };
 
-  // Mở modal xác nhận xóa
-  const openDeleteModal = (product) => {
-    setProductToDelete(product);
-    setDeleteModalOpen(true);
+  const handleViewDetails = (product) => {
+    setSelectedProduct(product);
+    setOpenDetailModal(true);
   };
 
-  // Đóng modal xác nhận xóa
-  const closeDeleteModal = () => {
-    setProductToDelete(null);
-    setDeleteModalOpen(false);
+  const handleEdit = (product) => {
+    console.log("pro", product)
+    setImgUrl(product.hinhanhchinh);
+    setSelectedProduct(product);
+    setOpenModal(true);
   };
-
-  // Xác nhận xóa sản phẩm
-  const handleConfirmDelete = async () => {
-    if (!productToDelete) return;
-    const success = await productService.deleteProduct(productToDelete.masanpham);
-    if (success) {
-      toast.success("Xóa sản phẩm thành công");
-      fetchProducts();
-    } else {
-      toast.error("Xóa sản phẩm thất bại");
-    }
-    closeDeleteModal();
-  };
-
-  // Tìm kiếm + lọc (nếu có)
-  const filteredProducts = products.filter((item) => {
-    const searchLower = searchTerm.toLowerCase();
-    const matchSearch = item.tensanpham?.toLowerCase().includes(searchLower);
-    const matchFilter = Object.entries(filterValue).every(([key, value]) =>
-      value ? item[key] === value : true
-    );
-    return matchSearch && matchFilter;
-  });
-
-  // Sắp xếp
-  const sortedProducts = filteredProducts.sort((a, b) => {
-    if (a[sortColumn] < b[sortColumn]) return sortOrder === "asc" ? -1 : 1;
-    if (a[sortColumn] > b[sortColumn]) return sortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  // Map thêm trường hiển thị trạng thái và id
-  const displayProducts = sortedProducts.map((item) => ({
-    ...item,
-    id: item.masanpham,
-    trangthaiText: item.trangthai === 0 ? "Hoạt động" : "Không hoạt động",
-  }));
-
-  const columns = [
-    { key: "masanpham", label: "ID" },
-    { key: "tensanpham", label: "Tên" },
-    { key: "hinhanh", label: "Hình ảnh", isImage: true },
-    { key: "hedieuhanh", label: "Hệ điều hành" },
-    { key: "tenthuonghieu", label: "Thương hiệu" },
-    { key: "trangthaiText", label: "Trạng thái" },
-  ];
 
   const handleSave = async (product) => {
     try {
+      let imageUrl = oldImgUrl;
+      if (product.hinhanhchinh instanceof File) {
+        const uploadResponse = await uploadSingleFile(
+          imageUrl,
+          "image_product",
+          product.hinhanhchinh
+        );
+        imageUrl = uploadResponse.fileName;
+      }
       const productData = {
-        ...product
+        ...product,
+        hinhanhchinh: imageUrl, // Cập nhật đường dẫn ảnh mới
       };
       if (selectedProduct) {
-        await productService.updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
+        await updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
         toast.success("Cập nhật thành công!!!")
 
       } else {
-        await productService.createProduct(productData); // Gọi API tạo mới
+        await createProduct(productData); // Gọi API tạo mới
         toast.success("Tạo mới thành công!!!")
       }
       setSelectedProduct(null);
-      setShowFormModal(false);
-      fetchProducts(); // Lấy lại danh sách 
+      setOpenModal(false);
+      getAllProductData(); // Lấy lại danh sách 
     } catch (error) {
       console.error("Error saving hotel:", error);
     }
   };
 
+  const openModalDelete = (product) => {
+    checkDelete(true);
+    setOpenDelete(true);
+    setSelectedProduct(product);
+  };
+
+  const handleCloseDelete = () => {
+    setOpenDelete(false);
+  };
+
+  const handleDeleteProduct = async () => {
+    try {
+      const response = await deleteProduct(selectedProduct.masanpham);
+      if (response.EC === 1) {
+        toast.success("Xóa thành công!");
+        getAllProductData();
+      } else {
+        console.log(response.EM);
+      }
+      setOpenDelete(false);
+    } catch (error) {
+      console.error("Lỗi xóa sản phẩm:", error);
+      alert("Đã xảy ra lỗi khi xóa sản phẩm.");
+    }
+  };
+
+  const handleSearch = (e) => {
+    setSearchTerm(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleFilterByManufacturer = (e) => {
+    setSelectedManufacturer(e.target.value);
+    setCurrentPage(1);
+  };
+
+
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+
+  const currentProducts = products
+    .filter((product) => {
+      const matchesSearchTerm = product.tensanpham.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesManufacturer = selectedManufacturer
+        ? product.tenthuonghieu === selectedManufacturer
+        : true;
+      return matchesSearchTerm && matchesManufacturer;
+    })
+    .slice(indexOfFirstProduct, indexOfLastProduct);
+
+
+  const totalPages = Math.ceil(products.length / productsPerPage);
+
   return (
-    <Box sx={{ padding: "2rem" }}>
-      <Typography variant="h4" gutterBottom>
-        📋 Danh sách sản phẩm
-      </Typography>
+    <>
+      <div>
+        <Dialog open={openDelete} onClose={handleCloseDelete}>
+          <DialogTitle>Xác nhận xóa sản phẩm</DialogTitle>
+          <DialogContent>
+            <Typography>
+              Bạn có chắc chắn muốn xóa "{selectedProduct?.tensanpham}" không?
+            </Typography>
+          </DialogContent>
+          <DialogActions>
+            <div
+              onClick={handleCloseDelete}
+              color="primary"
+              className="btn btn-danger"
+            >
+              <i className="fa-solid fa-x"></i> Không
+            </div>
+            <div
+              onClick={handleDeleteProduct}
+              className="btn btn-success"
+            >
+              <i className="fa-solid fa-check"></i> Có
+            </div>
+          </DialogActions>
+        </Dialog>
+        <div className="group-header">
+          <h2>Danh sách sản phẩm</h2>
+          <div className="d-flex gap-2">
+            <div className="filterGroup w-100" style={{ position: 'relative' }}>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Tìm kiếm"
+                value={searchTerm}
+                onChange={handleSearch}
+                style={{ paddingRight: '30px' }} // Chừa khoảng trống cho icon
+              />
+              <i
+                className="fa-solid fa-magnifying-glass"
+                style={{
+                  position: 'absolute',
+                  right: '10px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  pointerEvents: 'none',
+                  color: '#000'
+                }}
+              ></i>
+            </div>
+            <div className="w-75">
+              <select
+                value={selectedManufacturer}
+                onChange={handleFilterByManufacturer}
+                className="form-select"
+              >
+                <option value="">Thương hiệu</option>
+                {manufacturers && manufacturers.map((manu, index) => (
+                  <option key={index} value={manu.tenthuonghieu}>{manu.tenthuonghieu}</option>
+                ))}
+              </select>
 
-      <Box sx={{ mb: 2 }}>
-        <input
-          type="text"
-          placeholder="Tìm kiếm sản phẩm..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ padding: "0.5rem", width: "300px" }}
-        />
-      </Box>
+            </div>
+          </div>
+        </div>
+        <div className="btn-header-table">
+          <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ width: '70px' }}>
+            <i className="fa-solid fa-plus"></i> Thêm
+          </button>
+        </div>
 
-      <Box sx={{ mb: 2, textAlign: "right" }}>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={() => openFormModal(null)}
-        >
-          Thêm sản phẩm
-        </Button>
-      </Box>
+        <table className="table table-hover">
+          <thead className="thead-dark">
+            <tr className="table-title">
+              <th scope="col">STT</th>
+              <th scope="col">Tên</th>
+              <th scope="col">Thương hiệu</th>
+              <th scope="col">Giá</th>
+              <th scope="col">Số lượng</th>
+              <th scope="col">Hệ điều hành</th>
+              <th scope="col">Trạng thái</th>
+              <th scope="col">Hình ảnh</th>
+              <th scope="col">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            {currentProducts.length > 0 ? (
+              currentProducts.map((product, index) => (
+                <tr key={product.masanpham}>
+                  <td>{(currentPage - 1) * productsPerPage + index + 1}</td>
+                  <td>{product.tensanpham || "Không có tên"}</td>
+                  <td>{product.tenthuonghieu || "Không có thể loại"}</td>
+                  <td>{product.giasanpham ? product.giasanpham.toLocaleString("vi-VN") : "Không có giá"}đ</td>
+                  <td>{product.soluongsanpham || "Không có số lượng"}</td>
+                  <td>{product.hedieuhanh || "Không có giá"}</td>
+                  <td>{product.trangthai === 0 ? "Hoạt động" : "Không hoạt động"}</td>
+                  <td>
+                    <img
+                      width={`70px`}
+                      height={`70px`}
+                      src={`${imgURL}${product.hinhanhchinh}`}
+                      alt={product.tensanpham || "Hình ảnh sản phẩm"}
+                    />
+                  </td>
+                  <td className="d-flex align-items-center justify-content-between gap-1 func-button" style={{ border: 'none' }}>
+                    <button
+                      className="btn btn-sm btn-secondary"
+                      onClick={() => handleViewDetails(product)}
+                    >
+                      <i className="fa-regular fa-eye"></i> Xem
+                    </button>
+                    <button
+                      className="btn btn-sm btn-primary"
+                      onClick={() => handleEdit(product)}
+                    >
+                      <i className="fa-solid fa-pen-to-square"></i> Sửa
+                    </button>
+                    <button
+                      className="btn btn-sm btn-danger"
+                      onClick={() => openModalDelete(product)}
+                    >
+                      <i className="fa-solid fa-trash"></i> Xóa
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan="12" style={{ textAlign: 'center' }}>
+                  <h6>Không tìm thấy</h6>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+          <ul className="pagination justify-content-end admin-pagination">
+            <li
+              className={`page-item ${currentPage === 1 ? "disabled" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => currentPage > 1 && setCurrentPage(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Trước
+              </button>
+            </li>
+            {[...Array(totalPages)].map((_, index) => (
+              <li
+                key={index}
+                className={`page-item ${currentPage === index + 1 ? "active" : ""}`}
+              >
+                <button
+                  className="page-link"
+                  onClick={() => setCurrentPage(index + 1)}
+                >
+                  {index + 1}
+                </button>
+              </li>
+            ))}
 
-      <DynamicTable
-        columns={columns}
-        data={displayProducts}
-        onEdit={(id) => {
-          const p = displayProducts.find((x) => x.masanpham === id);
-          openFormModal(p);
-        }}
-        onView={(id) => {
-          const p = displayProducts.find((x) => x.masanpham === id);
-          openDetailModal(p);
-        }}
-        onDelete={(id) => {
-          const p = displayProducts.find((x) => x.masanpham === id);
-          openDeleteModal(p);
-        }}
-        showViewButton={true}
+            <li
+              className={`page-item ${currentPage === totalPages || currentProducts.length === 0 ? "disabled" : ""}`}
+            >
+              <button
+                className="page-link"
+                onClick={() => currentPage < totalPages && setCurrentPage(currentPage + 1)}
+                disabled={currentPage === totalPages || currentProducts.length === 0}
+              >
+                Sau
+              </button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+      <ModalProduct
+        product={selectedProduct}
+        open={openModal}
+        onSave={handleSave}
+        onClose={() => setOpenModal(false)}
       />
-
-      {/* Modal thêm/sửa sản phẩm */}
-      {showFormModal && (
-        <ProductFormModal
-          open={showFormModal}
-          onClose={closeFormModal}
-          onSave={handleSave}
-          product={editingProduct}
-          isView={false}
-          imageBaseUrl={API_IMG_URL}
-        />
-      )}
-
-      {/* Modal xem chi tiết sản phẩm */}
-      {showDetailModal && (
-        <ProductDetailModal
-          open={showDetailModal}
-          onClose={closeDetailModal}
-          product={selectedProduct}
-          isView={true}
-          imageBaseUrl={API_IMG_URL}
-        />
-      )}
-
-      {/* Modal xác nhận xóa sản phẩm */}
-      <Dialog open={deleteModalOpen} onClose={closeDeleteModal}>
-        <DialogTitle>Xác nhận xóa sản phẩm</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Bạn có chắc muốn xóa sản phẩm{" "}
-            <strong>{productToDelete?.tensanpham}</strong> không?
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleConfirmDelete} variant="contained" color="error">
-            Xóa
-          </Button>
-          <Button onClick={closeDeleteModal} variant="outlined" color="primary">
-            Hủy
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+      <ProductDetailModal
+        product={selectedProduct}
+        open={openDetailModal}
+        onClose={() => setOpenDetailModal(false)}
+      />
+    </>
   );
 };
 
