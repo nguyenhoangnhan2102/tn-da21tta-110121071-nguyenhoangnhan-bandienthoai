@@ -44,11 +44,13 @@ app.use(bodyParser.json());
 const userRoute = require("./routers/userRouters.js");
 const manufacturerRouter = require("./routers/manufacturerRouters.js");
 const productRouters = require("./routers/productRouters.js");
+const fileRouter = require("./routers/fileRouters.js");
 
 //router
 app.use("/user", userRoute);
 app.use("/manufactureres", manufacturerRouter);
 app.use("/product", productRouters);
+app.use("/", fileRouter);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId

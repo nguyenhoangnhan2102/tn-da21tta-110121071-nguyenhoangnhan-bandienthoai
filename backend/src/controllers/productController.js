@@ -1,4 +1,4 @@
-const pool = require("../config/database");
+const connection = require("../config/database");
 
 // GET all products theo trạng thái
 const getAllProduct = async (req, res) => {
@@ -6,24 +6,24 @@ const getAllProduct = async (req, res) => {
         const queryActive = `
         SELECT
             sp.*,
-            th.tenthuonghieu,
+            th.tenthuonghieu
         FROM
             SANPHAM sp
         LEFT JOIN
             THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
         WHERE
-            sp.trangthai = 0 AND sp.soluongsanpham > 0
+            sp.trangthai = 0 AND sp.soluong > 0
         GROUP BY
             sp.masanpham
         ORDER BY
-            sp.update_at DESC,
-            sp.created_at DESC;
+            sp.ngaycapnhat DESC,
+            sp.ngaytao DESC;
         `;
 
         const queryInactive = `
         SELECT
             sp.*,
-            th.tenthuonghieu,
+            th.tenthuonghieu
         FROM
             SANPHAM sp
         LEFT JOIN
@@ -33,7 +33,7 @@ const getAllProduct = async (req, res) => {
         GROUP BY
             sp.masanpham
         ORDER BY
-            sp.created_at DESC;
+            sp.ngaytao DESC;
         `;
 
         const [activeResults] = await connection.query(queryActive);
@@ -65,7 +65,7 @@ const getDetailProduct = async (req, res) => {
         const query = `
         SELECT 
             sp.*,
-            th.tenthuonghieu,
+            th.tenthuonghieu
         FROM
             SANPHAM sp
         JOIN 
@@ -73,7 +73,7 @@ const getDetailProduct = async (req, res) => {
         WHERE 
             sp.masanpham = ?
         GROUP BY
-            sp.masanpham
+            sp.masanpham;
         `;
 
         const [results] = await connection.query(query, [masanpham]);
@@ -117,10 +117,13 @@ const createProduct = async (req, res) => {
         soluong,
         gianhap,
         giaban,
-        giagiam,
         khuyenmai,
         cpu,
         gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
         pin,
         mota,
         trangthai,
@@ -129,24 +132,27 @@ const createProduct = async (req, res) => {
     try {
         const [result] = await connection.query(
             `INSERT INTO SANPHAM (
-                mathuonghieu, 
-                tensanpham,
-                hinhanhchinh,
-                mau,
-                dungluong,
-                ram,
-                hedieuhanh,
-                soluong,
-                gianhap,
-                giaban,
-                giagiam,
-                khuyenmai,
-                cpu,
-                gpu,
-                pin,
-                mota,
-                trangthai
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        mathuonghieu, 
+        tensanpham,
+        hinhanhchinh,
+        mau,
+        dungluong,
+        ram,
+        hedieuhanh,
+        soluong,
+        gianhap,
+        giaban,
+        khuyenmai,
+        cpu,
+        gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
+        pin,
+        mota,
+        trangthai
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 mathuonghieu,
                 tensanpham,
@@ -155,13 +161,16 @@ const createProduct = async (req, res) => {
                 dungluong,
                 ram,
                 hedieuhanh,
-                soluong,
+                soluong, // nếu DB là soluongsanpham thì giữ nguyên biến này
                 gianhap,
                 giaban,
-                giagiam,
                 khuyenmai,
                 cpu,
                 gpu,
+                cameratruoc,
+                camerasau,
+                congnghemanhinh,
+                dophangiaimanhinh,
                 pin,
                 mota,
                 trangthai,
@@ -182,10 +191,13 @@ const createProduct = async (req, res) => {
                 soluong,
                 gianhap,
                 giaban,
-                giagiam,
                 khuyenmai,
                 cpu,
                 gpu,
+                cameratruoc,
+                camerasau,
+                congnghemanhinh,
+                dophangiaimanhinh,
                 pin,
                 mota,
                 trangthai,
@@ -212,10 +224,13 @@ const updateProduct = async (req, res) => {
         soluong,
         gianhap,
         giaban,
-        giagiam,
         khuyenmai,
         cpu,
         gpu,
+        cameratruoc,
+        camerasau,
+        congnghemanhinh,
+        dophangiaimanhinh,
         pin,
         mota,
         trangthai
@@ -236,10 +251,13 @@ const updateProduct = async (req, res) => {
                     soluong = ?,
                     gianhap = ?,
                     giaban = ?,
-                    giagiam = ?,
                     khuyenmai = ?,
                     cpu = ?,
                     gpu = ?,
+                    cameratruoc = ?,
+                    camerasau = ?,
+                    congnghemanhinh = ?,
+                    dophangiaimanhinh = ?,
                     pin = ?,
                     mota = ?,
                     trangthai = ?
@@ -256,10 +274,13 @@ const updateProduct = async (req, res) => {
                 soluong,
                 gianhap,
                 giaban,
-                giagiam,
                 khuyenmai,
                 cpu,
                 gpu,
+                cameratruoc,
+                camerasau,
+                congnghemanhinh,
+                dophangiaimanhinh,
                 pin,
                 mota,
                 trangthai,

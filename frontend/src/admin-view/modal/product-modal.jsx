@@ -50,6 +50,10 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
     cpu: "",
     gpu: "",
     pin: "",
+    cameratruoc: "",
+    camerasau: "",
+    congnghemanhinh: "",
+    dophangiaimanhinh: "",
     mota: "",
     tenthuonghieu: "",
     trangthai: "",
@@ -70,11 +74,14 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
         soluong: "",
         gianhap: "",
         giaban: "",
-        giagiam: "",
         khuyenmai: "",
         cpu: "",
         gpu: "",
         pin: "",
+        cameratruoc: "",
+        camerasau: "",
+        congnghemanhinh: "",
+        dophangiaimanhinh: "",
         mota: "",
         tenthuonghieu: "",
         trangthai: 0,
@@ -123,11 +130,14 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
       soluong: "",
       gianhap: "",
       giaban: "",
-      giagiam: "",
       khuyenmai: "",
       cpu: "",
       gpu: "",
       pin: "",
+      cameratruoc: "",
+      camerasau: "",
+      congnghemanhinh: "",
+      dophangiaimanhinh: "",
       mota: "",
       tenthuonghieu: "",
       trangthai: 0,
@@ -213,10 +223,39 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             <TextField
               fullWidth
               margin="normal"
-              label="Giá"
-              type="number"
-              name="giasanpham"
-              value={form.giasanpham}
+              label="RAM"
+              type="text"
+              name="ram"
+              value={form.ram}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Dung lượng"
+              type="text"
+              name="dungluong"
+              value={form.dungluong}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Pin"
+              type="text"
+              name="pin"
+              value={form.pin}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Màu"
+              type="text"
+              name="mau"
+              value={form.mau}
               onChange={handleChange}
             />
             <TextField
@@ -224,8 +263,37 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               margin="normal"
               label="Số lượng"
               type="number"
-              name="soluongsanpham"
-              value={form.soluongsanpham}
+              name="soluong"
+              value={form.soluong}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Giá nhập"
+              type="number"
+              name="gianhap"
+              value={form.gianhap}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Giá bán"
+              type="number"
+              name="giaban"
+              value={form.giaban}
+              onChange={handleChange}
+            />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Khuyến mãi"
+              type="number"
+              name="khuyenmai"
+              value={form.khuyenmai}
               onChange={handleChange}
             />
           </div>
@@ -253,28 +321,39 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             <TextField
               fullWidth
               margin="normal"
-              label="RAM"
+              label="Camera trước"
               type="text"
-              name="ram"
-              value={form.ram}
+              name="cameratruoc"
+              value={form.cameratruoc}
               onChange={handleChange}
             />
             <TextField
               fullWidth
               margin="normal"
-              label="Dung lượng"
+              label="Camera sau"
               type="text"
-              name="dungluong"
-              value={form.dungluong}
+              name="camerasau"
+              value={form.camerasau}
+              onChange={handleChange}
+            />
+          </div>
+          <div className="d-flex gap-2">
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Công nghệ màn hình"
+              type="text"
+              name="congnghemanhinh"
+              value={form.congnghemanhinh}
               onChange={handleChange}
             />
             <TextField
               fullWidth
               margin="normal"
-              label="Pin"
+              label="Độ phân giải màn hình"
               type="text"
-              name="pin"
-              value={form.pin}
+              name="dophangiaimanhinh"
+              value={form.dophangiaimanhinh}
               onChange={handleChange}
             />
           </div>
@@ -283,7 +362,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             margin="normal"
             label="Mô tả"
             type="text"
-            name="motasanpham"
+            name="mota"
             value={form.mota}
             onChange={handleChange}
             multiline

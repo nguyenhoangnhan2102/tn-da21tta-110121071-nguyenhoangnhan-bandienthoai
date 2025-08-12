@@ -17,7 +17,7 @@ import { getAllManufacturer } from "../../services/manufacturerService";
 import productService from "../../services/productService";
 
 const imgURL = process.env.REACT_APP_IMG_URL;
-
+console.log("imgURL", imgURL)
 const ProductComponent = () => {
   const [products, setProducts] = useState([]);
   const [manufacturers, setListManufacturer] = useState([]);
@@ -57,8 +57,6 @@ const ProductComponent = () => {
       const response = await getAllManufacturer();
       if (response.EC === 1) {
         setListManufacturer(response.DT.activeManufacturer);
-        console.log("setListManufacturer", response.DT.activeManufacturer)
-
       } else {
         console.error("Failed to fetch");
       }
@@ -260,8 +258,8 @@ const ProductComponent = () => {
                   <td>{(currentPage - 1) * productsPerPage + index + 1}</td>
                   <td>{product.tensanpham || "Không có tên"}</td>
                   <td>{product.tenthuonghieu || "Không có thể loại"}</td>
-                  <td>{product.giasanpham ? product.giasanpham.toLocaleString("vi-VN") : "Không có giá"}đ</td>
-                  <td>{product.soluongsanpham || "Không có số lượng"}</td>
+                  <td>{product.giaban ? product.giaban.toLocaleString("vi-VN") : "Không có giá"}đ</td>
+                  <td>{product.soluong || "Không có số lượng"}</td>
                   <td>{product.hedieuhanh || "Không có giá"}</td>
                   <td>{product.trangthai === 0 ? "Hoạt động" : "Không hoạt động"}</td>
                   <td>
