@@ -4,7 +4,7 @@ const path = require("path");
 const cors = require("cors");
 require("dotenv").config();
 const port = process.env.PORT || 3002;
-require("./config/database.js");
+require("./src/config/database.js");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const hostname = process.env.HOST_NAME || "localhost";
@@ -34,23 +34,24 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 app.use(cookieParser());
-app.use("/images", express.static(path.join(__dirname, "src/public/images")));
+app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //api
-const userRoute = require("./routers/userRouters.js");
-const manufacturerRouter = require("./routers/manufacturerRouters.js");
-const productRouters = require("./routers/productRouters.js");
-const fileRouter = require("./routers/fileRouters.js");
+const userRoute = require("./src/routers/userRouters.js");
+const manufacturerRouter = require("./src/routers/manufacturerRouters.js");
+const productRouters = require("./src/routers/productRouters.js");
+const fileRouter = require("./src/routers/fileRouters.js");
 
 //router
-app.use("/user", userRoute);
-app.use("/manufactureres", manufacturerRouter);
-app.use("/product", productRouters);
-app.use("/", fileRouter);
+app.use("/api", fileRouter);
+app.use("/api/user", userRoute);
+app.use("/api/manufactureres", manufacturerRouter);
+app.use("/api/product", productRouters);
+
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
@@ -86,7 +87,7 @@ io.on("connection", (socket) => {
   });
 });
 
-const configViewEngine = require("./config/viewEngine.js");
+const configViewEngine = require("./src/config/viewEngine.js");
 configViewEngine(app);
 
 server.listen(port, hostname, () => {
