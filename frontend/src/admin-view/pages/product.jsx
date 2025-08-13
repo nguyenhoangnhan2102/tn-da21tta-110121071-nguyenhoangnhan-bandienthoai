@@ -71,8 +71,9 @@ const ProductComponent = () => {
   };
 
   const handleViewDetails = (product) => {
+    setImgUrl(product.hinhanhchinh);
     setSelectedProduct(product);
-    setOpenDetailModal(true);
+    setOpenModal(true);
   };
 
   const handleEdit = (product) => {
@@ -347,6 +348,7 @@ const ProductComponent = () => {
         open={openModal}
         onSave={handleSave}
         onClose={() => setOpenModal(false)}
+        isViewOnly={true}
       />
       <ProductDetailModal
         product={selectedProduct}

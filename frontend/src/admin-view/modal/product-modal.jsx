@@ -30,7 +30,7 @@ const modalStyle = {
 };
 const imgURL = process.env.REACT_APP_IMG_URL;
 
-const ModalProduct = ({ product, onSave, open, onClose }) => {
+const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) => {
   const [listManufacturer, setListManufacturer] = useState([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -188,6 +188,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             name="tensanpham"
             value={form.tensanpham}
             onChange={handleChange}
+            disabled={isViewOnly}
           />
           <div className="d-flex gap-2 align-items-center">
             <FormControl fullWidth margin="normal">
@@ -198,6 +199,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
                 label="Thương hiệu"
                 value={form.mathuonghieu}
                 onChange={handleChange}
+                disabled={isViewOnly}
               >
                 {listManufacturer.map((manufacturer) => (
                   <MenuItem key={manufacturer.mathuonghieu} value={manufacturer.mathuonghieu}>
@@ -206,9 +208,11 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
                 ))}
               </Select>
             </FormControl>
-            <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ height: '100%' }}>
-              <i className="fa-solid fa-plus"></i>
-            </button>
+            {!isViewOnly && (
+              <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ height: '100%' }}>
+                <i className="fa-solid fa-plus"></i>
+              </button>
+            )}
             <TextField
               fullWidth
               margin="normal"
@@ -217,6 +221,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="hedieuhanh"
               value={form.hedieuhanh}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -228,6 +233,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="ram"
               value={form.ram}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -237,6 +243,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="dungluong"
               value={form.dungluong}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -246,6 +253,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="pin"
               value={form.pin}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -257,6 +265,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="mau"
               value={form.mau}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -266,6 +275,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="soluong"
               value={form.soluong}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -277,6 +287,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="gianhap"
               value={form.gianhap}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -286,6 +297,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="giaban"
               value={form.giaban}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -295,6 +307,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="khuyenmai"
               value={form.khuyenmai}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -306,6 +319,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="cpu"
               value={form.cpu}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -315,6 +329,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="gpu"
               value={form.gpu}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -325,6 +340,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               type="text"
               name="cameratruoc"
               value={form.cameratruoc}
+              disabled={isViewOnly}
               onChange={handleChange}
             />
             <TextField
@@ -335,6 +351,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="camerasau"
               value={form.camerasau}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <div className="d-flex gap-2">
@@ -346,6 +363,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="congnghemanhinh"
               value={form.congnghemanhinh}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
             <TextField
               fullWidth
@@ -355,6 +373,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
               name="dophangiaimanhinh"
               value={form.dophangiaimanhinh}
               onChange={handleChange}
+              disabled={isViewOnly}
             />
           </div>
           <TextField
@@ -365,6 +384,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             name="mota"
             value={form.mota}
             onChange={handleChange}
+            disabled={isViewOnly}
             multiline
             rows={4}
           />
@@ -377,6 +397,7 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
                 label="Trạng thái"
                 value={form.trangthai}
                 onChange={handleChange}
+                disabled={isViewOnly}
               >
                 <MenuItem value={0}>Hoạt động</MenuItem>
                 <MenuItem value={1}>Không hoạt động</MenuItem>
@@ -390,37 +411,41 @@ const ModalProduct = ({ product, onSave, open, onClose }) => {
             height="100px"
             style={product ? {} : { display: "none" }} // Ẩn ảnh nếu không phải cập nhật
           />
-          <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-            <input
-              type="file"
-              makhachhang="hinhanhchinh"
-              name="hinhanhchinh"
-              accept="hinhanhchinh/*"
-              onChange={handleFileChange}
-              required
-              style={{
-                width: "100%",
-                padding: "16.5px 14px",
-                fontSize: "1rem",
-                lineHeight: "1.4375em",
-                backgroundColor: "#fff",
-                border: "1px solid rgba(0, 0, 0, 0.23)",
-                borderRadius: "4px",
-                color: "rgba(0, 0, 0, 0.87)",
-                boxSizing: "border-box",
-                transition: "border-color 0.3s, box-shadow 0.3s",
-              }}
-              onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
-              onBlur={(e) =>
-                (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
-              }
-            />
-          </Box>
+          {!isViewOnly && (
+            <Box sx={{ marginTop: 1, marginBottom: 1 }}>
+              <input
+                type="file"
+                makhachhang="hinhanhchinh"
+                name="hinhanhchinh"
+                accept="hinhanhchinh/*"
+                onChange={handleFileChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "16.5px 14px",
+                  fontSize: "1rem",
+                  lineHeight: "1.4375em",
+                  backgroundColor: "#fff",
+                  border: "1px solid rgba(0, 0, 0, 0.23)",
+                  borderRadius: "4px",
+                  color: "rgba(0, 0, 0, 0.87)",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.3s, box-shadow 0.3s",
+                }}
+                onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
+                onBlur={(e) =>
+                  (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
+                }
+              />
+            </Box>
+          )}
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
-            <button className="btn btn-primary admin-btn" onClick={handleSubmit}>
-              <i className="fa-regular fa-floppy-disk" style={{ marginRight: '5px' }}></i>Lưu
-            </button>
+            {!isViewOnly && (
+              <button className="btn btn-primary admin-btn" onClick={handleSubmit}>
+                <i className="fa-regular fa-floppy-disk" style={{ marginRight: '5px' }}></i>Lưu
+              </button>
+            )}
             <button className="btn btn-danger admin-btn" onClick={onClose} style={{ width: '15%' }}>
               <i className="fa-solid fa-x" style={{ marginRight: '5px' }}></i>
               Huỷ
