@@ -45,76 +45,68 @@ const Header = () => {
     return (
         <Navbar expand="lg" className="navbar-container">
             <Container fluid className='navbar-content'>
-                <Navbar className='navbar-logo'>
-                    <Link
-                        to={`/`}
-                        className="d-flex align-items-center text-decoration-none fst-italic"
-                        style={{ fontSize: "25px", fontWeight: 'bold', color: 'black' }}>
-                        <MdOutlineSmartphone style={{ fontSize: "50px" }} />
-                        PHONESHOP
-                    </Link>
-                </Navbar>
+                {/* Logo */}
+                <Navbar.Brand as={Link} to="/" className="navbar-logo d-flex align-items-center">
+                    <MdOutlineSmartphone style={{ fontSize: "40px", marginRight: "8px" }} />
+                    <span className="brand-name">PHONESHOP</span>
+                </Navbar.Brand>
+
                 <Navbar.Toggle aria-controls="navbarScroll" />
-                <Navbar.Collapse id="navbarScroll">
-                    <Nav className="me-auto my-2 my-lg-0" style={{ maxHeight: '100px' }} navbarScroll />
-                    <Form className="d-flex align-items-center justify-content-center">
-                        <Link
-                            to={`/cart`}
-                            className="text-decoration-none text-dark button-cart"
-                            style={{ border: 'none', backgroundColor: 'transparent' }}
-                        >
-                            <i
-                                className="fa-solid fa-cart-shopping me-4 d-flex align-items-center justify-content-center"
-                                style={{ fontSize: "25px", cursor: 'pointer' }}>
-                            </i>
-                        </Link>
-                        {isAuthenticated ? (
-                            userInfo && (
-                                <>
-                                    <li className="header-avata d-flex align-items-center">
-                                        <p onClick={handleClick} title="User Dropdown" className="d-flex justify-content-center">
-                                            <Avatar
-                                                sx={{ mr: 2 }}
-                                                alt="User Avatar"
-                                                src={userInfo?.avatarUrl || "/path/to/avatar.jpg"}
-                                            />
-                                            <span className="w-100 username">
-                                                {userInfo?.hoten}
-                                            </span>
-                                        </p>
-                                    </li>
-                                    <Menu
-                                        anchorEl={anchorEl}
-                                        open={Boolean(anchorEl)}
-                                        onClose={handleClose}
-                                        style={{ marginLeft: '0', marginTop: '10px' }}
-                                    >
-                                        <MenuItem onClick={() => handleOptionClick("Profile")}>
-                                            Thông tin
-                                        </MenuItem>
-                                        <MenuItem onClick={() => handleOptionClick("Orders")}>
-                                            Đơn hàng
-                                        </MenuItem>
-                                        {userInfo.role === 1 && (
-                                            <MenuItem onClick={() => handleOptionClick("AdminManagement")}>
-                                                Quản lý admin
-                                            </MenuItem>
-                                        )}
-                                        <MenuItem onClick={() => handleOptionClick("Logout")}>
-                                            Đăng xuất
-                                        </MenuItem>
-                                    </Menu>
-                                </>
-                            )
-                        ) : (
-                            <div className="nav navbar-right col-3 w-75">
-                                <Link to={`/login`} className='button-login text-dark'>Đăng nhập</Link>
-                            </div>
-                        )}
+                <Navbar.Collapse id="navbarScroll" className="justify-content-between">
+
+                    {/* Thanh tìm kiếm ở giữa */}
+                    <Form className="search-form d-flex mx-auto">
+                        <Form.Control
+                            type="search"
+                            placeholder="Tìm kiếm sản phẩm..."
+                            className="me-2"
+                            style={{ minWidth: "300px", borderRadius: "20px" }}
+                        />
+                        <button className="btn-search">
+                            <i className="fa-solid fa-search"></i>
+                        </button>
                     </Form>
+
+                    {/* Giỏ hàng + Avatar / Đăng nhập */}
+                    <div className="header-right d-flex align-items-center">
+                        <Link to={`/cart`} className="cart-link">
+                            <i className="fa-solid fa-cart-shopping"></i>
+                        </Link>
+
+                        {isAuthenticated ? (
+                            <>
+                                <div onClick={handleClick} className="d-flex align-items-center user-info">
+                                    <Avatar
+                                        sx={{ mr: 1 }}
+                                        alt="User Avatar"
+                                        src={userInfo?.avatarUrl || "/path/to/avatar.jpg"}
+                                    />
+                                    <span className="username">{userInfo?.hoten}</span>
+                                </div>
+
+                                <Menu
+                                    anchorEl={anchorEl}
+                                    open={Boolean(anchorEl)}
+                                    onClose={handleClose}
+                                >
+                                    <MenuItem onClick={() => handleOptionClick("Profile")}>Thông tin</MenuItem>
+                                    <MenuItem onClick={() => handleOptionClick("Orders")}>Đơn hàng</MenuItem>
+                                    {userInfo.role === 1 && (
+                                        <MenuItem onClick={() => handleOptionClick("AdminManagement")}>
+                                            Quản lý admin
+                                        </MenuItem>
+                                    )}
+                                    <MenuItem onClick={() => handleOptionClick("Logout")}>Đăng xuất</MenuItem>
+                                </Menu>
+                            </>
+                        ) : (
+                            <Link to={`/login`} className='button-login'>Đăng nhập</Link>
+                        )}
+                    </div>
                 </Navbar.Collapse>
             </Container>
         </Navbar>
+
     );
 };
 
