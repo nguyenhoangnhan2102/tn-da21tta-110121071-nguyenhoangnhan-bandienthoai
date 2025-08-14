@@ -35,7 +35,7 @@ const Footer = () => {
                                     <i className="fa-solid fa-phone me-2"></i>Shopphone
                                 </h6>
                                 <p>
-                                    Chào mừng đến với SHOPPHONE. Nơi bạn có thể tìm bất cứ sản phẩm điện thoại thịnh hành nhất!!!
+                                    Chào mừng đến với PHONESHOP. Nơi bạn có thể tìm bất cứ sản phẩm điện thoại thịnh hành nhất!!!
                                 </p>
                             </div>
                             <div className="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4">
@@ -55,7 +55,7 @@ const Footer = () => {
                             <div className="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4">
                                 <h6 className="text-uppercase fw-bold mb-4">Liên hệ</h6>
                                 <p><i className="fas fa-home me-3"></i> Phường 4, TP. Trà Vinh, tỉnh Trà Vinh</p>
-                                <p><i className="fas fa-envelope me-4"></i>Shopphone@gmail.com</p>
+                                <p><i className="fas fa-envelope me-4"></i>Phoneshop@gmail.com</p>
                                 <p><i className="fas fa-phone me-3"></i> + 01 234 567 88</p>
                                 <p><i className="fas fa-print me-3"></i> + 01 234 567 89</p>
                             </div>

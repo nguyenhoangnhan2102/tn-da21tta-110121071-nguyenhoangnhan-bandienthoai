@@ -1,0 +1,202 @@
+.product-details {
+    font-family: "Roboto", sans-serif;
+    color: #333;
+}
+
+/* Tiêu đề sản phẩm */
+h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    font-weight: 600;
+    font-size: 1.5rem;
+    color: #222;
+}
+
+/* Nút toggle */
+.btn-show {
+    padding: 12px;
+    text-align: left;
+    background-color: #f8f9fa;
+    border: none;
+    color: #333;
+    font-weight: 600;
+    width: 100%;
+    height: 50px;
+    border-radius: 8px;
+    transition: background-color 0.25s ease;
+    cursor: pointer;
+
+    &:hover {
+        background-color: #e9ecef;
+    }
+}
+
+/* Ảnh chính sản phẩm */
+.main-image {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    img {
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+
+    img:hover {
+        transform: scale(1.05);
+    }
+}
+
+/* Khối chọn màu sản phẩm */
+.product-color {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    img {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        padding: 5px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    img:hover {
+        border-color: #2270e6;
+        box-shadow: 0 0 6px rgba(34, 112, 230, 0.4);
+    }
+}
+
+/* Cam kết */
+.commit {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    li {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    hr {
+        margin: 10px 0;
+        border: 0;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    i {
+        margin-right: 8px;
+        font-size: 18px;
+        color: #2270e6;
+    }
+}
+
+/* Mô tả sản phẩm */
+.description {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+    label {
+        color: #2270e6;
+        font-weight: 600;
+    }
+}
+
+/* Thông số kỹ thuật */
+.feature-list {
+    padding: 12px;
+
+    .feature-list_details {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 0;
+    }
+
+    strong {
+        font-weight: 500;
+        font-size: 14px;
+        color: #555;
+    }
+
+    p {
+        font-size: 14px;
+        color: #333;
+    }
+
+    hr {
+        border: 0;
+        border-top: 1px solid #f0f0f0;
+        margin: 4px 0;
+    }
+}
+
+/* Nút mua hàng */
+.btn-buy {
+    padding: 12px;
+    display: flex;
+    gap: 10px;
+
+    .button-cart {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: #ffffff;
+        color: #2270e6;
+        border: 1px solid #2270e6;
+        font-size: 14px;
+        border-radius: 8px;
+        transition: all 0.25s ease;
+
+        &:hover {
+            background-color: #2270e6;
+            color: #fff;
+        }
+    }
+
+    .button-buy {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #FC7600;
+        color: #fff;
+        border: none;
+        font-size: 14px;
+        border-radius: 8px;
+        transition: background-color 0.25s ease;
+
+        &:hover {
+            background-color: #e46600;
+        }
+    }
+}
+
+/* Số điện thoại liên hệ */
+.contact {
+    padding: 12px;
+    font-size: 14px;
+    text-align: center;
+
+    strong {
+        color: #2270e6;
+    }
+}

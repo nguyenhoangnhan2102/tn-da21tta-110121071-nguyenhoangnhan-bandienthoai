@@ -8,7 +8,7 @@ import "../style/Details.scss";
 import { useAuth } from "../../authentication/AuthContext";
 
 const apiUrl = process.env.REACT_APP_API_URL;
-const apiProductUrl = apiUrl + '/products';
+const apiProductUrl = apiUrl + '/product';
 const imgURL = process.env.REACT_APP_IMG_URL;
 
 const ProductDetails = () => {
@@ -17,7 +17,6 @@ const ProductDetails = () => {
     const [inforUser, setInforUser] = useState({});
     const [showDetails, setShowDetails] = useState(true);
     const [showDetailsCamera, setShowDetailsCamera] = useState(true);
-    const [selectedColor, setSelectedColor] = useState('');
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
@@ -46,12 +45,6 @@ const ProductDetails = () => {
             try {
                 const response = await axiosInstance.get(`${apiProductUrl}/${masanpham}`);
                 setProductDetails(response.data.DT);
-                console.log("setProductDetails", response.data.DT);
-
-                // Mặc định chọn màu đầu tiên nếu có màu sắc
-                if (response.data.DT.danhsachmamau && response.data.DT.danhsachmamau.length > 0) {
-                    setSelectedColor(response.data.DT.danhsachmamau[0]);
-                }
             } catch (err) {
                 console.error("Error occurred", err);
             }
@@ -66,21 +59,14 @@ const ProductDetails = () => {
 
         const { makhachhang } = inforUser;
         const { masanpham } = productdetails;
-        const mamau = selectedColor;
-
-        if (!makhachhang || !masanpham || !mamau) {
-            toast.warning("Vui lòng chọn màu!!!.");
-            return;
-        }
 
         const soluong = 1;
-        const gia = productdetails.giasanpham;
+        const gia = productdetails.giaban;
 
         try {
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
                 makhachhang,
                 masanpham,
-                mamau,
                 soluong,
                 gia,
             });
@@ -111,21 +97,14 @@ const ProductDetails = () => {
 
         const { makhachhang } = inforUser;
         const { masanpham } = productdetails;
-        const mamau = selectedColor;
-
-        if (!makhachhang || !masanpham || !mamau) {
-            toast.warning("Vui lòng chọn màu!!!.");
-            return;
-        }
 
         const soluong = 1;
-        const gia = productdetails.giasanpham;
+        const gia = productdetails.giaban;
 
         try {
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
                 makhachhang,
                 masanpham,
-                mamau,
                 soluong,
                 gia,
             });
@@ -152,20 +131,15 @@ const ProductDetails = () => {
         return <div>Loading...</div>;
     }
 
-    const handleColorChange = (color) => {
-        setSelectedColor(color); // Cập nhật khi chọn màu
-        console.log("selectedColor", color);
-    };
-
     return (
         <div className="container mt-3 product-details">
             <div className="row d-flex">
                 <div className="d-flex mb-3 align-items-center">
                     <h3 className="me-2">
-                        {productdetails.tensanpham}
+                        {productdetails.tensanpham} {productdetails.ram}/{productdetails.dungluong}
                     </h3>
                     <label className="badge bg-warning text-dark d-flex align-items-center">
-                        Chỉ có tại Shopphone
+                        Chỉ có tại Phoneshop
                     </label>
                 </div>
                 <div className="col-md-8">
@@ -176,41 +150,6 @@ const ProductDetails = () => {
                             width="350px"
                             height="350px"
                         />
-                    </div>
-                    <div className="d-flex my-4 product-color">
-                        {productdetails.danhsachmamau &&
-                            productdetails.danhsachmamau.map((colorId, index) => (
-                                <div className="row" key={index}>
-                                    <div className="my-2 d-flex me-2">
-                                        <input
-                                            type="radio"
-                                            id={`color-${index}`}
-                                            name="productColor"
-                                            value={parseInt(colorId)}
-                                            checked={selectedColor === parseInt(colorId)}
-                                            onChange={() => handleColorChange(parseInt(colorId))}
-                                            style={{
-                                                marginRight: '10px',
-                                            }}
-                                        />
-                                        <img
-                                            src={`${imgURL}${productdetails.danhsachmausacsanpham.split(',')[index]}`}
-                                            alt={`Màu sản phẩm ${index + 1}`}
-                                            style={{
-                                                width: '100px',
-                                                height: '100px',
-                                                marginRight: '10px',
-                                                borderRadius: '5px',
-                                                border: '1px solid #ccc',
-                                                padding: '5px',
-                                                cursor: 'pointer' // Thêm con trỏ để dễ nhận diện là có thể click
-                                            }}
-                                            onClick={() => handleColorChange(parseInt(colorId))} // Cập nhật màu khi click vào ảnh
-                                        />
-                                    </div>
-                                </div>
-                            ))
-                        }
                     </div>
 
                     <div className="my-4 p-3 commit">
@@ -233,6 +172,17 @@ const ProductDetails = () => {
                     </div>
                 </div>
                 <div className="mb-4 col-md-4 product-info" style={{ backgroundColor: '#FFFFFF', borderRadius: '12px' }}>
+                    <div className="product-price mb-3">
+                        <span className="text-danger fw-bold me-2">
+                            {productdetails.giaban?.toLocaleString("vi-VN")}₫
+                        </span>
+                        {productdetails.khuyenmai && (
+                            <span className="text-success m-0">
+                                - {productdetails.khuyenmai}%
+                            </span>
+                        )}
+                    </div>
+
                     <button
                         className="mt-3 btn-show d-flex justify-content-between align-items-center"
                         onClick={() => setShowDetails(!showDetails)}

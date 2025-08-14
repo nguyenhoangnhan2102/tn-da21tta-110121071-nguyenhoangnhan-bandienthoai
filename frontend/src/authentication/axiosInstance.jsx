@@ -2,7 +2,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 // Tạo instance của axios
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const apiUrl = process.env.REACT_APP_API_URL;
 const axiosInstance = axios.create({
   baseURL: apiUrl, // Thay đổi URL này thành URL của API của bạn
 });

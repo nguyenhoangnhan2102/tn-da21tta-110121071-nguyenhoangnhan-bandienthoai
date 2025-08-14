@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-catch */
 import axios from "axios";
 
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const apiUrl = process.env.REACT_APP_API_URL;
 // Hàm upload file
 export const uploadSingleFile = async (imageUrl, folderPath, file) => {
     try {

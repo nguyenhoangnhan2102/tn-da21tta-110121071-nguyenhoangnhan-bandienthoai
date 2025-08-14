@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import axiosInstance from '../authentication/axiosInstance';
 import '../style/Form.scss';
 
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const apiUrl = process.env.REACT_APP_API_URL;
 const userUrl = apiUrl + "/user";
 
 const style = {

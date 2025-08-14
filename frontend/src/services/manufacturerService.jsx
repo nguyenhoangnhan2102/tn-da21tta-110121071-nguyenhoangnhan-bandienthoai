@@ -1,5 +1,5 @@
 import axiosInstance from "../authentication/axiosInstance";
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const apiUrl = process.env.REACT_APP_API_URL;
 const apiManufacturer = apiUrl + "/manufactureres";
 
 export const getAllManufacturer = async () => {

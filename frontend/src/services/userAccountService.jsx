@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import axiosInstance from "../authentication/axiosInstance";
 import Cookies from "js-cookie";
 
-const apiUrl = process.env.REACT_APP_URL_SERVER;
+const apiUrl = process.env.REACT_APP_API_URL;
 const apiUser = apiUrl + '/user';
 
 const userService = {

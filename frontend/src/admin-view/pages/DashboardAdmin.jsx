@@ -36,7 +36,7 @@ const DashboardAdmin = () => {
     yearlyRevenue: [],
   });
 
-  const api = process.env.REACT_APP_URL_SERVER; // URL API của bạn
+  const api = process.env.REACT_APP_API_URL; // URL API của bạn
 
   useEffect(() => {
     const fetchData = async () => {
