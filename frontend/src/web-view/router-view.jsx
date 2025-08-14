@@ -2,8 +2,8 @@ import { useRoutes, Navigate } from "react-router-dom";
 
 import Login from "../share/login";
 import Register from "../share/register";
-import ProductDetail from "./page/detailsProduct";
 import Home from "./page/Home";
+import ProductDetails from "./page/Details";
 
 const RouterView = () => {
   const element = useRoutes([
@@ -11,10 +11,10 @@ const RouterView = () => {
       path: "/",
       element: <Home />,
     },
-    // {
-    //   path: "/product-details/:masanpham",
-    //   element: <ProductDetails />,
-    // },
+    {
+      path: "/product-details/:masanpham",
+      element: <ProductDetails />,
+    },
     // {
     //   path: "/profile",
     //   element: <Profile />,

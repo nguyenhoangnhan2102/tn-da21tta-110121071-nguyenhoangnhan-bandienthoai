@@ -1,87 +1,99 @@
 .product-container {
-    background-color: white;
+    background-color: #fff;
     border-radius: 10px;
-    cursor: pointer;
+    padding: 16px;
 }
 
 .product-list {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 16px;
+    gap: 20px;
     padding: 16px;
-    justify-items: center;
-    /* Căn giữa các phần tử theo chiều ngang */
 }
 
 .product-card {
-    list-style: none;
     display: flex;
-    flex-direction: column; // Canh các phần tử theo chiều dọc
+    flex-direction: column;
     align-items: center;
-    width: 250px; // Đặt chiều rộng cố định cho từng card
-    border: 1px solid #ddd;
-    border-radius: 8px;
+    width: 250px;
+    border-radius: 12px;
     padding: 16px;
-    text-align: center;
     background: #fff;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-    position: relative;
-    /* Đảm bảo ảnh được căn theo container */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+    text-align: center;
+    cursor: pointer;
 }
 
-.product-card:hover .product-image {
-    transform: translateY(-10px);
-    /* Di chuyển ảnh lên khi hover */
+.product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
 }
 
 .product-image {
-    max-width: 100%;
-    height: auto;
-    border-radius: 4px;
-    transition: transform 0.3s ease-in-out;
-    /* Thêm hiệu ứng chuyển động cho ảnh */
+    width: 100%;
+    height: 220px;
+    object-fit: contain;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image {
+    transform: scale(1.05);
 }
 
 .product-name {
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
+    margin: 12px 0 4px 0;
     color: #333;
-    height: 30px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
-.current-price {
-    color: #e53935;
-    font-weight: bold;
-}
-
-.original-price {
-    text-decoration: line-through;
-    color: #888;
-}
-
-.discount {
-    color: #f57c00;
-}
-
-.stock-info {
-    background-color: #fff3cd;
-    padding: 4px 8px;
-    border-radius: 4px;
+.product-specs {
     font-size: 14px;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.product-price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #e53935;
+    margin-bottom: 12px;
 }
 
 .buy-now-button {
-    background: #F1F8FE;
-    color: #2A83E9;
+    background: linear-gradient(90deg, #ff6a00, #ff8c00);
+    color: white;
     border: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    font-weight: bold;
+    padding: 10px 0;
+    width: 100%;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.buy-now-button:hover {
+    background: linear-gradient(90deg, #ff5a00, #ff7a00);
+    transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
-    .product-card {
-        padding: 12px;
+    .product-image {
+        height: 180px;
+    }
+
+    .product-name {
+        font-size: 14px;
+    }
+
+    .product-price {
+        font-size: 16px;
     }
 }

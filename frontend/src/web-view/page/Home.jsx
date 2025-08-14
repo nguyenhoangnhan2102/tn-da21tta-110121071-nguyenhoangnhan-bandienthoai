@@ -14,7 +14,7 @@ const Home = () => {
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedPriceRange, setSelectedPriceRange] = useState("");
   const [visibleCount, setVisibleCount] = useState(8); // Số lượng sản phẩm hiển thị ban đầu
-
+  console.log("products", products)
   useEffect(() => {
     fetchListProduct();
     fetchListManufacturer();
@@ -83,7 +83,7 @@ const Home = () => {
               placeholder="Tìm kiếm"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="form-control col-2"
+              className="form-control"
               style={{ marginLeft: '18px' }}
             />
           </div>
@@ -131,24 +131,14 @@ const Home = () => {
                     className="product-image"
                     alt={product.tensanpham || "Hình ảnh sản phẩm"}
                   />
-                  <label className="product-name mt-2"
-                    style={{
-                      padding: '8px',
-                      maxWidth: '200px',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      cursor: 'pointer'
-                    }}
-                  >{product.tensanpham}</label>
-                  <p className="product-price mt-2">
-                    <span className="current-price">
-                      {product.giaban.toLocaleString("vi-VN")}<sup> <u>đ</u></sup>
-                    </span>
+                  <h3 className="product-name">{product.tensanpham}</h3>
+                  <p className="product-specs">
+                    {product.ram} / {product.dungluong}
                   </p>
-                  <button className="text-decoration-none buy-now-button w-100">
-                    Mua ngay
-                  </button>
+                  <p className="product-price">
+                    {Number(product.giaban).toLocaleString("vi-VN")}<sup><u>đ</u></sup>
+                  </p>
+                  <button className="buy-now-button">Mua ngay</button>
                 </div>
               </Link>
             ))
