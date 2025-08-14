@@ -28,7 +28,7 @@ const ProductComponent = () => {
   const [isDelete, checkDelete] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
-
+  const [isViewOnly, setIsViewOnly] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const productsPerPage = 10;
@@ -68,11 +68,13 @@ const ProductComponent = () => {
   const handleCreate = () => {
     setSelectedProduct(null);
     setOpenModal(true);
+    setIsViewOnly(false); // Chế độ nhập dữ liệu
   };
 
   const handleViewDetails = (product) => {
     setImgUrl(product.hinhanhchinh);
     setSelectedProduct(product);
+    setIsViewOnly(false); // Chế độ nhập dữ liệu
     setOpenModal(true);
   };
 
@@ -80,6 +82,7 @@ const ProductComponent = () => {
     console.log("pro", product)
     setImgUrl(product.hinhanhchinh);
     setSelectedProduct(product);
+    setIsViewOnly(false); // Chế độ nhập dữ liệu
     setOpenModal(true);
   };
 
@@ -348,7 +351,7 @@ const ProductComponent = () => {
         open={openModal}
         onSave={handleSave}
         onClose={() => setOpenModal(false)}
-        isViewOnly={true}
+        isViewOnly={isViewOnly}
       />
       <ProductDetailModal
         product={selectedProduct}

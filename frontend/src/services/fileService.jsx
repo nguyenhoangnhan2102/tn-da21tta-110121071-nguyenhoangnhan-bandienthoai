@@ -24,3 +24,32 @@ export const uploadSingleFile = async (imageUrl, folderPath, file) => {
         throw error;
     }
 };
+
+// Hàm upload nhiều file
+export const uploadMultipleFiles = async (folderPath, files) => {
+    try {
+        const formData = new FormData();
+        formData.append("folderPath", folderPath);
+
+        // Thêm từng file vào formData
+        files.forEach(file => {
+            formData.append("files", file);
+        });
+
+        const response = await axios.post(
+            `${apiUrl}/uploadMultipleFiles`,
+            formData,
+            {
+                headers: { "Content-Type": "multipart/form-data" },
+                maxContentLength: Infinity, // tránh giới hạn dung lượng
+                maxBodyLength: Infinity
+            }
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error("Upload multiple files error:", error);
+        throw error;
+    }
+};
+

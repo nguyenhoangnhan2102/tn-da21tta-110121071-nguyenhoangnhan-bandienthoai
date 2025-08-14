@@ -59,37 +59,47 @@ router.post(
 // Route upload nhiều file
 router.post(
     "/uploadMultipleFiles",
-    upload.array("files", 10),
-    validateRequest,
+    upload.array("files", 10), // Tối đa 10 file
+    (req, res, next) => {
+        const { folderPath, makhachhang } = req.body;
+        const files = req.files;
+
+        if (!folderPath) {
+            return res.status(400).json({ error: "folderPath is missing or empty" });
+        }
+
+        if (!files || files.length === 0) {
+            return res.status(400).json({ error: "files are missing or empty" });
+        }
+
+        next();
+    },
     async (req, res) => {
         try {
-            const { folderPath, makhachhang } = req.body;
-            const fullFolderPath = path.join(
-                __dirname,
-                "../../public",
-                folderPath,
-                makhachhang
-            );
+            const { folderPath } = req.body;
 
-            // Gọi service để upload các file
-            const newFiles = await fileService.uploadMultipleFiles(
-                req.files,
-                fullFolderPath
-            );
+            // Duyệt từng file và upload
+            const results = [];
+            for (const file of req.files) {
+                const result = await fileService.uploadSingleFile(
+                    file,
+                    folderPath,
+                    file.originalname // Có thể thay bằng uuidv4() + ext nếu muốn tên duy nhất
+                );
+                results.push({
+                    fileName: result.fileName,
+                    folderPath,
+                });
+            }
 
-            // Lấy danh sách tên file từ kết quả trả về
-            const fileNames = newFiles.map((file) => file.fileName);
-
-            // Trả về kết quả theo định dạng yêu cầu
             res.status(200).json({
                 status: true,
-                listfileName: `[${fileNames.join(",")}]`,
-                folderPath,
-                makhachhang,
+                uploadedFiles: results,
             });
         } catch (err) {
             res.status(500).json({ error: err.message });
         }
     }
 );
+
 module.exports = router;
