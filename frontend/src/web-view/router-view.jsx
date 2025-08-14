@@ -1,20 +1,28 @@
 import { useRoutes, Navigate } from "react-router-dom";
 
-import MainPage from "./page/page";
 import Login from "../share/login";
 import Register from "../share/register";
 import ProductDetail from "./page/detailsProduct";
+import Home from "./page/Home";
 
 const RouterView = () => {
   const element = useRoutes([
     {
       path: "/",
-      element: <MainPage />,
+      element: <Home />,
     },
-    {
-      path: "/san-pham/:masanpham",
-      element: <ProductDetail />,
-    },
+    // {
+    //   path: "/product-details/:masanpham",
+    //   element: <ProductDetails />,
+    // },
+    // {
+    //   path: "/profile",
+    //   element: <Profile />,
+    // },
+    // {
+    //   path: "/cart",
+    //   element: <Cart />,
+    // },
     {
       path: "/login",
       element: <Login />,

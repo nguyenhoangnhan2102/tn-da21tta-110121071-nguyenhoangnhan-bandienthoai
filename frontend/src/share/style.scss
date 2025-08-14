@@ -1,0 +1,55 @@
+.navbar-container {
+    background-color: #FFD400;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar-logo {
+    cursor: pointer;
+    font-family: "Titillium Web", sans-serif;
+}
+
+.btn-login {
+    background-color: #FFD400;
+    font-family: "Karla", sans-serif;
+    color: black;
+    border: none;
+}
+
+.btn-login:hover {
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    color: black;
+}
+
+li {
+    list-style: none;
+}
+
+p {
+    margin-bottom: 0;
+}
+
+.navbar-content {
+    width: 86%;
+}
+
+.username {
+    display: flex;
+    align-items: center;
+}
+
+
+.button-login {
+    color: black;
+    padding: 10px;
+}
+
+.button-login:hover {
+    padding: 10px;
+    border-radius: 32px;
+    background-color: rgb(227, 248, 106);
+}
