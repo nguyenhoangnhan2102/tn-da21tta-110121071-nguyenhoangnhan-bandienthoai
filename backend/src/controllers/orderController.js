@@ -308,14 +308,24 @@ const getAllOrdersByCustomer = async (req, res) => {
     try {
         const [orders] = await connection.query(
             `SELECT 
-         dh.madonhang, dh.thoigiandat, dh.trangthai, dh.tongtien, dh.diachigiaohang,
-         ctdh.masanpham, ctdh.soluong, ctdh.dongia,
-         sp.tensanpham
-       FROM DONHANG dh
-       LEFT JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
-       LEFT JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
-       WHERE dh.manguoidung = ?
-       ORDER BY dh.thoigiandat DESC, dh.madonhang DESC`,
+                dh.madonhang, 
+                dh.thoigiandat, 
+                dh.trangthai, 
+                dh.tongtien, 
+                dh.diachigiaohang,
+                dh.ghichu,
+                ctdh.masanpham, 
+                ctdh.tensanpham, 
+                ctdh.mau, 
+                ctdh.dungluong, 
+                ctdh.ram,
+                ctdh.hinhanh, 
+                ctdh.soluong, 
+                ctdh.dongia
+            FROM DONHANG dh
+            LEFT JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
+            WHERE dh.manguoidung = ?
+            ORDER BY dh.thoigiandat DESC, dh.madonhang DESC`,
             [manguoidung]
         );
 
@@ -327,18 +337,24 @@ const getAllOrdersByCustomer = async (req, res) => {
             });
         }
 
+        // Gom nhóm đơn hàng
         const formatted = orders.reduce((acc, row) => {
-            let ex = acc.find(o => o.madonhang === row.madonhang);
+            let existingOrder = acc.find(o => o.madonhang === row.madonhang);
+
             const item = {
                 masanpham: row.masanpham,
                 tensanpham: row.tensanpham,
+                mau: row.mau,
+                dungluong: row.dungluong,
+                ram: row.ram,
+                hinhanh: row.hinhanh,
                 soluong: row.soluong,
                 dongia: row.dongia,
                 thanhtien: row.soluong && row.dongia ? Number(row.soluong) * Number(row.dongia) : 0
             };
 
-            if (ex) {
-                if (row.masanpham) ex.chitiet.push(item);
+            if (existingOrder) {
+                if (row.masanpham) existingOrder.chitiet.push(item);
             } else {
                 acc.push({
                     madonhang: row.madonhang,
@@ -346,18 +362,29 @@ const getAllOrdersByCustomer = async (req, res) => {
                     trangthai: row.trangthai,
                     tongtien: row.tongtien,
                     diachigiaohang: row.diachigiaohang,
+                    ghichu: row.ghichu,
                     chitiet: row.masanpham ? [item] : []
                 });
             }
             return acc;
         }, []);
 
-        return res.status(200).json({ EM: "Lấy danh sách đơn hàng thành công", EC: 1, DT: formatted });
+        return res.status(200).json({
+            EM: "Lấy danh sách đơn hàng thành công",
+            EC: 1,
+            DT: formatted
+        });
+
     } catch (err) {
         console.error("Lỗi khi lấy danh sách đơn hàng:", err);
-        return res.status(500).json({ EM: `Lỗi server: ${err.message}`, EC: -1, DT: [] });
+        return res.status(500).json({
+            EM: `Lỗi server: ${err.message}`,
+            EC: -1,
+            DT: []
+        });
     }
 };
+
 
 module.exports = {
     getAllOrders,

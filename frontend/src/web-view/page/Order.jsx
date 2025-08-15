@@ -12,6 +12,7 @@ import { FormControl, TextField } from "@mui/material";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const orderUrl = apiUrl + "/orders";
+const imgURL = process.env.REACT_APP_IMG_URL;
 
 const Orders = () => {
     const [orders, setOrders] = useState([]);
@@ -52,6 +53,13 @@ const Orders = () => {
     const handleViewDetails = (order) => {
         setSelectedOrder(order);
         setShowModal(true);
+    };
+
+    const trangThaiMapping = {
+        choxacnhan: "Chờ xác nhận",
+        danggiao: "Đang giao",
+        dagiao: "Đã giao",
+        huy: "Đã hủy"
     };
 
     return (
@@ -116,14 +124,22 @@ const Orders = () => {
                             <TextField label="Tổng tiền" value={new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(selectedOrder.tongtien)} InputProps={{ readOnly: true }} />
                         </FormControl>
                         <FormControl fullWidth margin="dense">
-                            <TextField label="Trạng thái" value={selectedOrder.trangthai} InputProps={{ readOnly: true }} />
+                            <TextField
+                                label="Trạng thái"
+                                value={trangThaiMapping[selectedOrder.trangthai] || selectedOrder.trangthai}
+                                InputProps={{ readOnly: true }}
+                            />
                         </FormControl>
 
                         <h5 className="mt-4">Sản phẩm</h5>
                         <table className="table table-bordered table-sm">
                             <thead>
                                 <tr>
+                                    <th>Hình ảnh</th>
                                     <th>Tên sản phẩm</th>
+                                    <th>Màu</th>
+                                    <th>Dung lượng</th>
+                                    <th>RAM</th>
                                     <th>Số lượng</th>
                                     <th>Đơn giá</th>
                                     <th>Thành tiền</th>
@@ -133,15 +149,35 @@ const Orders = () => {
                                 {selectedOrder.chitiet?.length > 0 ? (
                                     selectedOrder.chitiet.map((sp, i) => (
                                         <tr key={i}>
+                                            <td>
+                                                <img
+                                                    src={`${imgURL}${sp.hinhanh}`}
+                                                    alt={sp.tensanpham}
+                                                    style={{ width: "60px", height: "60px", objectFit: "cover" }}
+                                                />
+                                            </td>
                                             <td>{sp.tensanpham}</td>
+                                            <td>{sp.mau}</td>
+                                            <td>{sp.dungluong}</td>
+                                            <td>{sp.ram}</td>
                                             <td>{sp.soluong}</td>
-                                            <td>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(sp.dongia)}</td>
-                                            <td>{new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(sp.thanhtien)}</td>
+                                            <td>
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND"
+                                                }).format(sp.dongia)}
+                                            </td>
+                                            <td>
+                                                {new Intl.NumberFormat("vi-VN", {
+                                                    style: "currency",
+                                                    currency: "VND"
+                                                }).format(sp.thanhtien)}
+                                            </td>
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="4" className="text-center">Không có sản phẩm</td>
+                                        <td colSpan="8" className="text-center">Không có sản phẩm</td>
                                     </tr>
                                 )}
                             </tbody>

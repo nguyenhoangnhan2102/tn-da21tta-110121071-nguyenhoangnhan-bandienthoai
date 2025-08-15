@@ -1,3 +1,89 @@
-table th {
-    color: black;
+.order-history {
+    h1 {
+        font-weight: bold;
+        color: #333;
+    }
+
+    table {
+        border-radius: 8px;
+        overflow: hidden;
+
+        thead {
+            background-color: #212529;
+            color: #fff;
+        }
+
+        tbody tr {
+            transition: background-color 0.2s;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        th,
+        td {
+            vertical-align: middle;
+        }
+    }
+
+    .btn-sm {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+
+        &:hover {
+            background-color: #495057;
+            color: white;
+        }
+    }
+
+    .status-choxacnhan {
+        color: #856404;
+        background-color: #fff3cd;
+        height: 20px;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .status-danggiao {
+        color: #004085;
+        background-color: #cce5ff;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .status-dagiao {
+        color: #155724;
+        background-color: #d4edda;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    .status-huy {
+        color: #721c24;
+        background-color: #f8d7da;
+        border-radius: 12px;
+        font-weight: 500;
+    }
+
+    /* Modal */
+    .modal-body {
+        .MuiFormControl-root {
+            margin-bottom: 12px;
+        }
+
+        table {
+            thead {
+                background-color: #f1f1f1;
+            }
+
+            img {
+                border-radius: 8px;
+                border: 1px solid #ddd;
+            }
+        }
+    }
 }
