@@ -16,9 +16,10 @@ import RouterAdmin from "./admin-view/router-admin";
 import NavBarAdmin from "./admin-view/components/navBarAdmin";
 import HeaderAdmin from "./admin-view/components/headerAdmin";
 
-import { Grid } from "@mui/material";
+import { Grid, Paper } from "@mui/material";
 import Header from "./web-view/share/header";
 import Footer from "./web-view/share/footer";
+import SidebarUser from "./user-view/profile/sidebar";
 
 function App() {
   return (
@@ -72,22 +73,27 @@ const MainLayout = () => (
 
 const RouterUser = () => (
   <>
+    <Header />
     {/* <HeaderUser /> */}
-    <Grid container style={{ height: "100vh" }}>
-      <Grid item xs={3} md={2.5}></Grid>
-      <Grid item xs={9} md={9}>
-        <Routes>
-          <Route path="/*" element={<UserRouter />} />
-        </Routes>
+    <Grid container style={{ minHeight: "100vh", background: "#f8f9fa" }}>
+      <Grid item xs={12} md={3} style={{ background: "#fff", borderRight: "1px solid #ddd" }}>
+        <SidebarUser />
+      </Grid>
+      <Grid item xs={12} md={9} style={{ padding: "20px" }}>
+        <Paper elevation={2} style={{ padding: "20px", borderRadius: "12px" }}>
+          <Routes>
+            <Route path="/*" element={<UserRouter />} />
+          </Routes>
+        </Paper>
       </Grid>
     </Grid>
+    <Footer />
   </>
 );
 
 const AdminLayout = () => (
   <>
     <HeaderAdmin />
-
     <Grid container style={{ height: "100vh" }}>
       <Grid item xs={3} md={2.5}>
         <NavBarAdmin />

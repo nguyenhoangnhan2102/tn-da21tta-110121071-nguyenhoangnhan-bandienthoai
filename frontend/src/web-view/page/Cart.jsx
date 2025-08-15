@@ -1,0 +1,196 @@
+import React, { useEffect, useState } from "react";
+import { TextField } from "@mui/material";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+import axiosInstance from "../../authentication/axiosInstance";
+import { Link } from "react-router-dom";
+import "../style/Cart.scss";
+
+const apiUrl = process.env.REACT_APP_API_URL;
+const imgURL = process.env.REACT_APP_IMG_URL;
+
+function Cart() {
+    const [infoUser, setInfoUser] = useState({});
+    const [totalQuantity, setTotalQuantity] = useState(0);
+    const [subTotal, setSubTotal] = useState(0);
+    const [cartItems, setCartItems] = useState([]);
+
+    useEffect(() => {
+        const accessToken = Cookies.get("accessToken");
+        if (accessToken) {
+            try {
+                const decodedToken = jwtDecode(accessToken);
+                if (decodedToken) {
+                    setInfoUser(decodedToken);
+                    fetchCartItems(decodedToken.manguoidung);
+                }
+            } catch (error) {
+                console.error("Error decoding JWT:", error);
+            }
+        }
+    }, []);
+
+    const fetchCartItems = async (manguoidung) => {
+        try {
+            const response = await axiosInstance.get(`${apiUrl}/cart/${manguoidung}`);
+            if (response.data.EC === 1) {
+                const updatedItems = response.data.DT.map((item) => ({
+                    ...item,
+                    soluong: item.soluong || 1,
+                }));
+                setCartItems(updatedItems);
+                calculateSubTotal(updatedItems);
+                calculateTotalQuantity(updatedItems);
+            }
+        } catch (error) {
+            console.error("Error fetching cart items:", error);
+        }
+    };
+
+    const handleCheckout = async () => {
+        if (!infoUser.hoten || !infoUser.sodienthoai || !infoUser.diachi) {
+            toast.warning("Vui lòng nhập đầy đủ thông tin!!!");
+            return;
+        }
+        if (cartItems.length === 0) {
+            toast.warning("Giỏ hàng của bạn đang trống.");
+            return;
+        }
+        try {
+            const orderData = {
+                manguoidung: infoUser.manguoidung,
+                hotenkhachhang: infoUser.hoten,
+                sdtkhachhang: infoUser.sodienthoai,
+                diachigiaohang: infoUser.diachi,
+                tongtien: subTotal,
+                chiTietSanPham: cartItems.map(item => ({
+                    masanpham: item.masanpham,
+                    giatien: item.giaban,
+                    soluong: item.soluong
+                }))
+            };
+            const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
+            if (response.data.success) {
+                await axiosInstance.post(`${apiUrl}/cart/delete`, { manguoidung: infoUser.manguoidung });
+                toast.success("Đặt hàng thành công!");
+                setCartItems([]);
+                setTotalQuantity(0);
+                setSubTotal(0);
+            } else {
+                toast.error(`Đặt hàng thất bại: ${response.data.message}`);
+            }
+        } catch (error) {
+            console.error("Lỗi khi đặt hàng:", error);
+            toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
+        }
+    };
+
+    const handleDelete = async (magiohang, masanpham, mamau) => {
+        await axiosInstance.delete(`${apiUrl}/cart/${magiohang}/${masanpham}/${mamau}`);
+        toast.success("Xóa sản phẩm khỏi giỏ hàng thành công");
+        fetchCartItems(infoUser.manguoidung);
+    };
+
+    const calculateSubTotal = (items) => {
+        setSubTotal(items.reduce((sum, item) => sum + item.giaban * item.soluong, 0));
+    };
+
+    const calculateTotalQuantity = (items) => {
+        setTotalQuantity(items.reduce((sum, item) => sum + item.soluong, 0));
+    };
+
+    const handleIncrease = (masanpham) => {
+        const updatedItems = cartItems.map((item) =>
+            item.masanpham === masanpham
+                ? { ...item, soluong: item.soluong + 1 }
+                : item
+        );
+        setCartItems(updatedItems);
+        calculateSubTotal(updatedItems);
+        calculateTotalQuantity(updatedItems);
+    };
+
+    const handleDecrease = (masanpham) => {
+        const updatedItems = cartItems.map((item) =>
+            item.masanpham === masanpham && item.soluong > 1
+                ? { ...item, soluong: item.soluong - 1 }
+                : item
+        );
+        setCartItems(updatedItems);
+        calculateSubTotal(updatedItems);
+        calculateTotalQuantity(updatedItems);
+    };
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setInfoUser(prev => ({ ...prev, [name]: value }));
+    };
+
+    return (
+        <div className="cart-container container py-3">
+            <h2 className="cart-title text-center mb-4">🛒 Giỏ Hàng</h2>
+            <div className="row">
+                {/* Danh sách sản phẩm */}
+                <div className="col-lg-8">
+                    {cartItems.length > 0 ? cartItems.map((item) => (
+                        <div key={`${item.magiohang}-${item.masanpham}`} className="cart-item card shadow-sm mb-3">
+                            <div className="row g-0 align-items-center">
+                                <div className="col-md-3 text-center">
+                                    <img
+                                        src={`${imgURL}/${item.hinhanhchinh}`}
+                                        alt={item.tensanpham}
+                                        className="img-fluid rounded"
+                                    />
+                                </div>
+                                <div className="col-md-9">
+                                    <div className="card-body">
+                                        <div className="d-flex justify-content-between align-items-start">
+                                            <h5 className="card-title">{item.tensanpham}</h5>
+                                            <button className="btn-remove" onClick={() => handleDelete(item.magiohang, item.masanpham)}>
+                                                <i className="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                        <p className="text-muted">Giá: {parseFloat(item.giaban).toLocaleString()} VND</p>
+
+                                        <div className="d-flex justify-content-between align-items-center mt-2">
+                                            <div className="quantity-control">
+                                                <button onClick={() => handleDecrease(item.masanpham)}>-</button>
+                                                <span>{item.soluong}</span>
+                                                <button onClick={() => handleIncrease(item.masanpham)}>+</button>
+                                            </div>
+                                            <p className="fw-bold text-danger mb-0">
+                                                {(item.giaban * item.soluong).toLocaleString()} VND
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )) : <p className="text-center">Giỏ hàng trống</p>}
+                </div>
+
+                {/* Thông tin người mua + thanh toán */}
+                <div className="col-lg-4">
+                    <div className="card p-3 shadow-sm mb-3">
+                        <h4 className="text-center mb-3">Thông tin người mua</h4>
+                        <form>
+                            <TextField fullWidth margin="normal" label="Họ tên" name="hoten" value={infoUser.hoten || ""} onChange={handleChange} />
+                            <TextField fullWidth margin="normal" label="Số điện thoại" type="tel" name="sodienthoai" value={infoUser.sodienthoai || ""} onChange={handleChange} />
+                            <TextField fullWidth margin="normal" label="Địa chỉ giao hàng" name="diachi" value={infoUser.diachi || ""} onChange={handleChange} multiline rows={3} />
+                        </form>
+                    </div>
+                    <div className="card p-3 shadow-sm">
+                        <h4 className="text-center mb-3">Tóm tắt đơn hàng</h4>
+                        <p><strong>Số lượng sản phẩm:</strong> {totalQuantity}</p>
+                        <p><strong>Tổng cộng:</strong> <span className="text-danger">{subTotal.toLocaleString()} VND</span></p>
+                        <button className="btn btn-success w-100 mt-3" onClick={handleCheckout}>Thanh Toán</button>
+                        <Link to="/" className="btn btn-outline-primary w-100 mt-2">⬅ Tiếp tục mua sắm</Link>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default Cart;

@@ -4,6 +4,7 @@ import Login from "../share/login";
 import Register from "../share/register";
 import Home from "./page/Home";
 import ProductDetails from "./page/Details";
+import Cart from "./page/Cart";
 
 const RouterView = () => {
   const element = useRoutes([
@@ -19,10 +20,10 @@ const RouterView = () => {
     //   path: "/profile",
     //   element: <Profile />,
     // },
-    // {
-    //   path: "/cart",
-    //   element: <Cart />,
-    // },
+    {
+      path: "/cart",
+      element: <Cart />,
+    },
     {
       path: "/login",
       element: <Login />,

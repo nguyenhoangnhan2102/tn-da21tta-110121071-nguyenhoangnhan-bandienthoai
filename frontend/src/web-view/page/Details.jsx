@@ -50,25 +50,22 @@ const ProductDetails = () => {
             }
         }
     };
-
+    console.log("inforUser", inforUser)
     const handleAddToCart = async () => {
         if (!isLoggedIn) {
             navigate("/login", { state: { from: location.pathname } });
             return;
         }
 
-        const { makhachhang } = inforUser;
-        const { masanpham } = productdetails;
-
+        const manguoidung = inforUser?.manguoidung; // lấy trực tiếp
+        const masanpham = productdetails?.masanpham;
         const soluong = 1;
-        const gia = productdetails.giaban;
 
         try {
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
-                makhachhang,
+                manguoidung,
                 masanpham,
-                soluong,
-                gia,
+                soluong
             });
 
             if (response.status === 201) {
@@ -95,18 +92,18 @@ const ProductDetails = () => {
             return;
         }
 
-        const { makhachhang } = inforUser;
+        const { manguoidung } = inforUser?.manguoidung;
         const { masanpham } = productdetails;
 
         const soluong = 1;
-        const gia = productdetails.giaban;
+        const giaban = productdetails.giaban;
 
         try {
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
-                makhachhang,
+                manguoidung,
                 masanpham,
                 soluong,
-                gia,
+                giaban,
             });
 
             if (response.status === 201) {

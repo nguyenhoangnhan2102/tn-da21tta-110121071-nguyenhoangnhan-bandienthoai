@@ -45,13 +45,16 @@ const userRoute = require("./src/routers/userRouters.js");
 const manufacturerRouter = require("./src/routers/manufacturerRouters.js");
 const productRouters = require("./src/routers/productRouters.js");
 const fileRouter = require("./src/routers/fileRouters.js");
+const cartRouter = require("./src/routers/cart");
+const orderRouter = require("./src/routers/order");
 
 //router
 app.use("/api", fileRouter);
 app.use("/api/user", userRoute);
 app.use("/api/manufactureres", manufacturerRouter);
 app.use("/api/product", productRouters);
-
+app.use("/api/cart", cartRouter);
+app.use("/api/orders", orderRouter);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId
