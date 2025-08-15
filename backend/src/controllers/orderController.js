@@ -17,96 +17,106 @@ const moment = require('moment-timezone');
 
 const ORDER_STATUSES = ['choxacnhan', 'danggiao', 'hoanthanh', 'huy'];
 
+// Lấy tất cả đơn hàng kèm hình ảnh sản phẩm
 const getAllOrders = async (req, res) => {
     try {
         const [rows] = await connection.query(`
-      SELECT
-        dh.madonhang,
-        dh.manguoidung,
-        dh.thoigiandat,
-        dh.tongtien,
-        dh.trangthai,
-        dh.diachigiaohang,
-        dh.ghichu,
-        dh.ngaytao,
-        dh.ngaycapnhat,
-        nd.hoten AS tennguoidung,
-        nd.email,
-        nd.sodienthoai
-      FROM DONHANG dh
-      JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
-      ORDER BY dh.ngaytao DESC
-    `);
+            SELECT
+                dh.madonhang,
+                dh.manguoidung,
+                dh.thoigiandat,
+                dh.tongtien,
+                dh.trangthai,
+                dh.diachigiaohang,
+                dh.ghichu,
+                dh.ngaytao,
+                dh.ngaycapnhat,
+                nd.hoten AS tennguoidung,
+                nd.email,
+                nd.sodienthoai,
+                sp.hinhanhchinh
+            FROM DONHANG dh
+            JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
+            JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
+            JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
+            ORDER BY dh.ngaytao DESC
+        `);
 
-        res.status(200).json(rows);
+        res.status(200).json({ success: true, data: rows });
     } catch (err) {
         console.error(err);
         res.status(500).send('Server Error');
     }
 };
 
-/**
- * GET /orders/:madonhang
- * Detailed order with items
- */
+
+// Lấy chi tiết đơn hàng theo mã đơn
 const getOrderDetails = async (req, res) => {
     try {
         const { madonhang } = req.params;
         if (!madonhang) {
-            return res.status(400).json({ message: 'Mã đơn hàng là bắt buộc.' });
+            return res.status(400).json({ success: false, message: 'Mã đơn hàng là bắt buộc.' });
         }
 
+        // Lấy thông tin chung của đơn hàng
         const [headerRows] = await connection.query(`
-      SELECT 
-        dh.madonhang,
-        dh.manguoidung,
-        dh.thoigiandat,
-        dh.trangthai,
-        dh.tongtien,
-        dh.ghichu,
-        dh.diachigiaohang,
-        dh.ngaytao,
-        dh.ngaycapnhat,
-        nd.hoten,
-        nd.sodienthoai,
-        nd.email
-      FROM DONHANG dh
-      JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
-      WHERE dh.madonhang = ?
-    `, [madonhang]);
+            SELECT 
+                dh.madonhang,
+                dh.manguoidung,
+                dh.thoigiandat,
+                dh.trangthai,
+                dh.tongtien,
+                dh.ghichu,
+                dh.diachigiaohang,
+                dh.ngaytao,
+                dh.ngaycapnhat,
+                nd.hoten,
+                nd.sodienthoai,
+                nd.email
+            FROM DONHANG dh
+            JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
+            WHERE dh.madonhang = ?
+        `, [madonhang]);
 
         if (headerRows.length === 0) {
-            return res.status(404).json({ message: 'Không tìm thấy đơn hàng.' });
+            return res.status(404).json({ success: false, message: 'Không tìm thấy đơn hàng.' });
         }
 
+        // Lấy danh sách sản phẩm trong đơn hàng (dùng dữ liệu lưu trực tiếp trong CHITIETDONHANG)
         const [items] = await connection.query(`
-      SELECT 
-        ctdh.masanpham,
-        sp.tensanpham,
-        ctdh.soluong,
-        ctdh.dongia
-      FROM CHITIETDONHANG ctdh
-      JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
-      WHERE ctdh.madonhang = ?
-    `, [madonhang]);
+            SELECT 
+                masanpham,
+                tensanpham,
+                mau,
+                dungluong,
+                ram,
+                soluong,
+                dongia
+            FROM CHITIETDONHANG
+            WHERE madonhang = ?
+        `, [madonhang]);
 
         const orderDetails = {
             ...headerRows[0],
-            sanpham: items.map(r => ({
-                masanpham: r.masanpham,
-                tensanpham: r.tensanpham,
-                soluong: r.soluong,
-                dongia: r.dongia,
-                thanhtien: Number(r.dongia) * Number(r.soluong)
+            sanpham: items.map(item => ({
+                masanpham: item.masanpham,
+                tensanpham: item.tensanpham,
+                mau: item.mau,
+                dungluong: item.dungluong,
+                ram: item.ram,
+                soluong: item.soluong,
+                dongia: item.dongia,
+                thanhtien: Number(item.dongia) * Number(item.soluong)
             }))
         };
 
         res.status(200).json({ success: true, data: orderDetails });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ message: 'Lỗi server.' });
+        res.status(500).json({ success: false, message: 'Lỗi server.' });
     }
 };
+
 
 /**
  * POST /orders/confirm
@@ -143,7 +153,7 @@ const confirmOrder = async (req, res) => {
 
         // 2️⃣ Lặp qua từng sản phẩm trong giỏ
         for (const item of sanpham) {
-            const { masanpham, soluong } = item;
+            const { masanpham, soluong, hinhanh } = item;
 
             if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0) {
                 throw new Error('Sản phẩm không hợp lệ trong giỏ hàng.');
@@ -169,8 +179,8 @@ const confirmOrder = async (req, res) => {
 
             // 5️⃣ Lưu vào CHITIETDONHANG (snapshot)
             await conn.query(
-                `INSERT INTO CHITIETDONHANG (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO CHITIETDONHANG (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia, hinhanh)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     madonhang,
                     masanpham,
@@ -179,7 +189,8 @@ const confirmOrder = async (req, res) => {
                     product.dungluong,
                     product.ram,
                     soluong,
-                    product.giaban
+                    product.giaban,
+                    hinhanh
                 ]
             );
 

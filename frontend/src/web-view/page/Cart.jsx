@@ -66,7 +66,8 @@ function Cart() {
                 sanpham: cartItems.map(item => ({
                     masanpham: item.masanpham,
                     soluong: item.soluong,
-                    dongia: item.giaban
+                    dongia: item.giaban,
+                    hinhanh: item.hinhanhchinh
                 }))
             };
 

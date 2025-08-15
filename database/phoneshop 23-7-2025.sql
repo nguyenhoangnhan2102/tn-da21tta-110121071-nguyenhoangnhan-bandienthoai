@@ -67,7 +67,8 @@ CREATE TABLE CHITIETDONHANG (
     tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, 
     mau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,       
     dungluong VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, 
-    ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,      
+    ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    hinhanh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     soluong INT,
     dongia DECIMAL(15,2),
     PRIMARY KEY (madonhang, masanpham),
@@ -77,7 +78,7 @@ CREATE TABLE CHITIETDONHANG (
 
 
 -- ALTER TABLE CHITIETDONHANG
--- ADD COLUMN tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER masanpham,
+-- ADD COLUMN hinhanh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER ram;
 -- ADD COLUMN mau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER tensanpham,
 -- ADD COLUMN dungluong VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER mau,
 -- ADD COLUMN ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER dungluong;
