@@ -35,7 +35,7 @@ const Header = () => {
         } else if (option === "Profile") {
             navigate("/profile");
         } else if (option === "Orders") {
-            navigate("/history-order");
+            navigate("/profile/history-order");
         } else if (option === "AdminManagement") {
             navigate("/admin");
         }

@@ -6,11 +6,11 @@ import Orders from "../web-view/page/Order";
 const UserRouter = () => {
   const element = useRoutes([
     {
-      path: "/",
+      path: "", // tương đương "/user"
       element: <Profile />,
     },
     {
-      path: "/history-order",
+      path: "history-order",
       element: <Orders />,
     },
     {

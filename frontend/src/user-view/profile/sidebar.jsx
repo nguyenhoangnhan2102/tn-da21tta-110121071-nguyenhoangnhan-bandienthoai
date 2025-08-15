@@ -11,7 +11,7 @@ const SidebarUser = () => {
 
     const menuItems = [
         { text: "Thông tin cá nhân", icon: <AccountCircle />, path: "/profile" },
-        { text: "Lịch sử đơn hàng", icon: <History />, path: "/history-order" },
+        { text: "Lịch sử đơn hàng", icon: <History />, path: "/profile/history-order" },
         { text: "Điểm thưởng", icon: <Star />, path: "/user/points" },
     ];
 

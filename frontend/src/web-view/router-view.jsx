@@ -18,10 +18,6 @@ const RouterView = () => {
       element: <ProductDetails />,
     },
     {
-      path: "/history-order",
-      element: <Orders />,
-    },
-    {
       path: "/cart",
       element: <Cart />,
     },

@@ -76,10 +76,10 @@ const RouterUser = () => (
     <Header />
     {/* <HeaderUser /> */}
     <Grid container style={{ minHeight: "100vh", background: "#f8f9fa" }}>
-      <Grid item xs={12} md={3} style={{ background: "#fff", borderRight: "1px solid #ddd" }}>
+      <Grid item xs={12} md={2} style={{ background: "#fff", borderRight: "1px solid #ddd" }}>
         <SidebarUser />
       </Grid>
-      <Grid item xs={12} md={9} style={{ padding: "20px" }}>
+      <Grid item xs={12} md={10} style={{ padding: "20px" }}>
         <Paper elevation={2} style={{ padding: "20px", borderRadius: "12px" }}>
           <Routes>
             <Route path="/*" element={<UserRouter />} />

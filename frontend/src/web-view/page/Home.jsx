@@ -77,7 +77,7 @@ const Home = () => {
       <Carouseles />
       <div className="container product-container my-4">
         <div className="d-flex gap-3 my-4">
-          <div className="col-2 mt-4 ms-4">
+          {/* <div className="col-2 mt-4 ms-4">
             <input
               type="text"
               placeholder="Tìm kiếm"
@@ -86,7 +86,7 @@ const Home = () => {
               className="form-control"
               style={{ marginLeft: '18px' }}
             />
-          </div>
+          </div> */}
           <div className="col-2 mt-4 ms-3">
             <select
               value={selectedManufacturer}
