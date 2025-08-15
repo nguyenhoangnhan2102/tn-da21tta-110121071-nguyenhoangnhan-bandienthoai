@@ -3,15 +3,15 @@ import React from "react";
 import { List, ListItemButton, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { AccountCircle, History, Star } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
-import "./user-layout.scss";
+
 
 const SidebarUser = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
     const menuItems = [
-        { text: "Thông tin cá nhân", icon: <AccountCircle />, path: "/user/profile" },
-        { text: "Lịch sử đơn hàng", icon: <History />, path: "/user/orders" },
+        { text: "Thông tin cá nhân", icon: <AccountCircle />, path: "/profile" },
+        { text: "Lịch sử đơn hàng", icon: <History />, path: "/history-order" },
         { text: "Điểm thưởng", icon: <Star />, path: "/user/points" },
     ];
 

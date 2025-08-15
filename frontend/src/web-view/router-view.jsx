@@ -5,6 +5,7 @@ import Register from "../share/register";
 import Home from "./page/Home";
 import ProductDetails from "./page/Details";
 import Cart from "./page/Cart";
+import Orders from "./page/Order";
 
 const RouterView = () => {
   const element = useRoutes([
@@ -16,10 +17,10 @@ const RouterView = () => {
       path: "/product-details/:masanpham",
       element: <ProductDetails />,
     },
-    // {
-    //   path: "/profile",
-    //   element: <Profile />,
-    // },
+    {
+      path: "/history-order",
+      element: <Orders />,
+    },
     {
       path: "/cart",
       element: <Cart />,

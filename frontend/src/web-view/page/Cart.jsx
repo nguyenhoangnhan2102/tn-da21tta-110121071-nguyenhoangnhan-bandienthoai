@@ -60,17 +60,18 @@ function Cart() {
         try {
             const orderData = {
                 manguoidung: infoUser.manguoidung,
-                hotenkhachhang: infoUser.hoten,
-                sdtkhachhang: infoUser.sodienthoai,
                 diachigiaohang: infoUser.diachi,
                 tongtien: subTotal,
-                chiTietSanPham: cartItems.map(item => ({
+                ghichu: null, // hoặc bạn có thể lấy từ input ghi chú nếu muốn
+                sanpham: cartItems.map(item => ({
                     masanpham: item.masanpham,
-                    giatien: item.giaban,
-                    soluong: item.soluong
+                    soluong: item.soluong,
+                    dongia: item.giaban
                 }))
             };
+
             const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
+
             if (response.data.success) {
                 await axiosInstance.post(`${apiUrl}/cart/delete`, { manguoidung: infoUser.manguoidung });
                 toast.success("Đặt hàng thành công!");
