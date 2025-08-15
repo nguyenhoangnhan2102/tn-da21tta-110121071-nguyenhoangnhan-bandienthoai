@@ -257,13 +257,13 @@ const Orders = () => {
                                             </td>
                                             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{product.soluong}</td>
                                             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
-                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.giatien)}
+                                                {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.giaban)}
                                             </td>
                                             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>
                                                 {/* Tính tổng tiền */}
                                                 {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(product.soluong * product.giatien)}
                                             </td>
-                                            <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{product.tenmausanpham}</td>
+                                            <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }}>{product.mau}</td>
                                             <td style={{ padding: '8px', borderBottom: '1px solid #ddd' }} >
                                                 <img
                                                     width="70px"

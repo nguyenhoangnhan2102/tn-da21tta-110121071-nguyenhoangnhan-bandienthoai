@@ -64,12 +64,24 @@ CREATE TABLE DONHANG (
 CREATE TABLE CHITIETDONHANG (
     madonhang INT,
     masanpham  INT,
+    tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, 
+    mau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,       
+    dungluong VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, 
+    ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,      
     soluong INT,
     dongia DECIMAL(15,2),
     PRIMARY KEY (madonhang, masanpham),
     FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang),
     FOREIGN KEY (masanpham) REFERENCES SANPHAM(masanpham)
 );
+
+
+-- ALTER TABLE CHITIETDONHANG
+-- ADD COLUMN tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER masanpham,
+-- ADD COLUMN mau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER tensanpham,
+-- ADD COLUMN dungluong VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER mau,
+-- ADD COLUMN ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER dungluong;
+
 
 CREATE TABLE GIOHANG (
     magiohang INT AUTO_INCREMENT PRIMARY KEY,

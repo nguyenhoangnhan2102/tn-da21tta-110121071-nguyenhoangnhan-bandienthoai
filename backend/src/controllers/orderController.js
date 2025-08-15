@@ -132,25 +132,27 @@ const confirmOrder = async (req, res) => {
 
         const thoigiandat = moment.tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
 
-        // Insert DONHANG
+        // 1️⃣ Thêm đơn hàng vào bảng DONHANG
         const [result] = await conn.query(
             `INSERT INTO DONHANG (manguoidung, thoigiandat, tongtien, ghichu, diachigiaohang)
-       VALUES (?, ?, ?, ?, ?)`,
+             VALUES (?, ?, ?, ?, ?)`,
             [manguoidung, thoigiandat, tongtien, ghichu, diachigiaohang]
         );
 
         const madonhang = result.insertId;
 
-        // Validate stock & insert CHITIETDONHANG
+        // 2️⃣ Lặp qua từng sản phẩm trong giỏ
         for (const item of sanpham) {
-            const { masanpham, soluong, dongia } = item;
+            const { masanpham, soluong } = item;
 
-            if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0 || isNaN(Number(dongia))) {
+            if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0) {
                 throw new Error('Sản phẩm không hợp lệ trong giỏ hàng.');
             }
 
+            // 3️⃣ Lấy thông tin sản phẩm từ DB (snapshot tại thời điểm đặt)
             const [prodRows] = await conn.query(
-                `SELECT soluong FROM SANPHAM WHERE masanpham = ? FOR UPDATE`,
+                `SELECT tensanpham, mau, dungluong, ram, giaban, soluong AS soluongton
+                 FROM SANPHAM WHERE masanpham = ? FOR UPDATE`,
                 [masanpham]
             );
 
@@ -158,18 +160,33 @@ const confirmOrder = async (req, res) => {
                 throw new Error(`Không tìm thấy sản phẩm mã ${masanpham}.`);
             }
 
-            if (Number(prodRows[0].soluong) < Number(soluong)) {
+            const product = prodRows[0];
+
+            // 4️⃣ Kiểm tra tồn kho
+            if (Number(product.soluongton) < Number(soluong)) {
                 throw new Error(`Sản phẩm mã ${masanpham} không đủ số lượng.`);
             }
 
+            // 5️⃣ Lưu vào CHITIETDONHANG (snapshot)
             await conn.query(
-                `INSERT INTO CHITIETDONHANG (madonhang, masanpham, soluong, dongia)
-         VALUES (?, ?, ?, ?)`,
-                [madonhang, masanpham, soluong, dongia]
+                `INSERT INTO CHITIETDONHANG (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+                [
+                    madonhang,
+                    masanpham,
+                    product.tensanpham,
+                    product.mau,
+                    product.dungluong,
+                    product.ram,
+                    soluong,
+                    product.giaban
+                ]
             );
-            // ❗ Không trừ kho ở bước xác nhận. Chỉ trừ khi chuyển trạng thái -> 'hoanthanh'.
+
+            // ❗ Không trừ kho ở bước xác nhận. Chỉ trừ khi trạng thái = 'hoanthanh'.
         }
 
+        // 6️⃣ Commit giao dịch
         await conn.commit();
 
         return res.status(201).json({
@@ -186,6 +203,7 @@ const confirmOrder = async (req, res) => {
         conn.release();
     }
 };
+
 
 /**
  * PATCH /orders/:madonhang/status
