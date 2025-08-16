@@ -166,71 +166,30 @@ const NavBarAdmin = () => {
               </ListItemIcon>
               <ListItemText primary="Quản lý sản phẩm" />
             </ListItem>
-            {/* <ListItem
+
+            {/* Quản lý đơn hàng */}
+            <ListItem
               button
-              onClick={() => toggleSection("sanPham")}
+              component={Link}
+              to="/admin/orders"
               sx={{
                 borderRadius: "12px",
                 color: "#1f1f1f",
                 cursor: "pointer",
                 userSelect: "none",
-              }}
-            >
-              <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
-                <InventoryIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary="Quản lý sản phẩm"
-                sx={{ color: "#1f1f1f" }}
-              />
-              {openSection === "sanPham" ? <ExpandLess /> : <ExpandMore />}
-            </ListItem>
-            <Collapse
-              in={openSection === "sanPham"}
-              timeout="auto"
-              unmountOnExit
-              to="/admin/product"
-            >
-              <List component="div" disablePadding>
-                <List>
-                  <ListItem
-                    button
-                    component={Link}
-                    to="/admin/product"
-                    sx={{
-                      pl: 4,
-                      color: "#1f1f1f",
-                      borderRadius: "13px",
-                      backgroundColor:
-                        location.pathname === "/admin/product"
-                          ? "#8aad51"
-                          : "transparent", // Kiểm tra nếu đang ở trang này
-                      "&:hover": { backgroundColor: "#8aad51" },
-                    }}
-                  >
-                    <ListItemText primary="Danh mục sản phẩm" />
-                  </ListItem>{" "}
-                </List>
-              </List>
-            </Collapse> */}
-
-            {/* Quản lý đơn hàng */}
-            <ListItem
-              button
-              onClick={() => toggleSection("donHang")}
-              sx={{
-                color: "#1f1f1f",
-                borderRadius: "13px",
-                cursor: "pointer",
+                backgroundColor:
+                  location.pathname === "/admin/orders"
+                    ? "#8aad51"
+                    : "transparent", // Kiểm tra nếu đang ở trang này
+                "&:hover": { backgroundColor: "#8aad51" },
               }}
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
                 <ShoppingCartIcon />
               </ListItemIcon>
               <ListItemText primary="Quản lý đơn hàng" />
-              {openSection === "donHang" ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
-            <Collapse
+            {/* <Collapse
               in={openSection === "donHang"}
               timeout="auto"
               unmountOnExit
@@ -257,93 +216,9 @@ const NavBarAdmin = () => {
                 >
                   <ListItemText primary="Tất cả đơn hàng" />
                 </ListItem>
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/don-hang/dang-xu-ly"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    mt: 1,
-                    mb: 1,
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname ===
-                        "/admin/san-pham/don-hang/dang-xu-ly"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": {
-                      backgroundColor: "#8aad51",
-                    },
-                  }}
-                >
-                  <ListItemText primary="Đơn hàng đang xử lý" />
-                </ListItem>
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/don-hang/da-huy"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    mt: 1,
-                    mb: 1,
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname === "/admin/don-hang/da-huy"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": {
-                      backgroundColor: "#8aad51",
-                    },
-                  }}
-                >
-                  <ListItemText primary="Đơn hàng đã hủy" />
-                </ListItem>{" "}
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/don-hang/hoan-tat"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    mt: 1,
-                    mb: 1,
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname === "/admin/don-hang/hoan-tat"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": {
-                      backgroundColor: "#8aad51",
-                    },
-                  }}
-                >
-                  <ListItemText primary="Đơn hàng đã thanh toán" />
-                </ListItem>{" "}
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/khuyen-mai"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    mt: 1,
-                    mb: 1,
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname === "/admin/khuyen-mai"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": {
-                      backgroundColor: "#8aad51",
-                    },
-                  }}
-                >
-                  <ListItemText primary="Quản lý khuyến mãi" />
-                </ListItem>{" "}
+
               </List>
-            </Collapse>
+            </Collapse> */}
           </List>
         </List>
       </Box>{" "}

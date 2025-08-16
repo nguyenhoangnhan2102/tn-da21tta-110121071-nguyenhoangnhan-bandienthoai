@@ -5,6 +5,7 @@ import Profile from "./components/profile";
 import UserComponent from "./pages/user";
 import ProductComponent from "./pages/product";
 import Manufacturer from "./pages/manufacturer";
+import Order from "./pages/Order";
 
 const RouterAdmin = () => {
   const element = useRoutes([
@@ -19,6 +20,10 @@ const RouterAdmin = () => {
     {
       path: "/user",
       element: <UserComponent />,
+    },
+    {
+      path: "orders", // Khi vào "/admin/users" sẽ render Users
+      element: <Order />,
     },
     {
       path: "/product",

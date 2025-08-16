@@ -311,7 +311,7 @@ const updateUserById_Admin = async (req, res) => {
         sodienthoai,
         diachi,
         role,
-        updated_at
+        ngaycapnhat
     } = req.body;
 
     // Kiểm tra xem có đủ ID người dùng để cập nhật hay không
@@ -332,14 +332,14 @@ const updateUserById_Admin = async (req, res) => {
                 sodienthoai = ?,
                 diachi = ?,
                 role = ?,
-                updated_at = ?
+                ngaycapnhat = ?
             WHERE manguoidung = ?`,
             [
                 hoten,
                 sodienthoai,
                 diachi,
                 role,
-                updated_at,
+                ngaycapnhat,
                 manguoidung
             ]
         );
@@ -378,7 +378,7 @@ const updateUserById_User = async (req, res) => {
         sodienthoai,
         diachi,
         role,
-        updated_at
+        ngaycapnhat
     } = req.body;
 
     const { manguoidung } = req.params;
@@ -438,7 +438,7 @@ const updateUserById_User = async (req, res) => {
 
         // Thêm trường ngày cập nhật
         const ngayCapNhat = new Date();
-        updateFields.push("updated_at = ?");
+        updateFields.push("ngaycapnhat = ?");
         updateValues.push(ngayCapNhat);
 
         // Nếu không có gì cần cập nhật, trả về lỗi

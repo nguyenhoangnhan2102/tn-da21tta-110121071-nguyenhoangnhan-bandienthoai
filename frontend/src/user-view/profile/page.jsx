@@ -1,61 +1,55 @@
 import React, { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import axiosInstance from "../../authentication/axiosInstance";
 import "react-toastify/dist/ReactToastify.css";
 import "../../web-view/style/profile.scss";
-import Cookies from "js-cookie"; // Import thư viện js-cookie
-import { jwtDecode } from "jwt-decode"; // Import jwt-decode
 import { Button, Modal, Form } from "react-bootstrap";
 import ReduxStateExport from "../../redux/redux-state";
-
-const apiUrl = process.env.REACT_APP_API_URL + "/users";
+import userService from "../../services/userAccountService";
+import { useDispatch } from "react-redux";
+import { setUserInfo } from "../../redux/authSlice";
 
 export default function Profile() {
-  const [loading, setLoading] = useState(true);
-  const [show, setShow] = useState(false); // Hiển thị modal
-  const [hoten, setHoten] = useState(""); // Lưu thông tin tên
-  const [sodienthoai, setSodienthoai] = useState(""); // Lưu số điện thoại
-  const [diachi, setDiachi] = useState(""); // Lưu địa chỉ
-
-
+  const [show, setShow] = useState(false);
+  const [hoten, setHoten] = useState("");
+  const [sodienthoai, setSodienthoai] = useState("");
+  const [diachi, setDiachi] = useState("");
+  const dispatch = useDispatch();
   const { userInfo } = ReduxStateExport();
-
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
-    // Hiển thị modal và gán giá trị ban đầu
     setHoten(userInfo.hoten || "");
     setSodienthoai(userInfo.sodienthoai || "");
     setDiachi(userInfo.diachi || "");
     setShow(true);
   };
-
+  console.log("userInfo", userInfo)
   const handleSubmit = async () => {
-    // Kiểm tra số điện thoại
-    const phoneRegex = /^[0-9]{10}$/; // Regex kiểm tra số điện thoại chỉ chứa 10 chữ số
+    const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(sodienthoai)) {
       toast.error("Số điện thoại phải là số và chứa đúng 10 ký tự.");
       return;
     }
 
-    try {
-      const response = await axiosInstance.put(`${apiUrl}/update/${userInfo.makhachhang}`, {
+    const result = await userService.updateUserById_User(userInfo.manguoidung, {
+      hoten,
+      sodienthoai,
+      diachi,
+    });
+
+    if (result) {
+      // ✅ Update lại Redux store với thông tin mới
+      dispatch(setUserInfo({
+        ...userInfo,
         hoten,
         sodienthoai,
         diachi,
-      });
+      }));
 
-      if (response.data.EC === 200) {
-        toast.success(response.data.EM);
-        handleClose();
-      } else {
-        toast.error(response.data.EM);
-      }
-    } catch (error) {
-      toast.error("Xảy ra lỗi khi cập nhật thông tin");
-      console.error("Error updating user:", error);
+      handleClose();
     }
   };
+
 
   if (!userInfo) {
     return <div>Không tìm thấy thông tin người dùng</div>;
@@ -109,12 +103,7 @@ export default function Profile() {
           </div>
         </div>
       </section>
-      <Modal
-        show={show}
-        onHide={handleClose}
-        backdrop="static"
-        className="model-content-profle"
-      >
+      <Modal show={show} onHide={handleClose} backdrop="static" className="model-content-profle">
         <Modal.Header closeButton>
           <Modal.Title>Cập nhật thông tin</Modal.Title>
         </Modal.Header>
@@ -124,10 +113,8 @@ export default function Profile() {
               <Form.Label>Tên</Form.Label>
               <Form.Control
                 type="text"
-                autoFocus
-                className="w-100 rounded-3"
                 value={hoten}
-                onChange={(e) => setHoten(e.target.value)} // Thêm onChange
+                onChange={(e) => setHoten(e.target.value)}
               />
             </Form.Group>
             <Form.Group className="mb-3">
@@ -135,17 +122,15 @@ export default function Profile() {
               <Form.Control
                 type="text"
                 value={sodienthoai}
-                className="w-100 rounded-3"
-                onChange={(e) => setSodienthoai(e.target.value)} // Thêm onChange
+                onChange={(e) => setSodienthoai(e.target.value)}
               />
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Địa chỉ</Form.Label>
               <Form.Control
                 type="text"
-                className="w-100 rounded-3"
                 value={diachi}
-                onChange={(e) => setDiachi(e.target.value)} // Thêm onChange
+                onChange={(e) => setDiachi(e.target.value)}
               />
             </Form.Group>
           </Form>
@@ -154,11 +139,7 @@ export default function Profile() {
           <Button variant="secondary" onClick={handleClose}>
             Đóng
           </Button>
-          <Button
-            variant="primary"
-            style={{ padding: ".375rem .75rem", width: "70px" }}
-            onClick={handleSubmit}
-          >
+          <Button variant="primary" onClick={handleSubmit}>
             Lưu
           </Button>
         </Modal.Footer>

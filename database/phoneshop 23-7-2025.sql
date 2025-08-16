@@ -10,8 +10,12 @@ CREATE TABLE NGUOIDUNG (
     diachi TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     trangthai TINYINT DEFAULT 0,
     role INT DEFAULT 0,
-    ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP
+    ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
+    ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP
 );
+
+-- ALTER TABLE NGUOIDUNG
+-- ADD COLUMN ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP AFTER ngaytao;
 
 CREATE TABLE THUONGHIEU (
     mathuonghieu INT AUTO_INCREMENT PRIMARY KEY,
@@ -55,6 +59,8 @@ CREATE TABLE DONHANG (
     tongtien DECIMAL(18, 2),
     ghichu TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     diachigiaohang TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    hotenkhachhang VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+    sodienthoaikhachhang VARCHAR(15),
     trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy') DEFAULT 'choxacnhan',
     ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
     ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,

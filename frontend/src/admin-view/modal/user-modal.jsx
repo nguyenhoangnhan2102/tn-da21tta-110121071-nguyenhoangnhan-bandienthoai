@@ -38,7 +38,8 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                 hoten: user.hoten || "",
                 sodienthoai: user.sodienthoai || "",
                 diachi: user.diachi || "",
-                role: user.role || "",
+                role: Number(user.role)  // đảm bảo luôn là số 0 hoặc 1
+
             });
         } else {
             setForm({
@@ -46,10 +47,10 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                 hoten: "",
                 sodienthoai: "",
                 diachi: "",
-                role: "",
+                role: 0, // mặc định là Người dùng
             });
         }
-    }, [user, open]);
+    }, [user]);
 
     const handleChange = (e) => {
         if (isView) return;
@@ -57,27 +58,27 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
 
         setForm((prev) => ({
             ...prev,
-            [name]: name === "role" ? parseInt(value) : value,
+            [name]: value, // giữ nguyên string
         }));
-    };
-
+    }
 
     const handleSubmit = async () => {
         try {
             if (user) {
-                // Cập nhật thông tin người dùng với dữ liệu từ form
                 const updatedData = {
                     ...form,
-                    updated_at: new Date(),
+                    role: parseInt(form.role, 10), // convert string "1"/"0" sang số
+                    ngaycapnhat: new Date(),
                 };
 
-                // Gọi API để cập nhật người dùng
-                const response = await userService.updateUserById_Admin(updatedData);
+                const response = await userService.updateUserById_User(
+                    form.manguoidung,
+                    updatedData
+                );
 
                 if (response) {
-                    toast.success("Cập nhật thành công");
-                    onSave(response.user); // Gửi dữ liệu người dùng mới về cha
-                    onClose(); // Đóng modal
+                    onSave(response.user);
+                    onClose();
                 } else {
                     toast.error("Cập nhật không thành công");
                 }
@@ -139,7 +140,6 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                     disabled={isView}
                 >
                     <MenuItem value={1}>Quản trị viên</MenuItem>
-                    <MenuItem value={2}>Nhân viên</MenuItem>
                     <MenuItem value={0}>Người dùng</MenuItem>
                 </TextField>
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
