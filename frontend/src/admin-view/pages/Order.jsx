@@ -214,20 +214,6 @@ const Order = () => {
                                         >
                                             <i className="fa-solid fa-pen-to-square"></i> Sửa
                                         </button>
-                                        <button
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => handleUpdateStatus(order, 1)}
-                                            disabled={order.trangthaidonhang === 1 || order.trangthaidonhang === 2}
-                                        >
-                                            <i className="fa-solid fa-truck"></i> Giao
-                                        </button>
-                                        <button
-                                            className="btn btn-danger btn-sm"
-                                            onClick={() => handleUpdateStatus(order, 2)}
-                                            disabled={order.trangthaidonhang === 1 || order.trangthaidonhang === 2}
-                                        >
-                                            <i className="fa-solid fa-x"></i> Hủy
-                                        </button>
                                     </td>
                                 </tr>
                             ))
