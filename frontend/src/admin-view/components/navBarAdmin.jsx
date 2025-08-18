@@ -15,6 +15,7 @@ import PaymentIcon from "@mui/icons-material/Payment";
 import LockIcon from "@mui/icons-material/Lock";
 import StarIcon from "@mui/icons-material/Star";
 import PeopleIcon from "@mui/icons-material/People"; // Quản lý người dùng
+import LocalOfferIcon from "@mui/icons-material/LocalOffer";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart"; // Quản lý đơn hàng
 import InventoryIcon from "@mui/icons-material/Inventory"; // Quản lý sản phẩm
 import GroupIcon from "@mui/icons-material/Group"; // Tương tác người dùng
@@ -85,8 +86,8 @@ const NavBarAdmin = () => {
               cursor: "pointer",
               userSelect: "none",
               backgroundColor:
-                location.pathname === "/admin" ? "#8aad51" : "transparent", // Kiểm tra nếu đang ở trang này
-              "&:hover": { backgroundColor: "#8aad51" },
+                location.pathname === "/admin" ? "#ffd400" : "transparent", // Kiểm tra nếu đang ở trang này
+              "&:hover": { backgroundColor: "#ffd400" },
             }}
           >
             <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
@@ -110,9 +111,9 @@ const NavBarAdmin = () => {
                 userSelect: "none",
                 backgroundColor:
                   location.pathname === "/admin/user"
-                    ? "#8aad51"
+                    ? "#ffd400"
                     : "transparent", // Kiểm tra nếu đang ở trang này
-                "&:hover": { backgroundColor: "#8aad51" },
+                "&:hover": { backgroundColor: "#ffd400" },
               }}
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
@@ -132,14 +133,14 @@ const NavBarAdmin = () => {
                 userSelect: "none",
                 backgroundColor:
                   location.pathname === "/admin/manufacturer"
-                    ? "#8aad51"
+                    ? "#ffd400"
                     : "transparent", // Kiểm tra nếu đang ở trang này
-                "&:hover": { backgroundColor: "#8aad51" },
+                "&:hover": { backgroundColor: "#ffd400" },
               }}
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
                 {" "}
-                <PersonIcon />
+                <LocalOfferIcon />
               </ListItemIcon>
               <ListItemText primary="Quản lý thương hiệu" />
             </ListItem>
@@ -155,14 +156,14 @@ const NavBarAdmin = () => {
                 userSelect: "none",
                 backgroundColor:
                   location.pathname === "/admin/product"
-                    ? "#8aad51"
+                    ? "#ffd400"
                     : "transparent", // Kiểm tra nếu đang ở trang này
-                "&:hover": { backgroundColor: "#8aad51" },
+                "&:hover": { backgroundColor: "#ffd400" },
               }}
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
                 {" "}
-                <PersonIcon />
+                <InventoryIcon />
               </ListItemIcon>
               <ListItemText primary="Quản lý sản phẩm" />
             </ListItem>
@@ -179,9 +180,9 @@ const NavBarAdmin = () => {
                 userSelect: "none",
                 backgroundColor:
                   location.pathname === "/admin/orders"
-                    ? "#8aad51"
+                    ? "#ffd400"
                     : "transparent", // Kiểm tra nếu đang ở trang này
-                "&:hover": { backgroundColor: "#8aad51" },
+                "&:hover": { backgroundColor: "#ffd400" },
               }}
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>

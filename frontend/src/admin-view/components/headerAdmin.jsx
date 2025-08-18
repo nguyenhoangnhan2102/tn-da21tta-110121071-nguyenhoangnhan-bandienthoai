@@ -68,7 +68,7 @@ const HeaderAdmin = () => {
     }
   };
   return (
-    <AppBar position="static" sx={{ backgroundColor: "#8aad51" }}>
+    <AppBar position="static" sx={{ backgroundColor: "#ffd400" }}>
       <Toolbar>
         {/* Left section: Logo and other items */}
         <Box
