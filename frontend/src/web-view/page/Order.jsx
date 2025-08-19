@@ -8,7 +8,8 @@ import moment from "moment";
 import "../style/Order.scss";
 import { Modal, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FormControl, TextField } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, TextField } from "@mui/material";
+import { cancelOrder } from "../../services/orderService";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const orderUrl = apiUrl + "/orders";
@@ -19,6 +20,10 @@ const Orders = () => {
     const [infoUser, setInfoUser] = useState({});
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showModal, setShowModal] = useState(false);
+    const [openCancelModal, setOpenCancelModal] = useState(false);
+    const [cancelReason, setCancelReason] = useState("");
+    const [orderToCancel, setOrderToCancel] = useState(null);
+
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -49,6 +54,37 @@ const Orders = () => {
             toast.error("Không thể tải danh sách đơn hàng");
         }
     };
+
+    const handleConfirmCancel = async () => {
+        if (!cancelReason.trim()) {
+            toast.error("Vui lòng nhập lý do hủy");
+            return;
+        }
+        try {
+            const res = await cancelOrder(orderToCancel.madonhang, cancelReason);
+            if (res.EC === 0) {
+                toast.success(res.EM);
+                fetchOrders(infoUser.manguoidung);
+                handleCloseCancelModal();
+            } else {
+                toast.error(res.EM);
+            }
+        } catch {
+            toast.error("Có lỗi khi hủy đơn hàng!");
+        }
+    };
+
+    const handleOpenCancelModal = (order) => {
+        setOrderToCancel(order);
+        setCancelReason("");
+        setOpenCancelModal(true);
+    };
+
+    const handleCloseCancelModal = () => {
+        setOpenCancelModal(false);
+        setOrderToCancel(null);
+    };
+
 
     const handleViewDetails = (order) => {
         setSelectedOrder(order);
@@ -95,10 +131,18 @@ const Orders = () => {
                                         {o.trangthai === "dagiao" && "Đã giao"}
                                         {o.trangthai === "huy" && "Đã hủy"}
                                     </td>
-                                    <td>
+                                    <td className="d-flex gap-2">
                                         <button className="btn btn-sm btn-secondary" onClick={() => handleViewDetails(o)}>
                                             <i className="fa-regular fa-eye"></i> Xem
                                         </button>
+                                        {o.trangthai !== "huy" && (
+                                            <button
+                                                className="btn btn-sm btn-danger"
+                                                onClick={() => handleOpenCancelModal(o)}
+                                            >
+                                                <i className="fa-solid fa-xmark"></i> Hủy
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             ))}
@@ -145,6 +189,7 @@ const Orders = () => {
                                     <th>Thành tiền</th>
                                 </tr>
                             </thead>
+                            {console.log("selectedOrder", selectedOrder)}
                             <tbody>
                                 {selectedOrder.chitiet?.length > 0 ? (
                                     selectedOrder.chitiet.map((sp, i) => (
@@ -185,6 +230,37 @@ const Orders = () => {
                     </Modal.Body>
                 </Modal>
             )}
+            <Dialog open={openCancelModal} onClose={handleCloseCancelModal} maxWidth="sm" fullWidth>
+                <DialogTitle>Lý do hủy đơn hàng</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        label="Nhập lý do"
+                        type="text"
+                        fullWidth
+                        multiline
+                        rows={3}
+                        value={cancelReason}
+                        onChange={(e) => setCancelReason(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleCloseCancelModal}
+                        variant="secondary"  // xám
+                    >
+                        Đóng
+                    </Button>
+
+                    <Button
+                        onClick={handleConfirmCancel}
+                        variant="primary"    // xanh
+                    >
+                        Xác nhận hủy
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </div>
     );
 };

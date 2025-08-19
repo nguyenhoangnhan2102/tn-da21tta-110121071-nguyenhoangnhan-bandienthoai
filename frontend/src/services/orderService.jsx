@@ -34,3 +34,13 @@ export const updateStatus = async (madonhang, status) => {
         throw error;
     }
 };
+
+export const cancelOrder = async (madonhang, lydohuy) => {
+    try {
+        const response = await axiosInstance.put(`${apiOrders}/cancel/${madonhang}`, { lydohuy });
+        return response.data; // trả về { DT, EC, EM }
+    } catch (error) {
+        console.error("Error cancelling order:", error);
+        throw error;
+    }
+};

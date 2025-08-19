@@ -62,6 +62,7 @@ CREATE TABLE DONHANG (
     hotenkhachhang VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     sodienthoaikhachhang VARCHAR(15),
     trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy') DEFAULT 'choxacnhan',
+    lydohuy TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
     ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
     ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung)
@@ -81,7 +82,6 @@ CREATE TABLE CHITIETDONHANG (
     FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang),
     FOREIGN KEY (masanpham) REFERENCES SANPHAM(masanpham)
 );
-
 
 -- ALTER TABLE CHITIETDONHANG
 -- ADD COLUMN hinhanh VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci AFTER ram;

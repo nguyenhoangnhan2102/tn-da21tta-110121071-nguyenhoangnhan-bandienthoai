@@ -19,31 +19,22 @@ const deleteFileIfExists = (filePath) => {
 const uploadSingleFile = (file, folderPath, imgName) => {
     let newFileName;
 
-    // Kiểm tra imgName, nếu có, sử dụng tên file đó
+    // Nếu có imgName thì giữ lại ảnh cũ, đồng thời tạo ảnh mới với tên UUID
     if (!imgName || imgName.trim() === "") {
-        newFileName = uuidv4() + path.extname(file.originalname); // Tạo file mới với UUID
+        // Nếu không có imgName (ảnh mới hoàn toàn)
+        newFileName = uuidv4() + path.extname(file.originalname);
     } else {
-        newFileName = imgName; // Giữ nguyên tên file nếu imgName được cung cấp
-        const oldFilePath = path.join(
-            __dirname,
-            "../../public",
-            folderPath,
-            imgName
-        );
-
-        // Kiểm tra nếu file cũ tồn tại thì xóa
-        deleteFileIfExists(oldFilePath); // Xóa file cũ nếu tồn tại
+        // Nếu có ảnh cũ -> vẫn tạo ảnh mới (không xóa ảnh cũ nữa)
         newFileName = uuidv4() + path.extname(file.originalname);
     }
 
     return new Promise((resolve, reject) => {
-        const newFullFolderPath = path.join(__dirname, "../../public", folderPath); // Đường dẫn tới thư mục
+        const newFullFolderPath = path.join(__dirname, "../../public", folderPath);
 
-        checkAndCreateFolder(newFullFolderPath); // Tạo thư mục nếu chưa tồn tại
+        checkAndCreateFolder(newFullFolderPath);
 
-        const filePath = path.join(newFullFolderPath, newFileName); // Đường dẫn đầy đủ tới file mới
+        const filePath = path.join(newFullFolderPath, newFileName);
 
-        // Lưu file vào hệ thống
         fs.writeFile(filePath, file.buffer, (err) => {
             if (err) {
                 reject(err);

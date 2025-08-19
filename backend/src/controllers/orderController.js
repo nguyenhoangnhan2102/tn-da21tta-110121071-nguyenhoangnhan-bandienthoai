@@ -272,7 +272,6 @@ const confirmOrder = async (req, res) => {
     }
 };
 
-
 /**
  * PATCH /orders/:madonhang/status
  * Body: { trangthai: 'choxacnhan' | 'danggiao' | 'hoanthanh' | 'huy' }
@@ -442,6 +441,74 @@ const getAllOrdersByCustomer = async (req, res) => {
     }
 };
 
+const cancelOrder = async (req, res) => {
+    const { madonhang } = req.params;
+    const { lydohuy } = req.body;
+
+    if (!lydohuy || lydohuy.trim() === "") {
+        return res.status(400).json({
+            DT: null,
+            EC: 1,
+            EM: "Vui lòng nhập lý do hủy đơn hàng."
+        });
+    }
+
+    const conn = await connection.getConnection();
+    try {
+        await conn.beginTransaction();
+
+        // Kiểm tra đơn hàng
+        const [orderRows] = await conn.query(
+            `SELECT trangthai FROM DONHANG WHERE madonhang = ?`,
+            [madonhang]
+        );
+
+        if (orderRows.length === 0) {
+            return res.status(404).json({
+                DT: null,
+                EC: 1,
+                EM: "Không tìm thấy đơn hàng."
+            });
+        }
+
+        const { trangthai } = orderRows[0];
+
+        if (trangthai !== "choxacnhan") {
+            return res.status(400).json({
+                DT: null,
+                EC: 1,
+                EM: "Đơn hàng không thể hủy ở trạng thái hiện tại."
+            });
+        }
+
+        // Cập nhật trạng thái
+        await conn.query(
+            `UPDATE DONHANG 
+             SET trangthai = 'huy', lydohuy = ?, ngaycapnhat = CURRENT_TIMESTAMP 
+             WHERE madonhang = ?`,
+            [lydohuy, madonhang]
+        );
+
+        await conn.commit();
+
+        return res.status(200).json({
+            DT: { madonhang, lydohuy },
+            EC: 0,
+            EM: "Đơn hàng đã được hủy thành công."
+        });
+    } catch (error) {
+        await conn.rollback();
+        console.error(error);
+        return res.status(500).json({
+            DT: null,
+            EC: 1,
+            EM: "Lỗi khi hủy đơn hàng."
+        });
+    } finally {
+        conn.release();
+    }
+};
+
 
 module.exports = {
     getAllOrders,
@@ -449,4 +516,5 @@ module.exports = {
     updateOrders,
     getOrderDetails,
     getAllOrdersByCustomer,
+    cancelOrder,
 };

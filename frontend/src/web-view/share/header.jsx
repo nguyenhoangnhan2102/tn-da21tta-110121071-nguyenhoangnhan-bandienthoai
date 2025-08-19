@@ -1,23 +1,40 @@
+import React, { useEffect, useRef, useState } from 'react';
 import { Container, Form, Nav, Navbar } from 'react-bootstrap/';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { MdOutlineSmartphone } from "react-icons/md";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 import { toast } from "react-toastify";
-import { useEffect, useState } from 'react';
 import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../../redux/authSlice";
 import userService from '../../services/userAccountService';
+import productService from "../../services/productService"; // service chứa getAllProducts
 import "../style/header.scss";
 
-const apiUrl = process.env.REACT_APP_API_URL;
-const userURL = apiUrl + '/users';
+const imgURL = process.env.REACT_APP_IMG_URL;
 
 const Header = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const [anchorEl, setAnchorEl] = useState(null);
     const { isAuthenticated, userInfo } = useSelector((state) => state.auth);
+
+    const [searchTerm, setSearchTerm] = useState("");
+    const [results, setResults] = useState([]);
+    const [showDropdown, setShowDropdown] = useState(false);
+    const searchRef = useRef(null); // ref cho khung search
+
+    useEffect(() => {
+        const handleClickOutside = (event) => {
+            if (searchRef.current && !searchRef.current.contains(event.target)) {
+                setShowDropdown(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+        };
+    }, []);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -42,6 +59,36 @@ const Header = () => {
         handleClose();
     };
 
+    // Xử lý khi gõ search
+    const handleSearchChange = async (e) => {
+        const value = e.target.value;
+        setSearchTerm(value);
+
+        if (value.trim().length > 0) {
+            try {
+                const products = await productService.getAllProducts();
+                const productList = products?.DT?.activeProducts || products || [];
+
+                const filtered = productList.filter(p =>
+                    p.tensanpham.toLowerCase().includes(value.toLowerCase())
+                );
+
+                setResults(filtered.slice(0, 5)); // chỉ lấy 5 sản phẩm
+                setShowDropdown(true);
+            } catch (error) {
+                console.error("Search error:", error);
+            }
+        } else {
+            setShowDropdown(false);
+        }
+    };
+
+    const handleSelectProduct = (product) => {
+        setSearchTerm("");
+        setShowDropdown(false);
+        navigate(`/product/${product.masanpham}`);
+    };
+
     return (
         <Navbar expand="lg" className="navbar-container">
             <Container fluid className='navbar-content'>
@@ -54,20 +101,72 @@ const Header = () => {
                 <Navbar.Toggle aria-controls="navbarScroll" />
                 <Navbar.Collapse id="navbarScroll" className="justify-content-between">
 
-                    {/* Thanh tìm kiếm ở giữa */}
-                    <Form className="search-form d-flex mx-auto">
-                        <Form.Control
-                            type="search"
-                            placeholder="Tìm kiếm sản phẩm..."
-                            className="me-2"
-                            style={{ minWidth: "300px", borderRadius: "20px" }}
-                        />
-                        <button className="btn-search">
-                            <i className="fa-solid fa-search"></i>
-                        </button>
-                    </Form>
+                    {/* Thanh tìm kiếm */}
+                    {/* Thanh tìm kiếm */}
+                    <div ref={searchRef} className="search-wrapper mx-auto" style={{ position: "relative" }}>
+                        <Form className="search-form d-flex" style={{ position: "relative" }}>
+                            <Form.Control
+                                type="search"
+                                placeholder="Tìm kiếm sản phẩm..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                                className="me-2"
+                                style={{ borderRadius: "20px", minWidth: "500px", paddingRight: "40px" }} // chừa khoảng cho icon
+                            />
 
-                    {/* Giỏ hàng + Avatar / Đăng nhập */}
+                            {/* Icon search hoặc clear */}
+                            {searchTerm ? (
+                                <i
+                                    className="fa-solid fa-xmark search-icon"
+                                    onClick={() => {
+                                        setSearchTerm("");
+                                        setResults([]);
+                                        setShowDropdown(false);
+                                    }}
+                                    style={{
+                                        position: "absolute",
+                                        right: "12px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        cursor: "pointer",
+                                        color: "#666",
+                                    }}
+                                ></i>
+                            ) : (
+                                <i
+                                    className="fa-solid fa-magnifying-glass search-icon"
+                                    style={{
+                                        position: "absolute",
+                                        right: "12px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        color: "#666",
+                                    }}
+                                ></i>
+                            )}
+                        </Form>
+
+                        {showDropdown && results.length > 0 && (
+                            <div className="search-dropdown">
+                                {results.map(product => (
+                                    <div
+                                        key={product.masanpham}
+                                        className="search-item"
+                                        onClick={() => handleSelectProduct(product)}
+                                    >
+                                        <img
+                                            src={`${imgURL}/${product.hinhanhchinh}`}
+                                            alt={product.tensanpham}
+                                            className="search-item-img"
+                                        />
+                                        <span>{product.tensanpham}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Giỏ hàng + Avatar */}
                     <div className="header-right d-flex align-items-center">
                         <Link to={`/cart`} className="cart-link">
                             <i className="fa-solid fa-cart-shopping"></i>
@@ -84,11 +183,7 @@ const Header = () => {
                                     <span className="username">{userInfo?.hoten}</span>
                                 </div>
 
-                                <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleClose}
-                                >
+                                <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                                     <MenuItem onClick={() => handleOptionClick("Profile")}>Thông tin</MenuItem>
                                     <MenuItem onClick={() => handleOptionClick("Orders")}>Đơn hàng</MenuItem>
                                     {userInfo.role === 1 && (
@@ -106,7 +201,6 @@ const Header = () => {
                 </Navbar.Collapse>
             </Container>
         </Navbar>
-
     );
 };
 
