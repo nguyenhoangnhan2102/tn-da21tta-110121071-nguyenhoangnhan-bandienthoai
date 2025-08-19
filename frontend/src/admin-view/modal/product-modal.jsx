@@ -19,7 +19,7 @@ const modalStyle = {
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 600,
+  width: 1100,
   maxHeight: "95vh", // Đặt chiều cao tối đa để tránh vượt quá màn hình
   bgcolor: "background.paper",
   boxShadow: 24,
@@ -32,6 +32,8 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   const [listManufacturer, setListManufacturer] = useState([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [openModal, setOpenModal] = useState(false);
+  const [finalPrice, setFinalPrice] = useState(0);
+
   const [form, setForm] = useState({
     mathuonghieu: "",
     tensanpham: "",
@@ -72,7 +74,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
         soluong: "",
         gianhap: "",
         giaban: "",
-        khuyenmai: "",
+        khuyenmai: 0,
         cpu: "",
         gpu: "",
         pin: "",
@@ -87,6 +89,21 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
     }
     getAllManufacturerData();
   }, [product]);
+
+  useEffect(() => {
+    if (form.giaban && form.khuyenmai) {
+      const giaban = parseFloat(form.giaban);
+      const khuyenmai = parseFloat(form.khuyenmai);
+
+      if (!isNaN(giaban) && !isNaN(khuyenmai)) {
+        const discountedPrice = giaban - (giaban * khuyenmai) / 100;
+        setFinalPrice(discountedPrice);
+      }
+    } else {
+      setFinalPrice(form.giaban || 0);
+    }
+  }, [form.giaban, form.khuyenmai]);
+
 
   const getAllManufacturerData = async () => {
     try {
@@ -188,6 +205,41 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             onChange={handleChange}
             disabled={isViewOnly}
           />
+          <img
+            src={product && form.hinhanhchinh ? imageSrc : ""}
+            alt={form.tensanpham}
+            width="100px"
+            height="100px"
+            style={product ? {} : { display: "none" }} // Ẩn ảnh nếu không phải cập nhật
+          />
+          {!isViewOnly && (
+            <Box sx={{ marginTop: 1, marginBottom: 1 }}>
+              <input
+                type="file"
+                makhachhang="hinhanhchinh"
+                name="hinhanhchinh"
+                accept="hinhanhchinh/*"
+                onChange={handleFileChange}
+                required
+                style={{
+                  width: "100%",
+                  padding: "16.5px 14px",
+                  fontSize: "1rem",
+                  lineHeight: "1.4375em",
+                  backgroundColor: "#fff",
+                  border: "1px solid rgba(0, 0, 0, 0.23)",
+                  borderRadius: "4px",
+                  color: "rgba(0, 0, 0, 0.87)",
+                  boxSizing: "border-box",
+                  transition: "border-color 0.3s, box-shadow 0.3s",
+                }}
+                onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
+                onBlur={(e) =>
+                  (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
+                }
+              />
+            </Box>
+          )}
           <div className="d-flex gap-2 align-items-center">
             <FormControl fullWidth margin="normal">
               <InputLabel makhachhang="select-mathuonghieu-label">Thương hiệu</InputLabel>
@@ -275,8 +327,6 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               onChange={handleChange}
               disabled={isViewOnly}
             />
-          </div>
-          <div className="d-flex gap-2">
             <TextField
               fullWidth
               margin="normal"
@@ -287,6 +337,8 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               onChange={handleChange}
               disabled={isViewOnly}
             />
+          </div>
+          <div className="d-flex gap-2">
             <TextField
               fullWidth
               margin="normal"
@@ -300,7 +352,18 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             <TextField
               fullWidth
               margin="normal"
-              label="Khuyến mãi"
+              label="Giá sau khuyến mãi"
+              type="number"
+              value={finalPrice}
+              InputProps={{
+                readOnly: true,
+              }}
+            />
+
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Phần trăm khuyến mãi(%)"
               type="number"
               name="khuyenmai"
               value={form.khuyenmai}
@@ -402,41 +465,6 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               </Select>
             </FormControl>
           )}
-          <img
-            src={product && form.hinhanhchinh ? imageSrc : ""}
-            alt={form.tensanpham}
-            width="100px"
-            height="100px"
-            style={product ? {} : { display: "none" }} // Ẩn ảnh nếu không phải cập nhật
-          />
-          {!isViewOnly && (
-            <Box sx={{ marginTop: 1, marginBottom: 1 }}>
-              <input
-                type="file"
-                makhachhang="hinhanhchinh"
-                name="hinhanhchinh"
-                accept="hinhanhchinh/*"
-                onChange={handleFileChange}
-                required
-                style={{
-                  width: "100%",
-                  padding: "16.5px 14px",
-                  fontSize: "1rem",
-                  lineHeight: "1.4375em",
-                  backgroundColor: "#fff",
-                  border: "1px solid rgba(0, 0, 0, 0.23)",
-                  borderRadius: "4px",
-                  color: "rgba(0, 0, 0, 0.87)",
-                  boxSizing: "border-box",
-                  transition: "border-color 0.3s, box-shadow 0.3s",
-                }}
-                onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
-                onBlur={(e) =>
-                  (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
-                }
-              />
-            </Box>
-          )}
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
             {!isViewOnly && (
@@ -444,7 +472,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
                 <i className="fa-regular fa-floppy-disk" style={{ marginRight: '5px' }}></i>Lưu
               </button>
             )}
-            <button className="btn btn-danger admin-btn" onClick={onClose} style={{ width: '15%' }}>
+            <button className="btn btn-danger admin-btn" onClick={onClose}>
               <i className="fa-solid fa-x" style={{ marginRight: '5px' }}></i>
               Huỷ
             </button>
