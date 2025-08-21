@@ -129,7 +129,7 @@ const DashboardAdmin = () => {
         <h2>Doanh thu</h2>
         <p>
           <strong>Tổng doanh thu:</strong>{" "}
-          {totalRevenue ? totalRevenue.toLocaleString() : "0"} VND
+          {totalRevenue ? totalRevenue.toLocaleString() : "0"} đ
         </p>
         {/* Thống kê chung */}
         <div style={{ marginBottom: "20px" }}>

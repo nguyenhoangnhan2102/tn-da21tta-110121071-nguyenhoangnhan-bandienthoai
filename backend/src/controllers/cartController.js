@@ -14,13 +14,21 @@ const getAllCartByCustomer = async (req, res) => {
         }
 
         const query = `
-            SELECT g.magiohang, s.masanpham, s.tensanpham, s.hinhanhchinh,
-                   c.soluong, s.giaban
+            SELECT 
+                g.magiohang, 
+                s.masanpham, 
+                s.tensanpham, 
+                s.hinhanhchinh,
+                c.soluong, 
+                s.giaban,
+                s.khuyenmai,
+                (s.giaban - (s.giaban * s.khuyenmai / 100)) AS giasaugiam
             FROM GIOHANG g
             JOIN CHITIETGIOHANG c ON g.magiohang = c.magiohang
             JOIN SANPHAM s ON c.masanpham = s.masanpham
             WHERE g.manguoidung = ?
         `;
+
         const [results] = await connection.query(query, [manguoidung]);
 
         if (results.length === 0) {

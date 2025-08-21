@@ -96,14 +96,12 @@ const ProductDetails = () => {
         const { masanpham } = productdetails;
 
         const soluong = 1;
-        const giaban = productdetails.giaban;
 
         try {
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
                 manguoidung,
                 masanpham,
                 soluong,
-                giaban,
             });
 
             if (response.status === 201) {
@@ -170,16 +168,25 @@ const ProductDetails = () => {
                 </div>
                 <div className="mb-4 col-md-4 product-info" style={{ backgroundColor: '#FFFFFF', borderRadius: '12px' }}>
                     <div className="product-price mb-3">
-                        <span className="text-danger fw-bold me-2">
-                            {productdetails.giaban?.toLocaleString("vi-VN")}₫
+                        {/* Giá bán gốc (có gạch ngang nếu có khuyến mãi) */}
+                        <span
+                            className={`me-2 ${productdetails.khuyenmai ? "text-decoration-line-through text-muted" : "text-danger fw-bold"}`}
+                        >
+                            {Number(productdetails.giaban)?.toLocaleString("vi-VN")}₫
                         </span>
-                        {productdetails.khuyenmai && (
-                            <span className="text-success m-0">
-                                - {productdetails.khuyenmai}%
-                            </span>
+
+                        {/* Nếu có khuyến mãi thì hiện giá sau giảm + % */}
+                        {productdetails.khuyenmai > 0 && (
+                            <>
+                                <span className="text-danger fw-bold me-2">
+                                    {Number(productdetails.giasaugiam)?.toLocaleString("vi-VN")}₫
+                                </span>
+                                <span className="text-success m-0">
+                                    -{productdetails.khuyenmai}%
+                                </span>
+                            </>
                         )}
                     </div>
-
                     <button
                         className="mt-3 btn-show d-flex justify-content-between align-items-center"
                         onClick={() => setShowDetails(!showDetails)}
@@ -242,6 +249,7 @@ const ProductDetails = () => {
                                 <strong>Độ phân giải camera sau:</strong>
                                 <p>{productdetails.camerasau}</p>
                             </div>
+                            {console.log("productdetails", productdetails)}
                             <hr />
                             <div className="feature-list_details">
                                 <strong>Độ phân giải camera trước:</strong>

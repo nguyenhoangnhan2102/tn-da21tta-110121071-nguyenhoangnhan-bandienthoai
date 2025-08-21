@@ -66,13 +66,13 @@ function Cart() {
                 sanpham: cartItems.map(item => ({
                     masanpham: item.masanpham,
                     soluong: item.soluong,
-                    dongia: item.giaban,
+                    dongia: item.giasaugiam,
                     hinhanh: item.hinhanhchinh
                 }))
             };
-
+            console.log("orderData", orderData)
             const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
-
+            console.log(response);
             if (response.data.success) {
                 await axiosInstance.post(`${apiUrl}/cart/delete`, { manguoidung: infoUser.manguoidung });
                 toast.success("Đặt hàng thành công!");
@@ -88,14 +88,14 @@ function Cart() {
         }
     };
 
-    const handleDelete = async (magiohang, masanpham, mamau) => {
-        await axiosInstance.delete(`${apiUrl}/cart/${magiohang}/${masanpham}/${mamau}`);
+    const handleDelete = async (magiohang, masanpham) => {
+        await axiosInstance.delete(`${apiUrl}/cart/${magiohang}/${masanpham}`);
         toast.success("Xóa sản phẩm khỏi giỏ hàng thành công");
         fetchCartItems(infoUser.manguoidung);
     };
 
     const calculateSubTotal = (items) => {
-        setSubTotal(items.reduce((sum, item) => sum + item.giaban * item.soluong, 0));
+        setSubTotal(items.reduce((sum, item) => sum + item.giasaugiam * item.soluong, 0));
     };
 
     const calculateTotalQuantity = (items) => {
@@ -145,6 +145,7 @@ function Cart() {
                                         className="img-fluid rounded"
                                     />
                                 </div>
+                                {console.log("item", item)}
                                 <div className="col-md-9">
                                     <div className="card-body">
                                         <div className="d-flex justify-content-between align-items-start">
@@ -153,8 +154,12 @@ function Cart() {
                                                 <i className="fas fa-times"></i>
                                             </button>
                                         </div>
-                                        <p className="text-muted">Giá: {parseFloat(item.giaban).toLocaleString()} VND</p>
-
+                                        <span className="gia-goc">
+                                            {parseFloat(item.giaban).toLocaleString()}<u>đ</u>
+                                        </span>
+                                        <span className="gia-sau-giam">
+                                            {parseFloat(item.giasaugiam).toLocaleString()}<u>đ</u>
+                                        </span>
                                         <div className="d-flex justify-content-between align-items-center mt-2">
                                             <div className="quantity-control">
                                                 <button onClick={() => handleDecrease(item.masanpham)}>-</button>
@@ -162,7 +167,7 @@ function Cart() {
                                                 <button onClick={() => handleIncrease(item.masanpham)}>+</button>
                                             </div>
                                             <p className="fw-bold text-danger mb-0">
-                                                {(item.giaban * item.soluong).toLocaleString()} VND
+                                                {(item.giasaugiam * item.soluong).toLocaleString()}<u>đ</u>
                                             </p>
                                         </div>
                                     </div>
@@ -185,7 +190,7 @@ function Cart() {
                     <div className="card p-3 shadow-sm">
                         <h4 className="text-center mb-3">Tóm tắt đơn hàng</h4>
                         <p><strong>Số lượng sản phẩm:</strong> {totalQuantity}</p>
-                        <p><strong>Tổng cộng:</strong> <span className="text-danger">{subTotal.toLocaleString()} VND</span></p>
+                        <p><strong>Tổng cộng:</strong> <span className="text-danger">{subTotal.toLocaleString()} đ</span></p>
                         <button className="btn btn-success w-100 mt-3" onClick={handleCheckout}>Thanh Toán</button>
                         <Link to="/" className="btn btn-outline-primary w-100 mt-2">⬅ Tiếp tục mua sắm</Link>
                     </div>

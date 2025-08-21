@@ -26,6 +26,21 @@
             }
         }
 
+        .gia-goc {
+            text-decoration: line-through;
+            /* gạch ngang */
+            color: #6c757d;
+            /* xám nhạt (text-muted) */
+            margin-right: 8px;
+        }
+
+        .gia-sau-giam {
+            color: red;
+            /* màu đỏ */
+            font-weight: bold;
+        }
+
+
         .quantity-control {
             display: flex;
             align-items: center;

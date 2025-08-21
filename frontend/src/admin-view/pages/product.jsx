@@ -259,6 +259,7 @@ const ProductComponent = () => {
             {currentProducts.length > 0 ? (
               currentProducts.map((product, index) => (
                 <tr key={product.masanpham}>
+                  {console.log("product", product)}
                   <td>{(currentPage - 1) * productsPerPage + index + 1}</td>
                   <td>{product.tensanpham || "Không có tên"}</td>
                   <td>{product.tenthuonghieu || "Không có thể loại"}</td>

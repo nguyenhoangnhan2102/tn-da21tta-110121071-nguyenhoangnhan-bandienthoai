@@ -155,7 +155,7 @@ const Order = () => {
                                     <td>{order.hotenkhachhang || "Không có"}</td>
                                     <td>{order.sodienthoaikhachhang || "Không có"}</td>
                                     <td>{order.diachigiaohang || "Không có"}</td>
-                                    <td>{order.tongtien ? new Intl.NumberFormat('vi-VN', { currency: 'VND' }).format(order.tongtien) : "Không có"}đ</td>
+                                    <td>{order.tongtien ? new Intl.NumberFormat('vi-VN', { currency: 'đ' }).format(order.tongtien) : "Không có"}đ</td>
                                     <td>
                                         {/* Chuyển đổi ngày */}
                                         {order.thoigiandat

@@ -6,7 +6,8 @@ const getAllProduct = async (req, res) => {
         const queryActive = `
         SELECT
             sp.*,
-            th.tenthuonghieu
+            th.tenthuonghieu,
+            (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam
         FROM
             SANPHAM sp
         LEFT JOIN
@@ -23,7 +24,8 @@ const getAllProduct = async (req, res) => {
         const queryInactive = `
         SELECT
             sp.*,
-            th.tenthuonghieu
+            th.tenthuonghieu,
+            (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam
         FROM
             SANPHAM sp
         LEFT JOIN
@@ -65,7 +67,8 @@ const getDetailProduct = async (req, res) => {
         const query = `
         SELECT 
             sp.*,
-            th.tenthuonghieu
+            th.tenthuonghieu,
+            (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam
         FROM
             SANPHAM sp
         JOIN 

@@ -122,22 +122,46 @@ const Home = () => {
             filteredProducts.slice(0, visibleCount).map((product, index) => (
               <Link
                 to={`/product-details/${product.masanpham}`}
-                className="text-decoration-none "
+                className="text-decoration-none"
                 key={product.masanpham}
               >
                 <div className="product-card">
-                  <img
-                    src={`${imgURL}${product.hinhanhchinh}`}
-                    className="product-image"
-                    alt={product.tensanpham || "Hình ảnh sản phẩm"}
-                  />
+                  <div className="product-image-wrapper">
+                    {product.khuyenmai > 0 && (
+                      <div className="discount-badge">-{product.khuyenmai}%</div>
+                    )}
+                    <img
+                      src={`${imgURL}${product.hinhanhchinh}`}
+                      className="product-image"
+                      alt={product.tensanpham || "Hình ảnh sản phẩm"}
+                    />
+                  </div>
+
                   <h3 className="product-name">{product.tensanpham}</h3>
                   <p className="product-specs">
                     {product.ram} / {product.dungluong}
                   </p>
-                  <p className="product-price">
-                    {Number(product.giaban).toLocaleString("vi-VN")}<sup><u>đ</u></sup>
-                  </p>
+
+                  {/* Hiển thị giá song song */}
+                  <div className="price-row">
+                    {product.khuyenmai > 0 ? (
+                      <>
+                        <span className="old-price">
+                          {Number(product.giaban).toLocaleString("vi-VN")}
+                          <sup><u>đ</u></sup>
+                        </span>
+                        <span className="discount-price">
+                          {Number(product.giasaugiam).toLocaleString("vi-VN")}
+                          <sup><u>đ</u></sup>
+                        </span>
+                      </>
+                    ) : (
+                      <span className="discount-price">
+                        {Number(product.giaban).toLocaleString("vi-VN")}
+                        <sup><u>đ</u></sup>
+                      </span>
+                    )}
+                  </div>
                   <button className="buy-now-button">Mua ngay</button>
                 </div>
               </Link>
@@ -158,7 +182,7 @@ const Home = () => {
             </div>
           </div>
         )}
-      </div>
+      </div >
     </>
   );
 };

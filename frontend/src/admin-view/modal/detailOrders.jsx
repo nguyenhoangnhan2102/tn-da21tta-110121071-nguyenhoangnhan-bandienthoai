@@ -95,7 +95,7 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
 
                 <FormControl fullWidth margin="normal">
                     <TextField
-                        value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(order.tongtien)}
+                        value={new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'đ' }).format(order.tongtien)}
                         label="Tổng tiền"
                         InputLabelProps={{ shrink: true }}
                         disabled={isViewMode}
@@ -147,10 +147,10 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                                     <td >{sp.tensanpham}</td>
                                     <td >{sp.soluong}</td>
                                     <td >
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sp.dongia)}
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'đ' }).format(sp.dongia)}
                                     </td>
                                     <td >
-                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(sp.soluong * sp.dongia)}
+                                        {new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'đ' }).format(sp.soluong * sp.dongia)}
                                     </td>
                                     <td >{sp.mau}</td>
                                     <td >{sp.ram}</td>

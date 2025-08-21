@@ -43,6 +43,37 @@
     transform: scale(1.05);
 }
 
+.discount-badge {
+    position: absolute;
+    top: 8px;
+    left: 0px;
+    background: red;
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 4px;
+}
+
+.price-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin-top: 6px;
+
+    .old-price {
+        text-decoration: line-through;
+        color: #888;
+        font-size: 14px;
+    }
+
+    .discount-price {
+        color: red;
+        font-weight: bold;
+        font-size: 16px;
+    }
+}
+
 .product-name {
     font-size: 16px;
     font-weight: 600;

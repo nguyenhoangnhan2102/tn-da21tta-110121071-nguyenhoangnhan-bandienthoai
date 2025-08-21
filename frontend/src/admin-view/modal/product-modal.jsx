@@ -58,7 +58,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
     tenthuonghieu: "",
     trangthai: "",
   });
-
+  console.log("form", form)
   useEffect(() => {
     if (product) {
       setForm(product);
