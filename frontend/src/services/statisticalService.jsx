@@ -5,10 +5,10 @@ const apiStatistical = apiUrl + `/statistical`;
 
 const statisticalService = {
     // 📊 Doanh thu theo thời gian (ngày / tháng / năm)
-    getRevenueByTime: async (type = "day") => {
+    getRevenueByTime: async ({ type = "day", date, month, year }) => {
         try {
             const res = await axiosInstance.get(`${apiStatistical}/revenue/time`, {
-                params: { type }
+                params: { type, date, month, year }
             });
             return res.data;
         } catch (error) {

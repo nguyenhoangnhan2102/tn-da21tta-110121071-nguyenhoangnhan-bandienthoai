@@ -5,6 +5,10 @@ const statisticalController = require("../controllers/statisticalController");
 // Doanh thu theo ngày / tháng / năm
 router.get("/revenue/time", statisticalController.revenueByTime);
 
+router.get("/day", statisticalController.RevenueByDay);
+router.get("/month", statisticalController.RevenueByMonth);
+router.get("/year", statisticalController.RevenueByYear);
+
 // Doanh thu theo sản phẩm
 router.get("/revenue/product", statisticalController.revenueByProduct);
 
