@@ -47,6 +47,7 @@ const productRouters = require("./src/routers/productRouters.js");
 const fileRouter = require("./src/routers/fileRouters.js");
 const cartRouter = require("./src/routers/cart");
 const orderRouter = require("./src/routers/order");
+const statisticalRouter = require("./src/routers/statisticalRouter.js");
 
 //router
 app.use("/api", fileRouter);
@@ -55,6 +56,7 @@ app.use("/api/manufactureres", manufacturerRouter);
 app.use("/api/product", productRouters);
 app.use("/api/cart", cartRouter);
 app.use("/api/orders", orderRouter);
+app.use("/api/statistical", statisticalRouter);
 
 // Socket.IO logic
 const userSockets = {}; // Lưu trữ socket.id của từng user theo userId

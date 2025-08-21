@@ -16,6 +16,7 @@ const imgURL = process.env.REACT_APP_IMG_URL;
 
 const Order = () => {
     const [orders, setOrders] = useState([]);
+    console.log("oder", orders)
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const [openModal, setOpenModal] = useState(false);
@@ -33,11 +34,19 @@ const Order = () => {
     const getAllOrdersData = async () => {
         try {
             const response = await getAllOrders();
-            setOrders(response.data);
+            if (response?.data) {
+                const sortedOrders = response.data.sort((a, b) => {
+                    const dateA = new Date(a.ngaycapnhat || a.ngaytao);
+                    const dateB = new Date(b.ngaycapnhat || b.ngaytao);
+                    return dateB - dateA; // Mới nhất lên đầu
+                });
+                setOrders(sortedOrders);
+            }
         } catch (err) {
             console.error("Error occurred", err);
         }
     };
+
 
     const handleViewDetails = async (order, mode = "view") => {
         setDetailMode(mode); // set chế độ view/edit
@@ -99,8 +108,11 @@ const Order = () => {
         .filter(order =>
             (order.hotenkhachhang && order.hotenkhachhang.toLowerCase().startsWith(searchTerm.toLowerCase()))
             ||
-            (order.tensanpham && order.tensanpham.toLowerCase().startsWith(searchTerm.toLowerCase())))
+            (order.tensanpham && order.tensanpham.toLowerCase().startsWith(searchTerm.toLowerCase()))
+        )
+        .sort((a, b) => new Date(b.ngaycapnhat || b.ngaytao) - new Date(a.ngaycapnhat || a.ngaytao))
         .slice(indexOfFirst, indexOfLast);
+
     const totalPages = Math.ceil(orders.length / ordersPerPage);
 
     console.log(orders);

@@ -43,7 +43,9 @@ const getAllOrders = async (req, res) => {
                 ctdh.dongia
             FROM DONHANG dh
             JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
-            ORDER BY dh.ngaytao DESC
+            ORDER BY  
+                dh.ngaycapnhat DESC,
+                dh.ngaytao DESC;
         `);
 
         // Gom nhóm theo madonhang
