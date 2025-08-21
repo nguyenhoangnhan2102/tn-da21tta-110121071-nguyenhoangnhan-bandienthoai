@@ -1,7 +1,7 @@
 const connection = require("../config/database");
 
 // Doanh thu theo ngày/tháng/năm (dùng query type=day|month|year)
-constrevenueByTime = async (req, res) => {
+const revenueByTime = async (req, res) => {
     try {
         const { type } = req.query; // "day" | "month" | "year"
         let groupBy = "DATE(dh.thoigiandat)";
