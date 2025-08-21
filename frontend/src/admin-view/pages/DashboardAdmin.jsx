@@ -78,6 +78,26 @@ const DashboardAdmin = () => {
     };
   };
 
+  const options = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            let value = context.raw; // lấy giá trị
+            return `Tổng: ${value.toLocaleString()} đ`; // format với dấu chấm hoặc dấu phẩy nếu muốn
+          }
+        }
+      }
+    },
+    responsive: true,
+    scales: {
+      y: {
+        beginAtZero: true
+      }
+    }
+  };
+
+
   const fetchTopProducts = async () => {
     try {
       // ⚠️ API top sản phẩm bán chạy chưa được đưa vào service nên vẫn dùng axios hoặc bổ sung vào service
@@ -163,7 +183,7 @@ const DashboardAdmin = () => {
       <div className="charts-wrapper">
         <div className="chart-card">
           <h4>Doanh thu tổng hợp</h4>
-          <Bar data={formatCombinedChartData()} />
+          <Bar data={formatCombinedChartData()} options={options} />
         </div>
 
         <div className="chart-card chart-card-small">
