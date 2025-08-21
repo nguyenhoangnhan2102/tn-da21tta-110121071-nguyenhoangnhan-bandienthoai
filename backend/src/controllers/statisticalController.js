@@ -1,53 +1,5 @@
 const connection = require("../config/database");
 
-// Doanh thu theo ngày/tháng/năm (dùng query type=day|month|year)
-// Doanh thu theo ngày/tháng/năm (có thể lọc theo ngày/tháng/năm cụ thể)
-const revenueByTime = async (req, res) => {
-    try {
-        const { type, date, month, year } = req.query; // type = "day" | "month" | "year"
-
-        let groupBy = "DATE(dh.thoigiandat)";
-        let label = "ngay";
-        let whereClause = "dh.trangthai = 'hoanthanh'";
-
-        // Nếu lọc theo ngày cụ thể
-        if (date) {
-            whereClause += ` AND DATE(dh.thoigiandat) = '${date}'`;
-        }
-
-        // Nếu lọc theo tháng cụ thể (vd: month=7&year=2025)
-        if (month && year) {
-            whereClause += ` AND MONTH(dh.thoigiandat) = ${month} AND YEAR(dh.thoigiandat) = ${year}`;
-        }
-
-        // Nếu lọc theo năm cụ thể
-        if (year && !month) {
-            whereClause += ` AND YEAR(dh.thoigiandat) = ${year}`;
-        }
-
-        if (type === "month") {
-            groupBy = "YEAR(dh.thoigiandat), MONTH(dh.thoigiandat)";
-            label = "thang";
-        } else if (type === "year") {
-            groupBy = "YEAR(dh.thoigiandat)";
-            label = "nam";
-        }
-
-        const [rows] = await connection.query(`
-            SELECT ${groupBy} AS ${label}, SUM(dh.tongtien) AS doanhthu
-            FROM DONHANG dh
-            WHERE ${whereClause}
-            GROUP BY ${groupBy}
-            ORDER BY MIN(dh.thoigiandat) ASC
-        `);
-
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
-
 const RevenueByDay = async (req, res) => {
     try {
         const { ngay } = req.query;
@@ -177,91 +129,44 @@ const RevenueByYear = async (req, res) => {
     }
 };
 
-// Doanh thu theo sản phẩm
-const revenueByProduct = async (req, res) => {
+const Top10Products = async (req, res) => {
     try {
-        const [rows] = await connection.query(`
-      SELECT ctdh.masanpham, ctdh.tensanpham,
-             SUM(ctdh.soluong) AS tong_soluong,
-             SUM(ctdh.dongia * ctdh.soluong) AS doanhthu
-      FROM CHITIETDONHANG ctdh
-      JOIN DONHANG dh ON ctdh.madonhang = dh.madonhang
-      WHERE dh.trangthai = 'hoanthanh'
-      GROUP BY ctdh.masanpham, ctdh.tensanpham
-      ORDER BY doanhthu DESC
-    `);
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
+        const query = `
+            SELECT 
+                sp.masanpham,
+                sp.tensanpham,
+                sp.hinhanhchinh,
+                sp.giaban,
+                sp.khuyenmai,
+                (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam,
+                SUM(ct.soluong) AS tongban,
+                SUM(ct.soluong * (sp.giaban - (sp.giaban * sp.khuyenmai / 100))) AS doanhthu
+            FROM CHITIETDONHANG ct
+            JOIN SANPHAM sp ON ct.masanpham = sp.masanpham
+            JOIN DONHANG dh ON ct.madonhang = dh.madonhang
+            WHERE dh.trangthai = 'hoanthanh'
+            GROUP BY sp.masanpham
+            HAVING SUM(ct.soluong) > 5
+            ORDER BY doanhthu DESC
+            LIMIT 10;
+        `;
 
-// Doanh thu theo thương hiệu
-const revenueByBrand = async (req, res) => {
-    try {
-        const [rows] = await connection.query(`
-      SELECT th.tenthuonghieu,
-             SUM(ctdh.soluong * ctdh.dongia) AS doanhthu
-      FROM CHITIETDONHANG ctdh
-      JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
-      JOIN THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
-      JOIN DONHANG dh ON dh.madonhang = ctdh.madonhang
-      WHERE dh.trangthai = 'hoanthanh'
-      GROUP BY th.tenthuonghieu
-      ORDER BY doanhthu DESC
-    `);
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
+        const [results] = await connection.query(query);
 
-// Doanh thu theo khách hàng
-const revenueByCustomer = async (req, res) => {
-    try {
-        const [rows] = await connection.query(`
-      SELECT nd.manguoidung, nd.hoten,
-             SUM(dh.tongtien) AS doanhthu
-      FROM DONHANG dh
-      JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
-      WHERE dh.trangthai = 'hoanthanh'
-      GROUP BY nd.manguoidung, nd.hoten
-      ORDER BY doanhthu DESC
-    `);
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
-    }
-};
-
-// Doanh thu theo hình thức thanh toán
-const revenueByPayment = async (req, res) => {
-    try {
-        const [rows] = await connection.query(`
-      SELECT tt.hinhthucthanhtoan,
-             SUM(dh.tongtien) AS doanhthu
-      FROM THANHTOAN tt
-      JOIN DONHANG dh ON tt.madonhang = dh.madonhang
-      WHERE dh.trangthai = 'hoanthanh' AND tt.trangthai = 'dathanhtoan'
-      GROUP BY tt.hinhthucthanhtoan
-    `);
-        res.json({ success: true, data: rows });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ success: false, message: "Server error" });
+        res.json({
+            success: true,
+            message: "Top 10 sản phẩm có doanh thu cao nhất",
+            data: results
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy top sản phẩm:", error);
+        res.status(500).json({ success: false, message: "Lỗi server khi lấy top sản phẩm" });
     }
 };
 
 module.exports = {
-    revenueByTime,
-    revenueByProduct,
-    revenueByBrand,
-    revenueByCustomer,
-    revenueByPayment,
     RevenueByDay,
     RevenueByMonth,
     RevenueByYear,
+    Top10Products,
 };

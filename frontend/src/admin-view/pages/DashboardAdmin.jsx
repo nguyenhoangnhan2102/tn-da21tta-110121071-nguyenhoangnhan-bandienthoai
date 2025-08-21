@@ -81,9 +81,9 @@ const DashboardAdmin = () => {
   const fetchTopProducts = async () => {
     try {
       // ⚠️ API top sản phẩm bán chạy chưa được đưa vào service nên vẫn dùng axios hoặc bổ sung vào service
-      const response = await fetch(`${process.env.REACT_APP_API_URL}/revenue/top5-products`);
-      const data = await response.json();
-      setTopProducts(data.data);
+      const response = await statisticalService.getTop10Products();
+      console.log("response", response)
+      setTopProducts(response.data);
     } catch (error) {
       console.error("Lỗi khi lấy danh sách sản phẩm bán chạy:", error);
     }
@@ -93,13 +93,29 @@ const DashboardAdmin = () => {
     labels: topProducts.map(product => product.tensanpham),
     datasets: [
       {
-        data: topProducts.map(product => product.tongban),
+        label: "Số lượng bán",
+        data: topProducts.map(product => parseInt(product.tongban)),
         backgroundColor: [
           "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
           "#FF9F40", "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"
         ]
       }
     ]
+  };
+
+  const chartOptions = {
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            const product = topProducts[context.dataIndex];
+            const soluong = product.tongban;
+            const doanhthu = parseFloat(product.doanhthu).toLocaleString("vi-VN");
+            return `Số lượng: ${soluong} - Tổng: ${doanhthu}₫`;
+          }
+        }
+      }
+    }
   };
 
   return (
@@ -151,8 +167,8 @@ const DashboardAdmin = () => {
         </div>
 
         <div className="chart-card chart-card-small">
-          <h4>Top 5 sản phẩm bán chạy</h4>
-          <Pie data={chartData} />
+          <h4>Top 10 sản phẩm bán chạy</h4>
+          <Pie data={chartData} options={chartOptions} />
         </div>
       </div>
     </div>

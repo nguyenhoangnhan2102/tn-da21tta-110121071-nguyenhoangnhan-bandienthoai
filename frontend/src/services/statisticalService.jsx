@@ -4,19 +4,6 @@ const apiUrl = process.env.REACT_APP_API_URL;
 const apiStatistical = apiUrl + `/statistical`;
 
 const statisticalService = {
-    // 📊 Doanh thu theo thời gian (ngày / tháng / năm)
-    getRevenueByTime: async ({ type = "day", date, month, year }) => {
-        try {
-            const res = await axiosInstance.get(`${apiStatistical}/revenue/time`, {
-                params: { type, date, month, year }
-            });
-            return res.data;
-        } catch (error) {
-            console.error("Error getRevenueByTime:", error);
-            throw error;
-        }
-    },
-
     // 📊 Doanh thu theo ngày
     getRevenueByDay: async (date) => {
         try {
@@ -56,49 +43,16 @@ const statisticalService = {
         }
     },
 
-    // 📊 Doanh thu theo sản phẩm
-    getRevenueByProduct: async () => {
+    // 🔝 Top 10 sản phẩm bán chạy nhất
+    getTop10Products: async () => {
         try {
-            const res = await axiosInstance.get(`${apiStatistical}/revenue/product`);
+            const res = await axiosInstance.get(`${apiStatistical}/top10-products`);
             return res.data;
         } catch (error) {
-            console.error("Error getRevenueByProduct:", error);
+            console.error("Error getTop10Products:", error);
             throw error;
         }
     },
-
-    // 📊 Doanh thu theo thương hiệu
-    getRevenueByBrand: async () => {
-        try {
-            const res = await axiosInstance.get(`${apiStatistical}/revenue/brand`);
-            return res.data;
-        } catch (error) {
-            console.error("Error getRevenueByBrand:", error);
-            throw error;
-        }
-    },
-
-    // 📊 Doanh thu theo khách hàng
-    getRevenueByCustomer: async () => {
-        try {
-            const res = await axiosInstance.get(`${apiStatistical}/revenue/customer`);
-            return res.data;
-        } catch (error) {
-            console.error("Error getRevenueByCustomer:", error);
-            throw error;
-        }
-    },
-
-    // 📊 Doanh thu theo hình thức thanh toán
-    getRevenueByPayment: async () => {
-        try {
-            const res = await axiosInstance.get(`${apiStatistical}/revenue/payment`);
-            return res.data;
-        } catch (error) {
-            console.error("Error getRevenueByPayment:", error);
-            throw error;
-        }
-    }
 };
 
 export default statisticalService;
