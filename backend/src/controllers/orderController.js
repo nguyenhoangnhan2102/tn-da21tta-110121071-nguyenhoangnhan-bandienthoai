@@ -205,7 +205,7 @@ const confirmOrder = async (req, res) => {
 
         // 3️⃣ Lặp qua từng sản phẩm trong giỏ
         for (const item of sanpham) {
-            const { masanpham, soluong, hinhanh } = item;
+            const { masanpham, soluong, hinhanh, dongia } = item;
 
             if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0) {
                 throw new Error('Sản phẩm không hợp lệ trong giỏ hàng.');
@@ -242,7 +242,7 @@ const confirmOrder = async (req, res) => {
                     product.dungluong,
                     product.ram,
                     soluong,
-                    product.giaban,
+                    dongia,
                     hinhanh
                 ]
             );

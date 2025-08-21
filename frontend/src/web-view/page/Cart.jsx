@@ -70,7 +70,7 @@ function Cart() {
                     hinhanh: item.hinhanhchinh
                 }))
             };
-            console.log("orderData", orderData)
+            console.log("orderData", orderData?.sanpham)
             const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
             console.log(response);
             if (response.data.success) {
