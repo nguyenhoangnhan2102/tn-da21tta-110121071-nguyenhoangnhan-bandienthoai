@@ -63,13 +63,13 @@ const RevenueByDay = async (req, res) => {
             SELECT 
                 sp.masanpham, 
                 sp.tensanpham, 
-                SUM(cthd.soluongSP) AS tong_soluong_ban, 
-                SUM(cthd.soluongSP * cthd.giatienSP) AS tong_doanh_thu
-            FROM CHITIETHOADON cthd
-            JOIN HOADON hd ON cthd.mahoadon = hd.mahoadon
-            JOIN SANPHAM sp ON cthd.masanpham = sp.masanpham
-            WHERE DATE(hd.ngaylap) = ?
-            AND hd.trangthaihoadon = 1
+                SUM(ctdh.soluong) AS tong_soluong_ban, 
+                SUM(ctdh.soluong * ctdh.dongia) AS tong_doanh_thu
+            FROM CHITIETDONHANG ctdh
+            JOIN DONHANG dh ON ctdh.madonhang = dh.madonhang
+            JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
+            WHERE DATE(dh.thoigiandat) = ?
+              AND dh.trangthai = 'hoanthanh'
             GROUP BY sp.masanpham, sp.tensanpham
             ORDER BY tong_doanh_thu DESC;
         `;
@@ -90,6 +90,7 @@ const RevenueByDay = async (req, res) => {
     }
 };
 
+
 const RevenueByMonth = async (req, res) => {
     try {
         const { thang, nam } = req.query;
@@ -105,13 +106,14 @@ const RevenueByMonth = async (req, res) => {
             SELECT 
                 sp.masanpham, 
                 sp.tensanpham, 
-                SUM(cthd.soluongSP) AS tong_soluong_ban, 
-                SUM(cthd.soluongSP * cthd.giatienSP) AS tong_doanh_thu
-            FROM CHITIETHOADON cthd
-            JOIN HOADON hd ON cthd.mahoadon = hd.mahoadon
-            JOIN SANPHAM sp ON cthd.masanpham = sp.masanpham
-            WHERE MONTH(hd.ngaylap) = ? AND YEAR(hd.ngaylap) = ?
-            AND hd.trangthaihoadon = 1
+                SUM(ctdh.soluong) AS tong_soluong_ban, 
+                SUM(ctdh.soluong * ctdh.dongia) AS tong_doanh_thu
+            FROM CHITIETDONHANG ctdh
+            JOIN DONHANG dh ON ctdh.madonhang = dh.madonhang
+            JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
+            WHERE MONTH(dh.thoigiandat) = ? 
+              AND YEAR(dh.thoigiandat) = ?
+              AND dh.trangthai = 'hoanthanh'
             GROUP BY sp.masanpham, sp.tensanpham
             ORDER BY tong_doanh_thu DESC;
         `;
@@ -132,6 +134,7 @@ const RevenueByMonth = async (req, res) => {
     }
 };
 
+
 const RevenueByYear = async (req, res) => {
     try {
         const { nam } = req.query;
@@ -147,13 +150,13 @@ const RevenueByYear = async (req, res) => {
             SELECT 
                 sp.masanpham, 
                 sp.tensanpham, 
-                SUM(cthd.soluongSP) AS tong_soluong_ban, 
-                SUM(cthd.soluongSP * cthd.giatienSP) AS tong_doanh_thu
-            FROM CHITIETHOADON cthd
-            JOIN HOADON hd ON cthd.mahoadon = hd.mahoadon
-            JOIN SANPHAM sp ON cthd.masanpham = sp.masanpham
-            WHERE YEAR(hd.ngaylap) = ?
-            AND hd.trangthaihoadon = 1
+                SUM(ctdh.soluong) AS tong_soluong_ban, 
+                SUM(ctdh.soluong * ctdh.dongia) AS tong_doanh_thu
+            FROM CHITIETDONHANG ctdh
+            JOIN DONHANG dh ON ctdh.madonhang = dh.madonhang
+            JOIN SANPHAM sp ON ctdh.masanpham = sp.masanpham
+            WHERE YEAR(dh.thoigiandat) = ?
+              AND dh.trangthai = 'hoanthanh'
             GROUP BY sp.masanpham, sp.tensanpham
             ORDER BY tong_doanh_thu DESC;
         `;

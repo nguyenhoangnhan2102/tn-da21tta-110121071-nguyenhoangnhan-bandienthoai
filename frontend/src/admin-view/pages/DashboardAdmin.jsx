@@ -1,143 +1,159 @@
 import React, { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement,
-} from "chart.js";
+import { Bar, Pie } from "react-chartjs-2";
+import "../style/dashboard.scss";
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement } from "chart.js";
 import statisticalService from "../../services/statisticalService";
-import '../style/dashboard.scss';
 
-ChartJS.register(
-  ArcElement,
-  Tooltip,
-  Legend,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  LineElement,
-  PointElement
-);
+// Đăng ký các thành phần cần thiết cho biểu đồ
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, ArcElement);
 
 const DashboardAdmin = () => {
-  const [type, setType] = useState("day");
-  const [date, setDate] = useState("");
-  const [month, setMonth] = useState("");
-  const [year, setYear] = useState("");
-  const [revenue, setRevenue] = useState([]);
+  const [dailyRevenue, setDailyRevenue] = useState([]);
+  const [monthlyRevenue, setMonthlyRevenue] = useState([]);
+  const [yearlyRevenue, setYearlyRevenue] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+
+  const today = new Date();
+  const formattedDate = today.toISOString().slice(0, 10); // YYYY-MM-DD
+  const formattedMonth = (today.getMonth() + 1).toString().padStart(2, "0");
+  const formattedYear = today.getFullYear().toString();
+
+  const [selectedDate, setSelectedDate] = useState(formattedDate);
+  const [selectedMonth, setSelectedMonth] = useState(formattedMonth);
+  const [selectedYear, setSelectedYear] = useState(formattedYear);
 
   useEffect(() => {
-    const fetchRevenue = async () => {
-      try {
-        const res = await statisticalService.getRevenueByTime({
-          type,
-          date: type === "day" ? date : undefined,
-          month:
-            type === "day" && month
-              ? month
-              : type === "month" && month
-                ? new Date(month).getMonth() + 1
-                : undefined,
-          year:
-            type === "day" && date
-              ? new Date(date).getFullYear()
-              : type === "month" && month
-                ? new Date(month).getFullYear()
-                : type === "year"
-                  ? year
-                  : undefined,
-        });
-        setRevenue(res.data || []);
-      } catch (error) {
-        console.error("Error fetching revenue:", error);
-      }
+    fetchRevenueData();
+    fetchTopProducts();
+  }, [selectedDate, selectedMonth, selectedYear]);
+
+  const fetchRevenueData = async () => {
+    try {
+      // 📊 Doanh thu theo ngày
+      const resDay = await statisticalService.getRevenueByDay(selectedDate);
+      setDailyRevenue(resDay.data);
+
+      // 📊 Doanh thu theo tháng
+      const resMonth = await statisticalService.getRevenueByMonth(selectedMonth, selectedYear);
+      setMonthlyRevenue(resMonth.data);
+
+      // 📊 Doanh thu theo năm
+      const resYear = await statisticalService.getRevenueByYear(selectedYear);
+      setYearlyRevenue(resYear.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu thống kê:", error);
+    }
+  };
+
+  const formatCombinedChartData = () => {
+    const dailyTotal = dailyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0);
+    const monthlyTotal = monthlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0);
+    const yearlyTotal = yearlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0);
+
+    return {
+      labels: ["Ngày", "Tháng", "Năm"],
+      datasets: [
+        {
+          label: `Doanh thu Ngày ${selectedDate}`,
+          data: [dailyTotal, 0, 0],
+          backgroundColor: "rgba(75, 192, 192, 0.6)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: `Doanh thu Tháng ${selectedMonth}/${selectedYear}`,
+          data: [0, monthlyTotal, 0],
+          backgroundColor: "rgba(255, 159, 64, 0.6)",
+          borderColor: "rgba(255, 159, 64, 1)",
+          borderWidth: 1,
+        },
+        {
+          label: `Doanh thu Năm ${selectedYear}`,
+          data: [0, 0, yearlyTotal],
+          backgroundColor: "rgba(153, 102, 255, 0.6)",
+          borderColor: "rgba(153, 102, 255, 1)",
+          borderWidth: 1,
+        },
+      ],
     };
-    fetchRevenue();
-  }, [type, date, month, year]);
+  };
+
+  const fetchTopProducts = async () => {
+    try {
+      // ⚠️ API top sản phẩm bán chạy chưa được đưa vào service nên vẫn dùng axios hoặc bổ sung vào service
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/revenue/top5-products`);
+      const data = await response.json();
+      setTopProducts(data.data);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách sản phẩm bán chạy:", error);
+    }
+  };
 
   const chartData = {
-    labels:
-      type === "day"
-        ? revenue.map((item) => new Date(item.ngay).toLocaleDateString("vi-VN"))
-        : type === "month"
-          ? revenue.map((item) => `${item.thang}/${item.nam}`)
-          : revenue.map((item) => item.nam),
+    labels: topProducts.map(product => product.tensanpham),
     datasets: [
       {
-        label:
-          type === "day"
-            ? "Doanh thu theo ngày"
-            : type === "month"
-              ? "Doanh thu theo tháng"
-              : "Doanh thu theo năm",
-        data: revenue.map((item) => item.doanhthu),
-        borderColor: "#36A2EB",
-        backgroundColor: "rgba(54, 162, 235, 0.2)",
-        fill: true,
-        tension: 0.3,
-        pointBackgroundColor: "#36A2EB",
-        pointBorderColor: "#fff",
-        pointRadius: 5,
-      },
-    ],
+        data: topProducts.map(product => product.tongban),
+        backgroundColor: [
+          "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF",
+          "#FF9F40", "#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0"
+        ]
+      }
+    ]
   };
 
   return (
     <div className="dashboard-container">
-      <h1 className="dashboard-title">📊 Thống kê doanh thu</h1>
+      <h2>Thống kê doanh thu</h2>
 
       {/* Bộ lọc */}
-      <div className="filter-container">
-        <label className="filter-label">Chọn kiểu thống kê:</label>
-        <select
-          value={type}
-          onChange={(e) => setType(e.target.value)}
-          className="filter-select"
-        >
-          <option value="day">Theo ngày</option>
-          <option value="month">Theo tháng</option>
-          <option value="year">Theo năm</option>
-        </select>
-
-        {type === "day" && (
+      <div className="filter-section">
+        <label>
+          Chọn ngày:
           <input
             type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="filter-input"
+            value={selectedDate}
+            onChange={(e) => setSelectedDate(e.target.value)}
           />
-        )}
+        </label>
 
-        {type === "month" && (
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-            className="filter-input"
-          />
-        )}
+        <label>
+          Chọn tháng:
+          <select
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(e.target.value)}
+          >
+            {[...Array(12)].map((_, i) => {
+              const month = (i + 1).toString().padStart(2, "0");
+              return <option key={month} value={month}>{month}</option>;
+            })}
+          </select>
+        </label>
 
-        {type === "year" && (
-          <input
-            type="number"
-            placeholder="Nhập năm"
-            min="2000"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className="filter-input"
-          />
-        )}
+        <label>
+          Chọn năm:
+          <select
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(e.target.value)}
+          >
+            {[2023, 2024, 2025, 2026].map(year => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+        </label>
       </div>
 
-      {/* Biểu đồ */}
-      <div className="chart-container">
-        <Line data={chartData} />
+      {/* Layout biểu đồ */}
+      <div className="charts-wrapper">
+        <div className="chart-card">
+          <h4>Doanh thu tổng hợp</h4>
+          <Bar data={formatCombinedChartData()} />
+        </div>
+
+        <div className="chart-card chart-card-small">
+          <h4>Top 5 sản phẩm bán chạy</h4>
+          <Pie data={chartData} />
+        </div>
       </div>
     </div>
   );

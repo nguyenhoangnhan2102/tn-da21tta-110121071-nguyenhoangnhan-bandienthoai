@@ -17,6 +17,45 @@ const statisticalService = {
         }
     },
 
+    // 📊 Doanh thu theo ngày
+    getRevenueByDay: async (date) => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/day`, {
+                params: { ngay: date }   // yyyy-MM-dd
+            });
+            return res.data;
+        } catch (error) {
+            console.error("Error getRevenueByDay:", error);
+            throw error;
+        }
+    },
+
+    // 📊 Doanh thu theo tháng
+    getRevenueByMonth: async (month, year) => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/month`, {
+                params: { thang: month, nam: year }   // month: 1-12, year: yyyy
+            });
+            return res.data;
+        } catch (error) {
+            console.error("Error getRevenueByMonth:", error);
+            throw error;
+        }
+    },
+
+    // 📊 Doanh thu theo năm
+    getRevenueByYear: async (year) => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/year`, {
+                params: { nam: year }
+            });
+            return res.data;
+        } catch (error) {
+            console.error("Error getRevenueByYear:", error);
+            throw error;
+        }
+    },
+
     // 📊 Doanh thu theo sản phẩm
     getRevenueByProduct: async () => {
         try {
