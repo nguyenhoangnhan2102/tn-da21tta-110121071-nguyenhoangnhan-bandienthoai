@@ -171,8 +171,118 @@ const getOrderDetails = async (req, res) => {
  *   sanpham: [ { masanpham: number, soluong: number, dongia: number } ]
  * }
  */
+// const confirmOrder = async (req, res) => {
+//     const { manguoidung, diachigiaohang, ghichu = null, tongtien, sanpham } = req.body;
+
+//     if (!manguoidung || !Array.isArray(sanpham) || sanpham.length === 0) {
+//         return res.status(400).json({ success: false, message: "Thiếu thông tin đơn hàng." });
+//     }
+
+//     const conn = await connection.getConnection();
+//     try {
+//         await conn.beginTransaction();
+
+//         const thoigiandat = moment.tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
+
+//         // 1️⃣ Lấy snapshot thông tin người dùng
+//         const [userRows] = await conn.query(
+//             `SELECT hoten, sodienthoai FROM NGUOIDUNG WHERE manguoidung = ?`,
+//             [manguoidung]
+//         );
+
+//         if (userRows.length === 0) {
+//             throw new Error(`Không tìm thấy người dùng mã ${manguoidung}.`);
+//         }
+
+//         const { hoten, sodienthoai } = userRows[0];
+
+//         // 2️⃣ Thêm đơn hàng vào bảng DONHANG
+//         const [result] = await conn.query(
+//             `INSERT INTO DONHANG (manguoidung, hotenkhachhang, sodienthoaikhachhang, thoigiandat, tongtien, ghichu, diachigiaohang)
+//              VALUES (?, ?, ?, ?, ?, ?, ?)`,
+//             [manguoidung, hoten, sodienthoai, thoigiandat, tongtien, ghichu, diachigiaohang]
+//         );
+
+//         const madonhang = result.insertId;
+
+//         // 3️⃣ Lặp qua từng sản phẩm trong giỏ
+//         for (const item of sanpham) {
+//             const { masanpham, soluong, hinhanh, dongia } = item;
+
+//             if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0) {
+//                 throw new Error('Sản phẩm không hợp lệ trong giỏ hàng.');
+//             }
+
+//             // 4️⃣ Lấy thông tin sản phẩm từ DB (snapshot)
+//             const [prodRows] = await conn.query(
+//                 `SELECT tensanpham, mau, dungluong, ram, giaban, soluong AS soluongton
+//                  FROM SANPHAM WHERE masanpham = ? FOR UPDATE`,
+//                 [masanpham]
+//             );
+
+//             if (prodRows.length === 0) {
+//                 throw new Error(`Không tìm thấy sản phẩm mã ${masanpham}.`);
+//             }
+
+//             const product = prodRows[0];
+
+//             // 5️⃣ Kiểm tra tồn kho
+//             if (Number(product.soluongton) < Number(soluong)) {
+//                 throw new Error(`Sản phẩm mã ${masanpham} không đủ số lượng.`);
+//             }
+
+//             // 6️⃣ Lưu vào CHITIETDONHANG (snapshot sản phẩm tại thời điểm đặt)
+//             await conn.query(
+//                 `INSERT INTO CHITIETDONHANG 
+//                     (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia, hinhanh)
+//                  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+//                 [
+//                     madonhang,
+//                     masanpham,
+//                     product.tensanpham,
+//                     product.mau,
+//                     product.dungluong,
+//                     product.ram,
+//                     soluong,
+//                     dongia,
+//                     hinhanh
+//                 ]
+//             );
+
+//             // ❗ Không trừ kho ở bước xác nhận. Chỉ trừ khi trạng thái = 'hoanthanh'.
+//         }
+
+//         // 7️⃣ Commit giao dịch
+//         await conn.commit();
+
+//         return res.status(201).json({
+//             success: true,
+//             message: "Đặt hàng thành công.",
+//             madonhang,
+//             thoigiandat
+//         });
+//     } catch (error) {
+//         await conn.rollback();
+//         console.error(error);
+//         return res.status(500).json({
+//             success: false,
+//             message: "Lỗi xử lý đơn hàng.",
+//             error: error.message
+//         });
+//     } finally {
+//         conn.release();
+//     }
+// };
+
 const confirmOrder = async (req, res) => {
-    const { manguoidung, diachigiaohang, ghichu = null, tongtien, sanpham } = req.body;
+    const {
+        manguoidung,
+        diachigiaohang,
+        ghichu = null,
+        tongtien,
+        sanpham,
+        hinhthucthanhtoan = "home" // 👈 thêm phương thức thanh toán
+    } = req.body;
 
     if (!manguoidung || !Array.isArray(sanpham) || sanpham.length === 0) {
         return res.status(400).json({ success: false, message: "Thiếu thông tin đơn hàng." });
@@ -184,19 +294,15 @@ const confirmOrder = async (req, res) => {
 
         const thoigiandat = moment.tz('Asia/Ho_Chi_Minh').format('YYYY-MM-DD HH:mm:ss');
 
-        // 1️⃣ Lấy snapshot thông tin người dùng
+        // 1️⃣ Lấy thông tin người dùng
         const [userRows] = await conn.query(
             `SELECT hoten, sodienthoai FROM NGUOIDUNG WHERE manguoidung = ?`,
             [manguoidung]
         );
-
-        if (userRows.length === 0) {
-            throw new Error(`Không tìm thấy người dùng mã ${manguoidung}.`);
-        }
-
+        if (userRows.length === 0) throw new Error(`Không tìm thấy người dùng mã ${manguoidung}.`);
         const { hoten, sodienthoai } = userRows[0];
 
-        // 2️⃣ Thêm đơn hàng vào bảng DONHANG
+        // 2️⃣ Thêm đơn hàng
         const [result] = await conn.query(
             `INSERT INTO DONHANG (manguoidung, hotenkhachhang, sodienthoaikhachhang, thoigiandat, tongtien, ghichu, diachigiaohang)
              VALUES (?, ?, ?, ?, ?, ?, ?)`,
@@ -205,37 +311,29 @@ const confirmOrder = async (req, res) => {
 
         const madonhang = result.insertId;
 
-        // 3️⃣ Lặp qua từng sản phẩm trong giỏ
+        // 3️⃣ Lặp sản phẩm
         for (const item of sanpham) {
             const { masanpham, soluong, hinhanh, dongia } = item;
-
             if (!masanpham || !Number.isInteger(Number(soluong)) || Number(soluong) <= 0) {
                 throw new Error('Sản phẩm không hợp lệ trong giỏ hàng.');
             }
 
-            // 4️⃣ Lấy thông tin sản phẩm từ DB (snapshot)
             const [prodRows] = await conn.query(
                 `SELECT tensanpham, mau, dungluong, ram, giaban, soluong AS soluongton
                  FROM SANPHAM WHERE masanpham = ? FOR UPDATE`,
                 [masanpham]
             );
-
-            if (prodRows.length === 0) {
-                throw new Error(`Không tìm thấy sản phẩm mã ${masanpham}.`);
-            }
+            if (prodRows.length === 0) throw new Error(`Không tìm thấy sản phẩm mã ${masanpham}.`);
 
             const product = prodRows[0];
-
-            // 5️⃣ Kiểm tra tồn kho
             if (Number(product.soluongton) < Number(soluong)) {
                 throw new Error(`Sản phẩm mã ${masanpham} không đủ số lượng.`);
             }
 
-            // 6️⃣ Lưu vào CHITIETDONHANG (snapshot sản phẩm tại thời điểm đặt)
             await conn.query(
                 `INSERT INTO CHITIETDONHANG 
                     (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia, hinhanh)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     madonhang,
                     masanpham,
@@ -248,18 +346,25 @@ const confirmOrder = async (req, res) => {
                     hinhanh
                 ]
             );
-
-            // ❗ Không trừ kho ở bước xác nhận. Chỉ trừ khi trạng thái = 'hoanthanh'.
         }
 
-        // 7️⃣ Commit giao dịch
+        // 4️⃣ Thêm thông tin thanh toán (ban đầu mặc định chưa thanh toán)
+        await conn.query(
+            `INSERT INTO THANHTOAN (madonhang, hinhthucthanhtoan, trangthai) 
+             VALUES (?, ?, 'chuathanhtoan')`,
+            [madonhang, hinhthucthanhtoan]
+        );
+
+        // 5️⃣ Commit
         await conn.commit();
 
         return res.status(201).json({
             success: true,
             message: "Đặt hàng thành công.",
             madonhang,
-            thoigiandat
+            thoigiandat,
+            hinhthucthanhtoan,
+            trangthai: "chuathanhtoan"
         });
     } catch (error) {
         await conn.rollback();

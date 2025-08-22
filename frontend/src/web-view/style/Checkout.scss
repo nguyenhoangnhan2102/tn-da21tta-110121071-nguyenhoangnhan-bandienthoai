@@ -32,7 +32,6 @@
         h4 {
             font-size: 20px;
             font-weight: 600;
-            color: #444;
             margin-bottom: 15px;
         }
     }
@@ -86,6 +85,14 @@
         font-size: 18px;
         font-weight: 600;
         color: #e53935 !important;
+    }
+
+    // Tóm tắt đơn hàng sticky
+    .card-summary {
+        position: sticky;
+        bottom: 0px;
+        align-self: start;
+        height: fit-content;
     }
 
     .btn {

@@ -84,7 +84,11 @@ function Checkout() {
                                         alt={item.tensanpham}
                                         style={{ width: "80px", height: "80px", objectFit: "cover", marginRight: "10px" }}
                                     />
-                                    <span>{item.tensanpham} (x{item.soluong})</span>
+
+                                    <div>
+                                        <div>{item.tensanpham} (x{item.soluong})</div>
+                                        <div>Màu:<strong> {item.mau}</strong></div>
+                                    </div>
                                 </div>
                                 <span>{(item.giasaugiam * item.soluong).toLocaleString()} đ</span>
                             </div>
@@ -100,26 +104,21 @@ function Checkout() {
                                 value={orderInfo.paymentMethod}
                                 onChange={(e) => setOrderInfo({ ...orderInfo, paymentMethod: e.target.value })}
                             >
-                                <FormControlLabel value="cod" control={<Radio />} label="Thanh toán khi nhận hàng (COD)" />
-                                <FormControlLabel value="bank" control={<Radio />} label="Chuyển khoản ngân hàng" />
+                                <FormControlLabel value="home" control={<Radio />} label="Thanh toán khi nhận hàng (COD)" />
                                 <FormControlLabel value="momo" control={<Radio />} label="Ví MoMo" />
                             </RadioGroup>
                         </FormControl>
                     </div>
 
                     {/* Tóm tắt đơn hàng */}
-                    <div className="card p-3 shadow-sm">
+                    <div className="card p-3 shadow-sm card-summary">
                         <h4>Tóm tắt đơn hàng</h4>
-                        {cartItems.map(item => (
-                            <div key={item.masanpham} className="d-flex justify-content-between border-bottom py-2">
-                                <span>{item.tensanpham} (x{item.soluong})</span>
-                                <span>{(item.giasaugiam * item.soluong).toLocaleString()} đ</span>
-                            </div>
-                        ))}
-                        <p className="mt-3"><strong>Tổng số lượng:</strong> {totalQuantity}</p>
+                        <p className="mt-2"><strong>Tổng số lượng:</strong> {totalQuantity}</p>
                         <p><strong>Tổng tiền:</strong> <span className="text-danger">{subTotal.toLocaleString()} đ</span></p>
-                        <button className="btn btn-success w-100" onClick={handleSubmit}>Xác nhận đặt hàng</button>
-                        <Link to="/cart" className="btn btn-outline-primary w-100 mt-2">⬅ Quay lại giỏ hàng</Link>
+                        <div className="d-flex gap-2 mt-2">
+                            <Link to="/cart" className="btn btn-outline-primary w-100">⬅ Quay lại giỏ hàng</Link>
+                            <button className="btn btn-success w-100" onClick={handleSubmit}>Xác nhận đặt hàng</button>
+                        </div>
                     </div>
                 </div>
 

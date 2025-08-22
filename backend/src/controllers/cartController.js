@@ -19,6 +19,7 @@ const getAllCartByCustomer = async (req, res) => {
                 s.masanpham, 
                 s.tensanpham, 
                 s.hinhanhchinh,
+                s.mau,
                 c.soluong, 
                 s.giaban,
                 s.khuyenmai,
