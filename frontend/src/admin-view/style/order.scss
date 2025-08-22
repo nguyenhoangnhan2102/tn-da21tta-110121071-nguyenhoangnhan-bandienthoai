@@ -1,0 +1,20 @@
+/* Trạng thái đơn hàng */
+.status-pending {
+    color: #ff9800;
+    /* cam */
+}
+
+.status-shipping {
+    color: #2196f3;
+    /* xanh dương */
+}
+
+.status-delivered {
+    color: #4caf50;
+    /* xanh lá */
+}
+
+.status-cancelled {
+    color: #f44336;
+    /* đỏ */
+}

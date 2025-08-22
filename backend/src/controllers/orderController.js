@@ -475,9 +475,15 @@ const updateOrders = async (req, res) => {
                 fields.push("hinhthucthanhtoan = ?");
                 values.push(hinhthucthanhtoan);
             }
+
             if (trangthaithanhtoan) {
                 fields.push("trangthai = ?");
                 values.push(trangthaithanhtoan);
+
+                // Nếu trạng thái = "dathanhtoan" thì set luôn ngày thanh toán
+                if (trangthaithanhtoan === "dathanhtoan") {
+                    fields.push("ngaythanhtoan = NOW()");
+                }
             }
 
             values.push(madonhang);

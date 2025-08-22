@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from 'react-toastify';
-import "../style/dashboard.scss";
+import "../style/order.scss";
 import {
     Typography,
     Dialog,
@@ -115,7 +115,30 @@ const Order = () => {
 
     const totalPages = Math.ceil(orders.length / ordersPerPage);
 
-    console.log(orders);
+    // Map trạng thái đơn hàng sang class, icon và text
+    const statusMap = {
+        choxacnhan: {
+            className: "status-pending",
+            icon: "fa-hourglass",
+            text: "Chờ xác nhận"
+        },
+        danggiao: {
+            className: "status-shipping",
+            icon: "fa-truck",
+            text: "Đang giao"
+        },
+        hoanthanh: {
+            className: "status-delivered",
+            icon: "fa-check",
+            text: "Hoàn thành"
+        },
+        huy: {
+            className: "status-cancelled",
+            icon: "fa-ban",
+            text: "Đã hủy"
+        }
+    };
+
 
     return (
         <>
@@ -182,35 +205,12 @@ const Order = () => {
                                             : "Không có"}
                                     </td>
                                     <td>
-                                        <span
-                                            className={
-                                                order.trangthai === "choxacnhan" ? "status-pending" :
-                                                    order.trangthai === "danggiao" ? "status-shipping" :
-                                                        order.trangthai === "hoanthanh" ? "status-delivered" :
-                                                            order.trangthai === "huy" ? "status-cancelled" : ""
-                                            }
-                                        >
-                                            {order.trangthai === "choxacnhan" && (
-                                                <>
-                                                    <i className="fa-solid fa-hourglass me-2"></i> Chờ xác nhận
-                                                </>
-                                            )}
-                                            {order.trangthai === "danggiao" && (
-                                                <>
-                                                    <i className="fa-solid fa-truck me-2"></i> Đang giao
-                                                </>
-                                            )}
-                                            {order.trangthai === "hoanthanh" && (
-                                                <>
-                                                    <i className="fa-solid fa-check me-2"></i> Hoàn thành
-                                                </>
-                                            )}
-                                            {order.trangthai === "huy" && (
-                                                <>
-                                                    <i className="fa-solid fa-ban me-2"></i> Đã hủy
-                                                </>
-                                            )}
-                                        </span>
+                                        {statusMap[order.trangthai] && (
+                                            <span className={statusMap[order.trangthai].className}>
+                                                <i className={`fa-solid ${statusMap[order.trangthai].icon} me-2`}></i>
+                                                {statusMap[order.trangthai].text}
+                                            </span>
+                                        )}
                                     </td>
                                     <td className="d-flex align-items-center gap-2" style={{ border: 'none' }}>
                                         <button
