@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import axiosInstance from "../../authentication/axiosInstance";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../style/Cart.scss";
 
 const apiUrl = process.env.REACT_APP_API_URL;
@@ -15,6 +15,7 @@ function Cart() {
     const [totalQuantity, setTotalQuantity] = useState(0);
     const [subTotal, setSubTotal] = useState(0);
     const [cartItems, setCartItems] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const accessToken = Cookies.get("accessToken");
@@ -179,19 +180,28 @@ function Cart() {
 
                 {/* Thông tin người mua + thanh toán */}
                 <div className="col-lg-4">
-                    <div className="card p-3 shadow-sm mb-3">
+                    {/* <div className="card p-3 shadow-sm mb-3">
                         <h4 className="text-center mb-3">Thông tin người mua</h4>
                         <form>
                             <TextField fullWidth margin="normal" label="Họ tên" name="hoten" value={infoUser.hoten || ""} onChange={handleChange} />
                             <TextField fullWidth margin="normal" label="Số điện thoại" type="tel" name="sodienthoai" value={infoUser.sodienthoai || ""} onChange={handleChange} />
                             <TextField fullWidth margin="normal" label="Địa chỉ giao hàng" name="diachi" value={infoUser.diachi || ""} onChange={handleChange} multiline rows={3} />
                         </form>
-                    </div>
+                    </div> */}
                     <div className="card p-3 shadow-sm">
                         <h4 className="text-center mb-3">Tóm tắt đơn hàng</h4>
                         <p><strong>Số lượng sản phẩm:</strong> {totalQuantity}</p>
                         <p><strong>Tổng cộng:</strong> <span className="text-danger">{subTotal.toLocaleString()} đ</span></p>
-                        <button className="btn btn-success w-100 mt-3" onClick={handleCheckout}>Thanh Toán</button>
+                        <button
+                            className="btn btn-success w-100 mt-3"
+                            onClick={() =>
+                                navigate("/checkout", {
+                                    state: { cartItems, infoUser, subTotal, totalQuantity }
+                                })
+                            }
+                        >
+                            Thanh Toán
+                        </button>
                         <Link to="/" className="btn btn-outline-primary w-100 mt-2">⬅ Tiếp tục mua sắm</Link>
                     </div>
                 </div>
