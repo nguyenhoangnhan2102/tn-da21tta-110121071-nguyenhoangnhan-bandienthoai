@@ -13,11 +13,11 @@
 
     .row {
         display: grid;
-        grid-template-columns: 2fr 1fr;
+        grid-template-columns: 2fr 1fr; // bên trái rộng hơn
         gap: 25px;
 
         @media (max-width: 992px) {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr; // mobile = 1 cột
         }
     }
 

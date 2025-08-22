@@ -6,6 +6,7 @@ import axiosInstance from "../../authentication/axiosInstance";
 import "../style/Checkout.scss";
 
 const apiUrl = process.env.REACT_APP_API_URL;
+const imgURL = process.env.REACT_APP_IMG_URL;
 
 function Checkout() {
     const location = useLocation();
@@ -65,21 +66,23 @@ function Checkout() {
     if (!cartItems) {
         return <p className="text-center mt-4">Không có dữ liệu đơn hàng.</p>;
     }
-
+    console.log("cartItems", cartItems)
     return (
         <div className="checkout-container">
             <h2 className="text-center mb-4">🧾 Thanh Toán Đơn Hàng</h2>
             <div className="row">
-                {/* Thông tin người mua */}
+                {/* BÊN TRÁI */}
                 <div>
-                    <div>
+                    {/* Danh sách sản phẩm */}
+                    <div className="card p-3 shadow-sm mb-3">
+                        <h4>Sản phẩm</h4>
                         {cartItems.map(item => (
                             <div key={item.masanpham} className="d-flex justify-content-between align-items-center border-bottom py-2">
                                 <div className="d-flex align-items-center">
                                     <img
-                                        src={`${process.env.REACT_APP_IMG_URL}/${item.hinhanhchinh}`}
+                                        src={`${imgURL}/${item.hinhanhchinh}`}
                                         alt={item.tensanpham}
-                                        style={{ width: "50px", height: "50px", objectFit: "cover", marginRight: "10px" }}
+                                        style={{ width: "80px", height: "80px", objectFit: "cover", marginRight: "10px" }}
                                     />
                                     <span>{item.tensanpham} (x{item.soluong})</span>
                                 </div>
@@ -87,13 +90,8 @@ function Checkout() {
                             </div>
                         ))}
                     </div>
-                    <div className="card p-3 shadow-sm mb-3">
-                        <h4>Thông tin người mua</h4>
-                        <TextField fullWidth margin="normal" label="Họ tên" name="hoten" value={orderInfo.hoten} onChange={handleChange} />
-                        <TextField fullWidth margin="normal" label="Số điện thoại" name="sodienthoai" value={orderInfo.sodienthoai} onChange={handleChange} />
-                        <TextField fullWidth margin="normal" label="Địa chỉ" name="diachi" value={orderInfo.diachi} onChange={handleChange} multiline rows={2} />
-                        <TextField fullWidth margin="normal" label="Ghi chú" name="ghichu" value={orderInfo.ghichu} onChange={handleChange} multiline rows={2} />
-                    </div>
+
+                    {/* Phương thức thanh toán */}
                     <div className="card p-3 shadow-sm mb-3">
                         <h4>Phương thức thanh toán</h4>
                         <FormControl>
@@ -108,10 +106,8 @@ function Checkout() {
                             </RadioGroup>
                         </FormControl>
                     </div>
-                </div>
 
-                {/* Thông tin đơn hàng */}
-                <div>
+                    {/* Tóm tắt đơn hàng */}
                     <div className="card p-3 shadow-sm">
                         <h4>Tóm tắt đơn hàng</h4>
                         {cartItems.map(item => (
@@ -126,7 +122,19 @@ function Checkout() {
                         <Link to="/cart" className="btn btn-outline-primary w-100 mt-2">⬅ Quay lại giỏ hàng</Link>
                     </div>
                 </div>
+
+                {/* BÊN PHẢI */}
+                <div>
+                    <div className="card p-3 shadow-sm">
+                        <h4>Thông tin người mua</h4>
+                        <TextField fullWidth margin="normal" label="Họ tên" name="hoten" value={orderInfo.hoten} onChange={handleChange} />
+                        <TextField fullWidth margin="normal" label="Số điện thoại" name="sodienthoai" value={orderInfo.sodienthoai} onChange={handleChange} />
+                        <TextField fullWidth margin="normal" label="Địa chỉ" name="diachi" value={orderInfo.diachi} onChange={handleChange} multiline rows={2} />
+                        <TextField fullWidth margin="normal" label="Ghi chú" name="ghichu" value={orderInfo.ghichu} onChange={handleChange} multiline rows={2} />
+                    </div>
+                </div>
             </div>
+
         </div>
     );
 }

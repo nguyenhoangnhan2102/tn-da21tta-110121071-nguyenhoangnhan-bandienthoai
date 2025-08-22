@@ -35,6 +35,7 @@ function Cart() {
     const fetchCartItems = async (manguoidung) => {
         try {
             const response = await axiosInstance.get(`${apiUrl}/cart/${manguoidung}`);
+            console.log("response", response)
             if (response.data.EC === 1) {
                 const updatedItems = response.data.DT.map((item) => ({
                     ...item,
@@ -58,6 +59,7 @@ function Cart() {
             toast.warning("Giỏ hàng của bạn đang trống.");
             return;
         }
+
         try {
             const orderData = {
                 manguoidung: infoUser.manguoidung,
@@ -68,10 +70,11 @@ function Cart() {
                     masanpham: item.masanpham,
                     soluong: item.soluong,
                     dongia: item.giasaugiam,
-                    hinhanh: item.hinhanhchinh
+                    hinhanh: item.hinhanhchinh,
+                    mau: item.mau,
                 }))
             };
-            console.log("orderData", orderData?.sanpham)
+
             const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
             console.log(response);
             if (response.data.success) {
@@ -129,7 +132,7 @@ function Cart() {
         const { name, value } = event.target;
         setInfoUser(prev => ({ ...prev, [name]: value }));
     };
-
+    console.log("cartItems", cartItems)
     return (
         <div className="cart-container container py-3">
             <h2 className="cart-title text-center mb-4">🛒 Giỏ Hàng</h2>
