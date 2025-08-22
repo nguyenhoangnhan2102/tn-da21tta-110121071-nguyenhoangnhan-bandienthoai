@@ -45,8 +45,8 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
 
     const handleUpdateStatus = async () => {
         try {
-            await updateStatus(order.madonhang, status);
-            toast.success("Cập nhật trạng thái thành công!");
+            await updateStatus(order.madonhang, status, paymentMethod, paymentStatus);
+            toast.success("Cập nhật trạng thái đơn hàng và thanh toán thành công!");
             if (reloadOrders) reloadOrders();
             onClose();
         } catch (error) {
@@ -128,7 +128,7 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                     </FormControl>
 
                     {/* Hình thức thanh toán */}
-                    <FormControl fullWidth margin="normal">
+                    {/* <FormControl fullWidth margin="normal">
                         <TextField
                             label="Hình thức thanh toán"
                             value={paymentMethodMap[paymentMethod] || paymentMethod} // 👈 map sang tiếng Việt
@@ -136,6 +136,21 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                             InputLabelProps={{ shrink: true }}
                             disabled={isViewMode}
                         />
+                    </FormControl> */}
+
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Hình thức thanh toán</InputLabel>
+                        <Select
+                            value={paymentMethod}
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            disabled={isViewMode}
+                            label="Hình thức thanh toán"
+                        >
+                            <MenuItem value="home">Tiền mặt</MenuItem>
+                            <MenuItem value="momo">MoMo</MenuItem>
+                            <MenuItem value="vnpay">VNPay</MenuItem>
+                            <MenuItem value="paypal">Paypal</MenuItem>
+                        </Select>
                     </FormControl>
 
                     {/* Trạng thái thanh toán */}

@@ -25,12 +25,17 @@ export const getOrderDetails = async (madonhang) => {
 };
 
 
-export const updateStatus = async (madonhang, status) => {
+// services/orderService.js
+export const updateStatus = async (madonhang, trangthai, hinhthucthanhtoan, trangthaithanhtoan) => {
     try {
-        const response = await axiosInstance.put(`${apiOrders}/${madonhang}`, { trangthai: status });
+        const response = await axiosInstance.put(`${apiOrders}/${madonhang}`, {
+            trangthai,
+            hinhthucthanhtoan,
+            trangthaithanhtoan,
+        });
         return response.data;
     } catch (error) {
-        console.error('Error updating order status:', error);
+        console.error("Error updating order status:", error);
         throw error;
     }
 };

@@ -387,11 +387,32 @@ const confirmOrder = async (req, res) => {
  */
 const updateOrders = async (req, res) => {
     const madonhang = req.params.madonhang;
-    const { trangthai } = req.body;
+    const { trangthai, hinhthucthanhtoan, trangthaithanhtoan } = req.body;
+
+    // Các trạng thái đơn hàng hợp lệ
+    const ORDER_STATUSES = ["choxacnhan", "danggiao", "hoanthanh", "huy"];
+    const PAYMENT_METHODS = ["home", "vnpay", "momo", "paypal"];
+    const PAYMENT_STATUSES = ["chuathanhtoan", "dathanhtoan"];
 
     if (!ORDER_STATUSES.includes(trangthai)) {
         return res.status(400).json({
             EM: "Trạng thái đơn hàng không hợp lệ",
+            EC: -1,
+            DT: [],
+        });
+    }
+
+    if (hinhthucthanhtoan && !PAYMENT_METHODS.includes(hinhthucthanhtoan)) {
+        return res.status(400).json({
+            EM: "Hình thức thanh toán không hợp lệ",
+            EC: -1,
+            DT: [],
+        });
+    }
+
+    if (trangthaithanhtoan && !PAYMENT_STATUSES.includes(trangthaithanhtoan)) {
+        return res.status(400).json({
+            EM: "Trạng thái thanh toán không hợp lệ",
             EC: -1,
             DT: [],
         });
@@ -424,7 +445,7 @@ const updateOrders = async (req, res) => {
             for (const item of orderItems) {
                 const [updateRes] = await conn.query(
                     `UPDATE SANPHAM SET soluong = soluong - ?
-           WHERE masanpham = ? AND soluong >= ?`,
+                     WHERE masanpham = ? AND soluong >= ?`,
                     [item.soluong, item.masanpham, item.soluong]
                 );
 
@@ -434,7 +455,7 @@ const updateOrders = async (req, res) => {
             }
         }
 
-        // Cập nhật trạng thái
+        // Cập nhật trạng thái đơn hàng
         const [updateResult] = await conn.query(
             `UPDATE DONHANG SET trangthai = ? WHERE madonhang = ?`,
             [trangthai, madonhang]
@@ -445,12 +466,34 @@ const updateOrders = async (req, res) => {
             return res.status(404).json({ EM: "Không tìm thấy đơn hàng", EC: 0, DT: [] });
         }
 
+        // Nếu có truyền thêm hinhthucthanhtoan hoặc trangthaithanhtoan thì update bảng THANHTOAN
+        if (hinhthucthanhtoan || trangthaithanhtoan) {
+            const fields = [];
+            const values = [];
+
+            if (hinhthucthanhtoan) {
+                fields.push("hinhthucthanhtoan = ?");
+                values.push(hinhthucthanhtoan);
+            }
+            if (trangthaithanhtoan) {
+                fields.push("trangthai = ?");
+                values.push(trangthaithanhtoan);
+            }
+
+            values.push(madonhang);
+
+            await conn.query(
+                `UPDATE THANHTOAN SET ${fields.join(", ")} WHERE madonhang = ?`,
+                values
+            );
+        }
+
         await conn.commit();
 
         return res.status(200).json({
-            EM: "Cập nhật trạng thái đơn hàng thành công",
+            EM: "Cập nhật trạng thái đơn hàng và thanh toán thành công",
             EC: 1,
-            DT: { madonhang, trangthai },
+            DT: { madonhang, trangthai, hinhthucthanhtoan, trangthaithanhtoan },
         });
     } catch (err) {
         await conn.rollback();
