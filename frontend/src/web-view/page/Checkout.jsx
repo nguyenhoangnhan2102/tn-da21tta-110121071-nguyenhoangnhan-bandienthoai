@@ -20,7 +20,7 @@ function Checkout() {
         sodienthoai: infoUser?.sodienthoai || "",
         diachi: infoUser?.diachi || "",
         ghichu: "",
-        paymentMethod: "cod", // mặc định Thanh toán khi nhận hàng
+        paymentMethod: "home",
     });
 
     const handleChange = (e) => {

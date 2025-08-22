@@ -31,11 +31,15 @@ const imgURL = process.env.REACT_APP_IMG_URL;
 
 const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
     const [status, setStatus] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("");
+    const [paymentStatus, setPaymentStatus] = useState("");
     const isViewMode = mode === "view"; // true khi chỉ xem
 
     useEffect(() => {
         if (order) {
             setStatus(order.trangthai);
+            setPaymentMethod(order.hinhthucthanhtoan || "");
+            setPaymentStatus(order.trangthaithanhtoan || "");
         }
     }, [order]);
 
@@ -51,6 +55,12 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
     };
 
     if (!order) return null;
+    console.log("order", order)
+    // Map phương thức thanh toán sang tiếng Việt
+    const paymentMethodMap = {
+        home: "Tiền mặt",
+        momo: "MoMo"
+    };
 
     return (
         <Modal open={open} onClose={onClose}>
@@ -101,22 +111,47 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                         disabled={isViewMode}
                     />
                 </FormControl>
+                <div className="d-flex gap-2">
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Trạng thái đơn hàng</InputLabel>
+                        <Select
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                            disabled={isViewMode}
+                            label="Trạng thái đơn hàng"
+                        >
+                            <MenuItem value="choxacnhan">Chờ xác nhận</MenuItem>
+                            <MenuItem value="danggiao">Đang giao</MenuItem>
+                            <MenuItem value="hoanthanh">Hoàn thành</MenuItem>
+                            <MenuItem value="huy">Đã hủy</MenuItem>
+                        </Select>
+                    </FormControl>
 
-                <FormControl fullWidth margin="normal">
-                    <InputLabel>Trạng thái đơn hàng</InputLabel>
-                    <Select
-                        value={status}
-                        onChange={(e) => setStatus(e.target.value)}
-                        disabled={isViewMode}
-                        label="Trạng thái đơn hàng"
-                    >
-                        <MenuItem value="choxacnhan">Chờ xác nhận</MenuItem>
-                        <MenuItem value="danggiao">Đang giao</MenuItem>
-                        <MenuItem value="hoanthanh">Hoàn thành</MenuItem>
-                        <MenuItem value="huy">Đã hủy</MenuItem>
-                    </Select>
-                </FormControl>
+                    {/* Hình thức thanh toán */}
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            label="Hình thức thanh toán"
+                            value={paymentMethodMap[paymentMethod] || paymentMethod} // 👈 map sang tiếng Việt
+                            onChange={(e) => setPaymentMethod(e.target.value)}
+                            InputLabelProps={{ shrink: true }}
+                            disabled={isViewMode}
+                        />
+                    </FormControl>
 
+                    {/* Trạng thái thanh toán */}
+                    <FormControl fullWidth margin="normal">
+                        <InputLabel>Trạng thái thanh toán</InputLabel>
+                        <Select
+                            value={paymentStatus}
+                            onChange={(e) => setPaymentStatus(e.target.value)}
+                            disabled={isViewMode}
+                            label="Trạng thái thanh toán"
+                        >
+                            <MenuItem value="chuathanhtoan">Chưa thanh toán</MenuItem>
+                            <MenuItem value="dathanhtoan">Đã thanh toán</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
                 {/* Bảng sản phẩm */}
                 <table style={{ width: '100%', marginTop: "20px" }} className="table table-hover">
                     <thead>
@@ -168,14 +203,23 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                 </table>
 
                 {mode === "edit" && (
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={handleUpdateStatus}
-                        sx={{ mt: 2 }}
-                    >
-                        Cập nhật trạng thái
-                    </Button>
+                    <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end", gap: "10px" }}>
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={onClose}
+                        >
+                            Đóng
+                        </Button>
+
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={handleUpdateStatus}
+                        >
+                            Cập nhật
+                        </Button>
+                    </Box>
                 )}
             </Box>
         </Modal>

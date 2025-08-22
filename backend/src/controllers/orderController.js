@@ -40,9 +40,13 @@ const getAllOrders = async (req, res) => {
                 ctdh.ram,
                 ctdh.hinhanh,
                 ctdh.soluong,
-                ctdh.dongia
+                ctdh.dongia,
+                tt.hinhthucthanhtoan,
+                tt.trangthai AS trangthaithanhtoan,
+                tt.ngaythanhtoan
             FROM DONHANG dh
             JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
+            LEFT JOIN THANHTOAN tt ON dh.madonhang = tt.madonhang
             ORDER BY  
                 dh.ngaycapnhat DESC,
                 dh.ngaytao DESC;
@@ -65,6 +69,9 @@ const getAllOrders = async (req, res) => {
                     trangthai: row.trangthai,
                     ngaytao: row.ngaytao,
                     ngaycapnhat: row.ngaycapnhat,
+                    hinhthucthanhtoan: row.hinhthucthanhtoan,
+                    trangthaithanhtoan: row.trangthaithanhtoan,
+                    ngaythanhtoan: row.ngaythanhtoan,
                     sanpham: []
                 };
             }
@@ -100,7 +107,7 @@ const getOrderDetails = async (req, res) => {
             return res.status(400).json({ success: false, message: 'Mã đơn hàng là bắt buộc.' });
         }
 
-        // Lấy thông tin chung của đơn hàng
+        // Lấy thông tin chung của đơn hàng + thông tin thanh toán
         const [headerRows] = await connection.query(`
             SELECT 
                 dh.madonhang,
@@ -114,9 +121,13 @@ const getOrderDetails = async (req, res) => {
                 dh.ngaycapnhat,
                 nd.hoten,
                 nd.sodienthoai,
-                nd.email
+                nd.email,
+                tt.hinhthucthanhtoan,
+                tt.trangthai AS trangthaithanhtoan,
+                tt.ngaythanhtoan
             FROM DONHANG dh
             JOIN NGUOIDUNG nd ON dh.manguoidung = nd.manguoidung
+            LEFT JOIN THANHTOAN tt ON dh.madonhang = tt.madonhang
             WHERE dh.madonhang = ?
         `, [madonhang]);
 
@@ -133,7 +144,8 @@ const getOrderDetails = async (req, res) => {
                 dungluong,
                 ram,
                 soluong,
-                dongia
+                dongia,
+                hinhanh
             FROM CHITIETDONHANG
             WHERE madonhang = ?
         `, [madonhang]);
@@ -146,6 +158,7 @@ const getOrderDetails = async (req, res) => {
                 mau: item.mau,
                 dungluong: item.dungluong,
                 ram: item.ram,
+                hinhanh: item.hinhanh,
                 soluong: item.soluong,
                 dongia: item.dongia,
                 thanhtien: Number(item.dongia) * Number(item.soluong)
@@ -160,17 +173,6 @@ const getOrderDetails = async (req, res) => {
 };
 
 
-/**
- * POST /orders/confirm
- * Body expected:
- * {
- *   manguoidung: number,
- *   diachigiaohang: string,
- *   ghichu?: string,
- *   tongtien: number,
- *   sanpham: [ { masanpham: number, soluong: number, dongia: number } ]
- * }
- */
 // const confirmOrder = async (req, res) => {
 //     const { manguoidung, diachigiaohang, ghichu = null, tongtien, sanpham } = req.body;
 
@@ -333,7 +335,7 @@ const confirmOrder = async (req, res) => {
             await conn.query(
                 `INSERT INTO CHITIETDONHANG 
                     (madonhang, masanpham, tensanpham, mau, dungluong, ram, soluong, dongia, hinhanh)
-                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
                 [
                     madonhang,
                     masanpham,
