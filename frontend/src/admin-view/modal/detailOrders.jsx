@@ -145,6 +145,8 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                             onChange={(e) => setPaymentMethod(e.target.value)}
                             disabled={isViewMode}
                             label="Hình thức thanh toán"
+                            disabled // 👈 khóa Select lại (read-only)
+                            sx={{ opacity: 0.6 }} // 👈 set opacity
                         >
                             <MenuItem value="home">Tiền mặt</MenuItem>
                             <MenuItem value="momo">MoMo</MenuItem>
