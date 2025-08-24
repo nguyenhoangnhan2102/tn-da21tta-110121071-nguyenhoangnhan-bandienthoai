@@ -25,51 +25,68 @@ const NavBarAdmin = () => {
   const location = useLocation();
   const { userInfo } = ReduxStateExport();
 
+  // ------------------- CẤU HÌNH MENU THEO ROLE -------------------
+  const menuConfig = {
+    1: [ // Admin
+      {
+        label: "Thống kê cơ bản",
+        icon: <BarChartIcon />,
+        path: "/admin",
+      },
+      {
+        label: "Quản lý người dùng",
+        icon: <PersonIcon />,
+        path: "/admin/user",
+      },
+      {
+        label: "Quản lý thương hiệu",
+        icon: <LocalOfferIcon />,
+        path: "/admin/manufacturer",
+      },
+      {
+        label: "Quản lý sản phẩm",
+        icon: <InventoryIcon />,
+        section: "sanPham",
+        children: [
+          { label: "Tất cả sản phẩm", path: "/admin/product" },
+          { label: "Sản phẩm chờ duyệt", path: "/admin/product/pending" },
+        ],
+      },
+      {
+        label: "Quản lý đơn hàng",
+        icon: <ShoppingCartIcon />,
+        path: "/admin/orders",
+      },
+    ],
+    2: [ // Nhân viên
+      {
+        label: "Thống kê cơ bản",
+        icon: <BarChartIcon />,
+        path: "/admin",
+      },
+      {
+        label: "Quản lý sản phẩm",
+        icon: <InventoryIcon />,
+        section: "sanPham",
+        children: [
+          { label: "Tất cả sản phẩm", path: "/admin/product" },
+        ],
+      },
+      {
+        label: "Quản lý đơn hàng",
+        icon: <ShoppingCartIcon />,
+        path: "/admin/orders",
+      },
+    ],
+  };
+
+  const role = userInfo?.role ?? 2; // nếu chưa có user thì mặc định là nhân viên
+  const menuItems = menuConfig[role] || [];
+
+  // ------------------- FUNCTION -------------------
   const toggleSection = (section) => {
     setOpenSection((prev) => (prev === section ? null : section));
   };
-
-  const menuItems = [
-    {
-      label: "Thống kê cơ bản",
-      icon: <BarChartIcon />,
-      path: "/admin",
-    },
-    {
-      label: "Quản lý người dùng",
-      icon: <PersonIcon />,
-      path: "/admin/user",
-    },
-    {
-      label: "Quản lý thương hiệu",
-      icon: <LocalOfferIcon />,
-      path: "/admin/manufacturer",
-    },
-    {
-      label: "Quản lý sản phẩm",
-      icon: <InventoryIcon />,
-      section: "sanPham",
-      children: [
-        {
-          label: "Tất cả sản phẩm",
-          path: "/admin/product",
-        },
-        ...(userInfo?.role !== 2
-          ? [
-            {
-              label: "Sản phẩm chờ duyệt",
-              path: "/admin/product/pending",
-            },
-          ]
-          : []),
-      ],
-    },
-    {
-      label: "Quản lý đơn hàng",
-      icon: <ShoppingCartIcon />,
-      path: "/admin/orders",
-    },
-  ];
 
   const listItemBaseStyle = (path) => ({
     borderRadius: "12px",
@@ -80,6 +97,7 @@ const NavBarAdmin = () => {
     "&:hover": { backgroundColor: "#ffd400" },
   });
 
+  // ------------------- RENDER -------------------
   return (
     <Box
       sx={{
