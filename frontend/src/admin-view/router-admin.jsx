@@ -6,6 +6,7 @@ import UserComponent from "./pages/user";
 import ProductComponent from "./pages/product";
 import Manufacturer from "./pages/manufacturer";
 import Order from "./pages/Order";
+import PendingProductComponent from "./pages/pendingProduct";
 
 const RouterAdmin = () => {
   const element = useRoutes([
@@ -28,6 +29,10 @@ const RouterAdmin = () => {
     {
       path: "/product",
       element: <ProductComponent />,
+    },
+    {
+      path: "/product/pending",
+      element: <PendingProductComponent />,
     },
     {
       path: "/manufacturer",

@@ -51,7 +51,7 @@ const defaultForm = {
   dophangiaimanhinh: "",
   mota: "",
   tenthuonghieu: "",
-  trangthai: 0,
+  trangthai: 1,
 };
 
 const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) => {
@@ -61,7 +61,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   const [finalPrice, setFinalPrice] = useState(0);
   const [form, setForm] = useState(defaultForm);
   const { userInfo } = ReduxStateExport();
-
+  console.log("product", product)
   // Fetch manufacturer
   const getAllManufacturerData = useCallback(async () => {
     try {
@@ -265,19 +265,25 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               disabled={isViewOnly}
               label="Trạng thái"
             >
-              {userInfo.role === 2 ? (
-                <MenuItem value={1}>Không duyệt</MenuItem>
-              ) : (
-                <>
-                  <MenuItem value={1}>Không duyệt</MenuItem>
-                  <MenuItem value={0}>Duyệt</MenuItem>
-                </>
-              )}
+              <MenuItem value={1}>Không duyệt</MenuItem>
+              <MenuItem value={0}>Duyệt</MenuItem>
             </Select>
           </FormControl>
           {/* )} */}
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
+            {userInfo?.role === 1 && (
+              <button
+                className="btn btn-success admin-btn"
+                onClick={() => {
+                  const approvedForm = { ...form, trangthai: 0 };
+                  onSave(approvedForm);
+                  setForm(defaultForm);
+                }}
+              >
+                <i className="fa-solid fa-check me-1"></i>Duyệt
+              </button>
+            )}
             {!isViewOnly && (
               <button className="btn btn-primary admin-btn" onClick={handleSubmit}>
                 <i className="fa-regular fa-floppy-disk me-1"></i>Lưu
