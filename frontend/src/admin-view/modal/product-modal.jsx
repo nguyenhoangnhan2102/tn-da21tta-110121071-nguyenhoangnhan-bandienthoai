@@ -13,6 +13,7 @@ import {
 import { toast } from "react-toastify";
 import ModalManufacturer from "./manufacturer-modal";
 import { createManufacturer, getAllManufacturer } from "../../services/manufacturerService";
+import ReduxStateExport from "../../redux/redux-state";
 
 const modalStyle = {
   position: "absolute",
@@ -59,6 +60,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   const [openModal, setOpenModal] = useState(false);
   const [finalPrice, setFinalPrice] = useState(0);
   const [form, setForm] = useState(defaultForm);
+  const { userInfo } = ReduxStateExport();
 
   // Fetch manufacturer
   const getAllManufacturerData = useCallback(async () => {
@@ -253,22 +255,27 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             rows={4}
           />
 
-          {product && (
-            <FormControl fullWidth margin="normal">
-              <InputLabel>Trạng thái</InputLabel>
-              <Select
-                name="trangthai"
-                value={form.trangthai}
-                onChange={handleChange}
-                disabled={isViewOnly}
-                label="Trạng thái"
-              >
+          {/* {product && ( */}
+          <FormControl fullWidth margin="normal">
+            <InputLabel>Trạng thái</InputLabel>
+            <Select
+              name="trangthai"
+              value={form.trangthai}
+              onChange={handleChange}
+              disabled={isViewOnly}
+              label="Trạng thái"
+            >
+              {userInfo.role === 2 ? (
                 <MenuItem value={1}>Không duyệt</MenuItem>
-                <MenuItem value={0}>Duyệt</MenuItem>
-
-              </Select>
-            </FormControl>
-          )}
+              ) : (
+                <>
+                  <MenuItem value={1}>Không duyệt</MenuItem>
+                  <MenuItem value={0}>Duyệt</MenuItem>
+                </>
+              )}
+            </Select>
+          </FormControl>
+          {/* )} */}
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
             {!isViewOnly && (

@@ -196,10 +196,10 @@ const ProductComponent = () => {
             </div>
           </DialogActions>
         </Dialog>
-        <div className="group-header">
+        <div className="group-header mt-3">
           <h2>Danh sách sản phẩm</h2>
-          <div className="d-flex gap-2">
-            <div className="filterGroup w-100" style={{ position: 'relative' }}>
+          <div className="d-flex gap-2 justify-content-end align-items-center mb-5">
+            <div className="filterGroup" style={{ position: 'relative' }}>
               <input
                 type="text"
                 className="form-control"
@@ -220,7 +220,7 @@ const ProductComponent = () => {
                 }}
               ></i>
             </div>
-            <div className="w-75">
+            <div>
               <select
                 value={selectedManufacturer}
                 onChange={handleFilterByManufacturer}
@@ -233,14 +233,13 @@ const ProductComponent = () => {
               </select>
 
             </div>
+            <div className="btn-header-table">
+              <button className="btn btn-sm btn-success mr-2" onClick={handleCreate}>
+                <i className="fa-solid fa-plus"></i> Thêm
+              </button>
+            </div>
           </div>
         </div>
-        <div className="btn-header-table">
-          <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ width: '70px' }}>
-            <i className="fa-solid fa-plus"></i> Thêm
-          </button>
-        </div>
-
         <table className="table table-hover">
           <thead className="thead-dark">
             <tr className="table-title">

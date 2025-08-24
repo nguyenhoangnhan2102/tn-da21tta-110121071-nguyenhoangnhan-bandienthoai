@@ -154,14 +154,14 @@ const Manufacturer = () => {
                 </Dialog>
                 <div className="group-header">
                     <h2>Danh sách thương hiệu</h2>
-                    <div className="filterGroup" style={{ position: 'relative' }}>
+                    <div className="filterGroup d-flex">
                         <input
                             type="text"
                             className="form-control"
                             placeholder="Tìm kiếm"
                             value={searchTerm}
                             onChange={handleSearch}
-                            style={{ paddingRight: '30px' }} // Chừa khoảng trống cho icon
+                            style={{ paddingRight: '30px', position: 'relative' }} // Chừa khoảng trống cho icon
                         />
                         <i
                             className="fa-solid fa-magnifying-glass"
@@ -174,13 +174,13 @@ const Manufacturer = () => {
                                 color: '#000'
                             }}
                         ></i>
-                    </div>
-                </div>
 
-                <div className="btn-header-table">
-                    <button className="btn btn-sm btn-success mr-2" onClick={handleCreate}>
-                        <i className="fa-solid fa-plus"></i> Thêm
-                    </button>
+                        <div className="btn-header-table">
+                            <button className="btn btn-sm btn-success mr-2" onClick={handleCreate}>
+                                <i className="fa-solid fa-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <table className="table table-hover">
