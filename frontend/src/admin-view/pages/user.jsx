@@ -21,9 +21,13 @@ const UserComponent = () => {
             const mappedResponse = response.map((item) => ({
                 ...item,
                 id: item.manguoidung,
-                roleMapVietnamese: item.role === 1 ? "Quản trị viên" : "Người dùng",
+                roleMapVietnamese:
+                    item.role === 1
+                        ? "Quản trị viên"
+                        : item.role === 2
+                            ? "Nhân viên"
+                            : "Người dùng",
             }));
-            console.log("mappedResponse", mappedResponse)
             setUsers(mappedResponse);
         } catch (error) {
             console.error("Error fetching data:", error);

@@ -38,8 +38,7 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                 hoten: user.hoten || "",
                 sodienthoai: user.sodienthoai || "",
                 diachi: user.diachi || "",
-                role: Number(user.role)  // đảm bảo luôn là số 0 hoặc 1
-
+                role: Number(user.role)  // 0, 1 hoặc 2
             });
         } else {
             setForm({
@@ -140,6 +139,7 @@ const UserModal = ({ user, onSave, open, onClose, isView }) => {
                     disabled={isView}
                 >
                     <MenuItem value={1}>Quản trị viên</MenuItem>
+                    <MenuItem value={2}>Nhân viên</MenuItem>
                     <MenuItem value={0}>Người dùng</MenuItem>
                 </TextField>
                 <Box mt={2} display="flex" justifyContent="flex-end" gap={2}>
