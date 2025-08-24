@@ -144,29 +144,81 @@ const NavBarAdmin = () => {
               </ListItemIcon>
               <ListItemText primary="Quản lý thương hiệu" />
             </ListItem>
+
             {/* Quản lý sản phẩm */}
             <ListItem
               button
-              component={Link}
-              to="/admin/product"
+              onClick={() => toggleSection("sanPham")}
               sx={{
                 borderRadius: "12px",
                 color: "#1f1f1f",
                 cursor: "pointer",
                 userSelect: "none",
-                backgroundColor:
-                  location.pathname === "/admin/product"
-                    ? "#ffd400"
-                    : "transparent", // Kiểm tra nếu đang ở trang này
-                "&:hover": { backgroundColor: "#ffd400" },
               }}
+              to="/admin/product"
             >
               <ListItemIcon sx={{ minWidth: "40px", color: "#1f1f1f" }}>
-                {" "}
                 <InventoryIcon />
               </ListItemIcon>
-              <ListItemText primary="Quản lý sản phẩm" />
+              <ListItemText
+                primary="Quản lý sản phẩm"
+                sx={{ color: "#1f1f1f" }}
+              />
+              {openSection === "sanPham" ? <ExpandLess /> : <ExpandMore />}
             </ListItem>
+            <Collapse
+              in={openSection === "sanPham"}
+              timeout="auto"
+              unmountOnExit
+              to="/admin/product"
+            >
+              <List component="div" disablePadding>
+                <ListItem
+                  button
+                  component={Link}
+                  to="/admin/product"
+                  sx={{
+                    pl: 4,
+                    color: "#1f1f1f",
+                    borderRadius: "13px",
+                    backgroundColor:
+                      location.pathname === "/admin/product"
+                        ? "#ffd400"
+                        : "transparent", // Kiểm tra nếu đang ở trang này
+                    "&:hover": { backgroundColor: "#ffd400" },
+                  }}
+                >
+                  <ListItemText primary="Tất cả sản phẩm" />
+                </ListItem>{" "}
+              </List>
+            </Collapse>
+            <Collapse
+              in={openSection === "sanPham"}
+              timeout="auto"
+              unmountOnExit
+              to="/admin/product"
+            >
+              <List component="div" disablePadding>
+                <ListItem
+                  button
+                  component={Link}
+                  to="/admin/product/pending"
+                  sx={{
+                    pl: 4,
+                    mt: 1,
+                    color: "#1f1f1f",
+                    borderRadius: "13px",
+                    backgroundColor:
+                      location.pathname === "/admin/product/pending"
+                        ? "#ffd400"
+                        : "transparent", // Kiểm tra nếu đang ở trang này
+                    "&:hover": { backgroundColor: "#ffd400" },
+                  }}
+                >
+                  <ListItemText primary="Sản phẩm chờ duyệt" />
+                </ListItem>{" "}
+              </List>
+            </Collapse>
 
             {/* Quản lý đơn hàng */}
             <ListItem
@@ -190,36 +242,6 @@ const NavBarAdmin = () => {
               </ListItemIcon>
               <ListItemText primary="Quản lý đơn hàng" />
             </ListItem>
-            {/* <Collapse
-              in={openSection === "donHang"}
-              timeout="auto"
-              unmountOnExit
-            >
-              <List component="div" disablePadding>
-                <ListItem
-                  button
-                  component={Link}
-                  to="/admin/don-hang/tat-ca"
-                  sx={{
-                    pl: 4,
-                    color: "#1f1f1f",
-                    mt: 1,
-                    mb: 1,
-                    borderRadius: "13px",
-                    backgroundColor:
-                      location.pathname === "/admin/don-hang/tat-ca"
-                        ? "#8aad51"
-                        : "transparent", // Kiểm tra nếu đang ở trang này
-                    "&:hover": {
-                      backgroundColor: "#8aad51",
-                    },
-                  }}
-                >
-                  <ListItemText primary="Tất cả đơn hàng" />
-                </ListItem>
-
-              </List>
-            </Collapse> */}
           </List>
         </List>
       </Box>{" "}

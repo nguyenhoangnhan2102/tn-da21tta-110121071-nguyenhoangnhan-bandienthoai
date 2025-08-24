@@ -186,9 +186,9 @@ const Header = () => {
                                 <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleClose}>
                                     <MenuItem onClick={() => handleOptionClick("Profile")}>Thông tin</MenuItem>
                                     <MenuItem onClick={() => handleOptionClick("Orders")}>Đơn hàng</MenuItem>
-                                    {userInfo.role === 1 && (
+                                    {(userInfo.role === 1 || userInfo.role === 2) && (
                                         <MenuItem onClick={() => handleOptionClick("AdminManagement")}>
-                                            Quản lý admin
+                                            Quản trị
                                         </MenuItem>
                                     )}
                                     <MenuItem onClick={() => handleOptionClick("Logout")}>Đăng xuất</MenuItem>

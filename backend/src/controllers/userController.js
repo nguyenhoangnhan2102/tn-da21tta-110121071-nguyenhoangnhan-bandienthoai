@@ -529,17 +529,17 @@ const verifyAdmin = async (req, res) => {
             const user = rows[0];
 
             // Kiểm tra vai trò của người dùng
-            if (user.role == "1") {
+            if (user.role == "1" || user.role == "2") {
                 return res.status(200).json({
-                    EM: "User is admin",
+                    EM: "User is admin or staff",
                     EC: 200,
-                    DT: { isAdmin: true }, // Người dùng là admin
+                    DT: { isAdmin: true }, // Người dùng là admin hoặc nhân viên
                 });
             } else {
                 return res.status(403).json({
-                    EM: "User is not admin",
+                    EM: "User is not admin/staff",
                     EC: 403,
-                    DT: { isAdmin: false }, // Người dùng không phải admin
+                    DT: { isAdmin: false }, // Người dùng không phải admin/nhân viên
                 });
             }
         } else {
