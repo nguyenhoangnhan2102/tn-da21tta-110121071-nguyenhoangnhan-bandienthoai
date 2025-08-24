@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import {
   Box,
   TextField,
@@ -20,104 +20,72 @@ const modalStyle = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 1100,
-  maxHeight: "95vh", // Đặt chiều cao tối đa để tránh vượt quá màn hình
+  maxHeight: "95vh",
   bgcolor: "background.paper",
   boxShadow: 24,
   p: 4,
-  overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc khi cần
+  overflowY: "auto",
 };
+
 const imgURL = process.env.REACT_APP_IMG_URL;
+
+const defaultForm = {
+  mathuonghieu: "",
+  tensanpham: "",
+  hinhanhchinh: "",
+  mau: "",
+  dungluong: "",
+  ram: "",
+  hedieuhanh: "",
+  soluong: "",
+  gianhap: "",
+  giaban: "",
+  khuyenmai: 0,
+  cpu: "",
+  gpu: "",
+  pin: "",
+  cameratruoc: "",
+  camerasau: "",
+  congnghemanhinh: "",
+  dophangiaimanhinh: "",
+  mota: "",
+  tenthuonghieu: "",
+  trangthai: 0,
+};
 
 const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) => {
   const [listManufacturer, setListManufacturer] = useState([]);
   const [selectedManufacturer, setSelectedManufacturer] = useState(null);
   const [openModal, setOpenModal] = useState(false);
   const [finalPrice, setFinalPrice] = useState(0);
+  const [form, setForm] = useState(defaultForm);
 
-  const [form, setForm] = useState({
-    mathuonghieu: "",
-    tensanpham: "",
-    hinhanhchinh: "",
-    mau: "",
-    dungluong: "",
-    ram: "",
-    hedieuhanh: "",
-    soluong: "",
-    gianhap: "",
-    giaban: "",
-    giagiam: "",
-    khuyenmai: "",
-    cpu: "",
-    gpu: "",
-    pin: "",
-    cameratruoc: "",
-    camerasau: "",
-    congnghemanhinh: "",
-    dophangiaimanhinh: "",
-    mota: "",
-    tenthuonghieu: "",
-    trangthai: "",
-  });
-  console.log("form", form)
-  useEffect(() => {
-    if (product) {
-      setForm(product);
-    } else {
-      setForm({
-        mathuonghieu: "",
-        tensanpham: "",
-        hinhanhchinh: "",
-        mau: "",
-        dungluong: "",
-        ram: "",
-        hedieuhanh: "",
-        soluong: "",
-        gianhap: "",
-        giaban: "",
-        khuyenmai: 0,
-        cpu: "",
-        gpu: "",
-        pin: "",
-        cameratruoc: "",
-        camerasau: "",
-        congnghemanhinh: "",
-        dophangiaimanhinh: "",
-        mota: "",
-        tenthuonghieu: "",
-        trangthai: 0,
-      });
-    }
-    getAllManufacturerData();
-  }, [product]);
-
-  useEffect(() => {
-    if (form.giaban && form.khuyenmai) {
-      const giaban = parseFloat(form.giaban);
-      const khuyenmai = parseFloat(form.khuyenmai);
-
-      if (!isNaN(giaban) && !isNaN(khuyenmai)) {
-        const discountedPrice = giaban - (giaban * khuyenmai) / 100;
-        setFinalPrice(discountedPrice);
-      }
-    } else {
-      setFinalPrice(form.giaban || 0);
-    }
-  }, [form.giaban, form.khuyenmai]);
-
-
-  const getAllManufacturerData = async () => {
+  // Fetch manufacturer
+  const getAllManufacturerData = useCallback(async () => {
     try {
       const response = await getAllManufacturer();
-      if (response) {
-        setListManufacturer(response.DT.activeManufacturer || []); // Đảm bảo rằng `DT` luôn là một mảng
-      } else {
-        console.error("Failed to fetch");
+      if (response?.DT) {
+        setListManufacturer(response.DT.activeManufacturer || []);
       }
     } catch (error) {
-      console.error("Error occurred", error);
+      console.error("Error fetching manufacturer", error);
     }
-  };
+  }, []);
 
+  // Reset form khi mở modal
+  useEffect(() => {
+    setForm(product || defaultForm);
+    getAllManufacturerData();
+  }, [product, getAllManufacturerData]);
+
+  // Tính giá sau khuyến mãi
+  useEffect(() => {
+    const giaban = parseFloat(form.giaban) || 0;
+    const khuyenmai = parseFloat(form.khuyenmai) || 0;
+    setFinalPrice(giaban - (giaban * khuyenmai) / 100);
+  }, [form.giaban, form.khuyenmai]);
+
+  // Handle form
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -125,77 +93,43 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    setForm((prev) => ({ ...prev, hinhanhchinh: file })); // Cập nhật ảnh mới và xóa ảnh cũ
+    setForm((prev) => ({ ...prev, hinhanhchinh: file }));
   };
-
-  const imageSrc = form.hinhanhchinh instanceof File
-    ? URL.createObjectURL(form.hinhanhchinh)
-    : `${imgURL}${form.hinhanhchinh}`;
 
   const handleSubmit = () => {
     onSave(form);
-    setForm({
-      mathuonghieu: "",
-      tensanpham: "",
-      hinhanhchinh: "",
-      mau: "",
-      dungluong: "",
-      ram: "",
-      hedieuhanh: "",
-      soluong: "",
-      gianhap: "",
-      giaban: "",
-      khuyenmai: "",
-      cpu: "",
-      gpu: "",
-      pin: "",
-      cameratruoc: "",
-      camerasau: "",
-      congnghemanhinh: "",
-      dophangiaimanhinh: "",
-      mota: "",
-      tenthuonghieu: "",
-      trangthai: 0,
-    });
+    setForm(defaultForm);
   };
 
+  // Manufacturer modal
   const handleSave = async (manufacturer) => {
     try {
-
-      const manufacturerData = {
-        ...manufacturer,
-      };
-
-      await createManufacturer(manufacturerData); // Gọi API tạo mới
-      toast.success("Tạo mới thành công!!!")
-
+      await createManufacturer(manufacturer);
+      toast.success("Tạo mới thành công!!!");
       setSelectedManufacturer(null);
       setOpenModal(false);
-      getAllManufacturerData(); // Lấy lại danh sách 
+      getAllManufacturerData();
     } catch (error) {
-      console.error("Error saving hotel:", error);
+      console.error("Error saving manufacturer:", error);
     }
   };
 
-  const handleCreate = () => {
-    setSelectedManufacturer(null);
-    setOpenModal(true);
-  };
+  const imageSrc =
+    form.hinhanhchinh instanceof File
+      ? URL.createObjectURL(form.hinhanhchinh)
+      : form.hinhanhchinh
+        ? `${imgURL}${form.hinhanhchinh}`
+        : "";
 
   return (
     <>
-      <Modal
-        open={open}
-        onClose={onClose}
-        aria-labelledby="modal-title"
-        aria-describedby="modal-description"
-      // hideBackdrop
-      >
+      <Modal open={open} onClose={onClose} aria-labelledby="modal-title">
         <Box sx={modalStyle}>
-          <Typography makhachhang="modal-title" variant="h6" component="h2">
+          <Typography id="modal-title" variant="h6">
             {product ? "Cập nhật" : "Tạo mới"}
           </Typography>
 
+          {/* Tên sản phẩm */}
           <TextField
             fullWidth
             margin="normal"
@@ -205,61 +139,60 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             onChange={handleChange}
             disabled={isViewOnly}
           />
-          <img
-            src={product && form.hinhanhchinh ? imageSrc : ""}
-            alt={form.tensanpham}
-            width="100px"
-            height="100px"
-            style={product ? {} : { display: "none" }} // Ẩn ảnh nếu không phải cập nhật
-          />
+
+          {/* Ảnh sản phẩm */}
+          {imageSrc && (
+            <img
+              src={imageSrc}
+              alt={form.tensanpham}
+              width="100"
+              height="100"
+            />
+          )}
           {!isViewOnly && (
-            <Box sx={{ marginTop: 1, marginBottom: 1 }}>
+            <Box sx={{ my: 1 }}>
               <input
                 type="file"
-                makhachhang="hinhanhchinh"
                 name="hinhanhchinh"
-                accept="hinhanhchinh/*"
+                accept="image/*"
                 onChange={handleFileChange}
-                required
                 style={{
                   width: "100%",
                   padding: "16.5px 14px",
-                  fontSize: "1rem",
-                  lineHeight: "1.4375em",
-                  backgroundColor: "#fff",
                   border: "1px solid rgba(0, 0, 0, 0.23)",
                   borderRadius: "4px",
-                  color: "rgba(0, 0, 0, 0.87)",
-                  boxSizing: "border-box",
-                  transition: "border-color 0.3s, box-shadow 0.3s",
                 }}
-                onFocus={(e) => (e.target.style.border = "2px solid #3f51b5")}
-                onBlur={(e) =>
-                  (e.target.style.border = "1px solid rgba(0, 0, 0, 0.23)")
-                }
               />
             </Box>
           )}
+
+          {/* Thương hiệu + HĐH */}
           <div className="d-flex gap-2 align-items-center">
             <FormControl fullWidth margin="normal">
-              <InputLabel makhachhang="select-mathuonghieu-label">Thương hiệu</InputLabel>
+              <InputLabel>Thương hiệu</InputLabel>
               <Select
-                labelId="select-mathuonghieu-label"
                 name="mathuonghieu"
-                label="Thương hiệu"
                 value={form.mathuonghieu}
+                label="Thương hiệu"
                 onChange={handleChange}
                 disabled={isViewOnly}
               >
-                {listManufacturer.map((manufacturer) => (
-                  <MenuItem key={manufacturer.mathuonghieu} value={manufacturer.mathuonghieu}>
-                    {manufacturer.tenthuonghieu}
+                {listManufacturer.map((m) => (
+                  <MenuItem key={m.mathuonghieu} value={m.mathuonghieu}>
+                    {m.tenthuonghieu}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
             {!isViewOnly && (
-              <button className="btn btn-sm btn-success mr-2" onClick={handleCreate} style={{ height: '100%' }}>
+              <button
+                className="btn btn-sm btn-success"
+                onClick={() => {
+                  setSelectedManufacturer(null);
+                  setOpenModal(true);
+                }}
+                style={{ height: "100%" }}
+              >
                 <i className="fa-solid fa-plus"></i>
               </button>
             )}
@@ -267,181 +200,51 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               fullWidth
               margin="normal"
               label="Hệ điều hành"
-              type="text"
               name="hedieuhanh"
               value={form.hedieuhanh}
               onChange={handleChange}
               disabled={isViewOnly}
             />
           </div>
-          <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="RAM"
-              type="text"
-              name="ram"
-              value={form.ram}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Dung lượng"
-              type="text"
-              name="dungluong"
-              value={form.dungluong}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Pin"
-              type="text"
-              name="pin"
-              value={form.pin}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-          </div>
-          <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Màu"
-              type="text"
-              name="mau"
-              value={form.mau}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Số lượng"
-              type="number"
-              name="soluong"
-              value={form.soluong}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Giá nhập"
-              type="number"
-              name="gianhap"
-              value={form.gianhap}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-          </div>
-          <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Giá bán"
-              type="number"
-              name="giaban"
-              value={form.giaban}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Giá sau khuyến mãi"
-              type="number"
-              value={finalPrice}
-              InputProps={{
-                readOnly: true,
-              }}
-            />
 
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Phần trăm khuyến mãi(%)"
-              type="number"
-              name="khuyenmai"
-              value={form.khuyenmai}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-          </div>
+          {/* Các trường nhóm */}
           <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="CPU"
-              type="text"
-              name="cpu"
-              value={form.cpu}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="GPU"
-              type="text"
-              name="gpu"
-              value={form.gpu}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
+            <TextField fullWidth margin="normal" label="RAM" name="ram" value={form.ram} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Dung lượng" name="dungluong" value={form.dungluong} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Pin" name="pin" value={form.pin} onChange={handleChange} disabled={isViewOnly} />
           </div>
+
           <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Camera trước"
-              type="text"
-              name="cameratruoc"
-              value={form.cameratruoc}
-              disabled={isViewOnly}
-              onChange={handleChange}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Camera sau"
-              type="text"
-              name="camerasau"
-              value={form.camerasau}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
+            <TextField fullWidth margin="normal" label="Màu" name="mau" value={form.mau} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Số lượng" type="number" name="soluong" value={form.soluong} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Giá nhập" type="number" name="gianhap" value={form.gianhap} onChange={handleChange} disabled={isViewOnly} />
           </div>
+
           <div className="d-flex gap-2">
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Công nghệ màn hình"
-              type="text"
-              name="congnghemanhinh"
-              value={form.congnghemanhinh}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
-            <TextField
-              fullWidth
-              margin="normal"
-              label="Độ phân giải màn hình"
-              type="text"
-              name="dophangiaimanhinh"
-              value={form.dophangiaimanhinh}
-              onChange={handleChange}
-              disabled={isViewOnly}
-            />
+            <TextField fullWidth margin="normal" label="Giá bán" type="number" name="giaban" value={form.giaban} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Giá sau khuyến mãi" type="number" value={finalPrice} InputProps={{ readOnly: true }} />
+            <TextField fullWidth margin="normal" label="Khuyến mãi (%)" type="number" name="khuyenmai" value={form.khuyenmai} onChange={handleChange} disabled={isViewOnly} />
           </div>
+
+          <div className="d-flex gap-2">
+            <TextField fullWidth margin="normal" label="CPU" name="cpu" value={form.cpu} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="GPU" name="gpu" value={form.gpu} onChange={handleChange} disabled={isViewOnly} />
+          </div>
+
+          <div className="d-flex gap-2">
+            <TextField fullWidth margin="normal" label="Camera trước" name="cameratruoc" value={form.cameratruoc} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Camera sau" name="camerasau" value={form.camerasau} onChange={handleChange} disabled={isViewOnly} />
+          </div>
+
+          <div className="d-flex gap-2">
+            <TextField fullWidth margin="normal" label="Công nghệ màn hình" name="congnghemanhinh" value={form.congnghemanhinh} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Độ phân giải màn hình" name="dophangiaimanhinh" value={form.dophangiaimanhinh} onChange={handleChange} disabled={isViewOnly} />
+          </div>
+
           <TextField
             fullWidth
             margin="normal"
             label="Mô tả"
-            type="text"
             name="mota"
             value={form.mota}
             onChange={handleChange}
@@ -449,19 +252,20 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             multiline
             rows={4}
           />
+
           {product && (
             <FormControl fullWidth margin="normal">
-              <InputLabel makhachhang="trangthai-label">Trạng thái</InputLabel>
+              <InputLabel>Trạng thái</InputLabel>
               <Select
-                labelId="trangthai-label"
                 name="trangthai"
-                label="Trạng thái"
                 value={form.trangthai}
                 onChange={handleChange}
                 disabled={isViewOnly}
+                label="Trạng thái"
               >
-                <MenuItem value={0}>Hoạt động</MenuItem>
-                <MenuItem value={1}>Không hoạt động</MenuItem>
+                <MenuItem value={1}>Không duyệt</MenuItem>
+                <MenuItem value={0}>Duyệt</MenuItem>
+
               </Select>
             </FormControl>
           )}
@@ -469,16 +273,17 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
             {!isViewOnly && (
               <button className="btn btn-primary admin-btn" onClick={handleSubmit}>
-                <i className="fa-regular fa-floppy-disk" style={{ marginRight: '5px' }}></i>Lưu
+                <i className="fa-regular fa-floppy-disk me-1"></i>Lưu
               </button>
             )}
             <button className="btn btn-danger admin-btn" onClick={onClose}>
-              <i className="fa-solid fa-x" style={{ marginRight: '5px' }}></i>
-              Huỷ
+              <i className="fa-solid fa-x me-1"></i>Huỷ
             </button>
           </Box>
         </Box>
-      </Modal >
+      </Modal>
+
+      {/* Modal thêm thương hiệu */}
       <ModalManufacturer
         manufacturer={selectedManufacturer}
         open={openModal}

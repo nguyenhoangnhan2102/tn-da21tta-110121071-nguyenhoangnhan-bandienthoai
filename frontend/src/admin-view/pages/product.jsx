@@ -74,7 +74,7 @@ const ProductComponent = () => {
   const handleViewDetails = (product) => {
     setImgUrl(product.hinhanhchinh);
     setSelectedProduct(product);
-    setIsViewOnly(false); // Chế độ nhập dữ liệu
+    setIsViewOnly(true); // Chế độ nhập dữ liệu
     setOpenModal(true);
   };
 
