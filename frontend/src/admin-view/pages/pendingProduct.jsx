@@ -252,7 +252,7 @@ const PendingProductComponent = () => {
                     ) : (
                         <tr>
                             <td colSpan="12" style={{ textAlign: 'center' }}>
-                                <h6>Không tìm thấy</h6>
+                                <h6>Không có sản phẩm</h6>
                             </td>
                         </tr>
                     )}
