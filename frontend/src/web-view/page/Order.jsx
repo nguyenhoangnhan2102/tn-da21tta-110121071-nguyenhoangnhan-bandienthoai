@@ -286,7 +286,7 @@ const Orders = () => {
                 </DialogActions>
             </Dialog>
             <CommentModal
-                show={showCommentModal}
+                open={showCommentModal}
                 handleClose={handleCloseCommentModal}
                 backdropClassName="custom-backdrop"
             />
