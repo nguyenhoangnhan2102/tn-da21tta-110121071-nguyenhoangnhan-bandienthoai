@@ -6,10 +6,21 @@ import axiosInstance from "../../authentication/axiosInstance";
 import Cookies from "js-cookie";
 import moment from "moment";
 import "../style/Order.scss";
-import { Modal, Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogActions, DialogContent, DialogTitle, FormControl, TextField } from "@mui/material";
+import { Modal } from "react-bootstrap"; // chỉ giữ lại Modal cho chi tiết đơn
+import {
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    FormControl,
+    TextField,
+    Rating,
+    Button,
+    Box,   // lấy Button từ MUI thay vì react-bootstrap
+} from "@mui/material";
 import { cancelOrder } from "../../services/orderService";
+import commentService from "../../services/commentService";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const orderUrl = apiUrl + "/orders";
@@ -23,6 +34,10 @@ const Orders = () => {
     const [openCancelModal, setOpenCancelModal] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [orderToCancel, setOrderToCancel] = useState(null);
+    const [openCommentModal, setOpenCommentModal] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState(null);
+    const [commentContent, setCommentContent] = useState("");
+    const [rating, setRating] = useState(0);
 
     const navigate = useNavigate();
 
@@ -73,6 +88,42 @@ const Orders = () => {
             toast.error("Có lỗi khi hủy đơn hàng!");
         }
     };
+
+    const handleOpenCommentModal = (product) => {
+        setSelectedProduct(product);
+        setCommentContent("");
+        setRating(0);
+        setOpenCommentModal(true);
+    };
+
+    const handleCloseCommentModal = () => {
+        setOpenCommentModal(false);
+        setSelectedProduct(null);
+        setCommentContent(""); // Reset comment content khi đóng modal
+    };
+
+    const handleSubmitComment = async () => {
+        if (!rating || !commentContent.trim()) {
+            toast.error("Vui lòng nhập đầy đủ số sao và nội dung!");
+            return;
+        }
+        try {
+            const payload = {
+                masanpham: selectedProduct.masanpham,   // mã sản phẩm cần bình luận
+                manguoidung: infoUser.manguoidung,      // user đang đăng nhập
+                noidung: commentContent,                // nội dung bình luận
+                sosao: rating                           // số sao đánh giá
+            };
+
+            await commentService.createComment(payload);
+
+            toast.success("Đã gửi bình luận!");
+            handleCloseCommentModal();
+        } catch (error) {
+            toast.error("Có lỗi khi gửi bình luận!");
+        }
+    };
+
 
     const handleOpenCancelModal = (order) => {
         setOrderToCancel(order);
@@ -135,14 +186,14 @@ const Orders = () => {
                                     </td>
                                     <td className="d-flex gap-2">
                                         <button className="btn btn-sm btn-secondary" onClick={() => handleViewDetails(o)}>
-                                            <i className="fa-regular fa-eye"></i> Xem
+                                            <i className="fa-regular fa-eye"></i> Xem chi tiết
                                         </button>
                                         {o.trangthai !== "huy" && (
                                             <button
                                                 className="btn btn-sm btn-danger"
                                                 onClick={() => handleOpenCancelModal(o)}
                                             >
-                                                <i className="fa-solid fa-xmark"></i> Hủy
+                                                <i className="fa-solid fa-xmark"></i> Hủy đơn
                                             </button>
                                         )}
                                     </td>
@@ -189,9 +240,9 @@ const Orders = () => {
                                     <th>Số lượng</th>
                                     <th>Đơn giá</th>
                                     <th>Thành tiền</th>
+                                    {selectedOrder.trangthai === "hoanthanh" && <th>Bình luận</th>}
                                 </tr>
                             </thead>
-                            {console.log("selectedOrder", selectedOrder)}
                             <tbody>
                                 {selectedOrder.chitiet?.length > 0 ? (
                                     selectedOrder.chitiet.map((sp, i) => (
@@ -208,23 +259,26 @@ const Orders = () => {
                                             <td>{sp.dungluong}</td>
                                             <td>{sp.ram}</td>
                                             <td>{sp.soluong}</td>
-                                            <td>
-                                                {new Intl.NumberFormat("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND"
-                                                }).format(sp.dongia)}
-                                            </td>
-                                            <td>
-                                                {new Intl.NumberFormat("vi-VN", {
-                                                    style: "currency",
-                                                    currency: "VND"
-                                                }).format(sp.thanhtien)}
-                                            </td>
+                                            <td>{new Intl.NumberFormat("vi-VN", {
+                                                style: "currency", currency: "VND"
+                                            }).format(sp.dongia)}</td>
+                                            <td>{new Intl.NumberFormat("vi-VN", {
+                                                style: "currency", currency: "VND"
+                                            }).format(sp.thanhtien)}</td>
+                                            {selectedOrder.trangthai === "hoanthanh" && (
+                                                <td className="text-center">
+                                                    <i
+                                                        className="fa-regular fa-comment-dots text-primary"
+                                                        style={{ cursor: "pointer", fontSize: "18px" }}
+                                                        onClick={() => handleOpenCommentModal(sp)}
+                                                    ></i>
+                                                </td>
+                                            )}
                                         </tr>
                                     ))
                                 ) : (
                                     <tr>
-                                        <td colSpan="8" className="text-center">Không có sản phẩm</td>
+                                        <td colSpan="9" className="text-center">Không có sản phẩm</td>
                                     </tr>
                                 )}
                             </tbody>
@@ -260,6 +314,56 @@ const Orders = () => {
                         variant="primary"    // xanh
                     >
                         Xác nhận hủy
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Comment */}
+            {/* Comment Modal (MUI) */}
+            <Dialog
+                open={openCommentModal}
+                onClose={handleCloseCommentModal}
+                maxWidth="sm"
+                fullWidth
+                disableEnforceFocus   // tránh xung đột focus với bootstrap modal
+            >
+                <DialogTitle>
+                    Bình luận sản phẩm: {selectedProduct?.tensanpham}
+                </DialogTitle>
+                <DialogContent>
+                    {selectedProduct && (
+                        <Box>
+                            <Rating
+                                name="rating"
+                                value={rating}
+                                onChange={(e, newValue) => setRating(newValue)}
+                            />
+                            <TextField
+                                fullWidth
+                                multiline
+                                rows={3}
+                                placeholder="Nhập nội dung bình luận..."
+                                value={commentContent}
+                                onChange={(e) => setCommentContent(e.target.value)} // Thêm sự kiện onChange
+                            />
+                        </Box>
+                    )}
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={handleCloseCommentModal}   // ✅ dùng đúng hàm đóng comment
+                        color="secondary"
+                        variant="outlined"
+                    >
+                        Đóng
+                    </Button>
+
+                    <Button
+                        onClick={handleSubmitComment}       // ✅ gọi đúng hàm gửi comment
+                        color="primary"
+                        variant="contained"
+                    >
+                        Gửi
                     </Button>
                 </DialogActions>
             </Dialog>
