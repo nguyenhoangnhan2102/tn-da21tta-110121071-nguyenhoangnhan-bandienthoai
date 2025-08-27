@@ -94,15 +94,9 @@
         }
     }
 
-    .comment-modal .modal-content {
-        z-index: 1061; // cao hơn modal gốc (mặc định 1050)
-        position: relative;
-        box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.4);
+    .custom-backdrop {
+        background-color: rgba(0, 0, 0, 0.8) !important;
     }
 
-    .comment-backdrop {
-        z-index: 1060; // ngay dưới modal
-        background-color: rgba(0, 0, 0, 0.6) !important; // backdrop tối hơn modal chính
-    }
 
 }
