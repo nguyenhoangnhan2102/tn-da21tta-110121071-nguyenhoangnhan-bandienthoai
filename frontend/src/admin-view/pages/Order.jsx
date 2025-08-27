@@ -139,7 +139,7 @@ const Order = () => {
         }
     };
 
-    console.log("currentOrders", currentOrders)
+
     return (
         <>
             <div>

@@ -95,7 +95,8 @@ const Orders = () => {
         choxacnhan: "Chờ xác nhận",
         danggiao: "Đang giao",
         dagiao: "Đã giao",
-        huy: "Đã hủy"
+        huy: "Đã hủy",
+        hoanthanh: "Hoàn thành"
     };
 
     return (
@@ -130,6 +131,7 @@ const Orders = () => {
                                         {o.trangthai === "danggiao" && "Đang giao"}
                                         {o.trangthai === "dagiao" && "Đã giao"}
                                         {o.trangthai === "huy" && "Đã hủy"}
+                                        {o.trangthai === "hoanthanh" && "Hoàn thành"}
                                     </td>
                                     <td className="d-flex gap-2">
                                         <button className="btn btn-sm btn-secondary" onClick={() => handleViewDetails(o)}>
