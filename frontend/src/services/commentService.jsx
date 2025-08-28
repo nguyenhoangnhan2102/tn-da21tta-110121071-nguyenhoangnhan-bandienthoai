@@ -23,7 +23,7 @@ const commentService = {
             const res = await axiosInstance.get(`${apiProduct}/${masanpham}`);
             return res.data;
         } catch (err) {
-            toast.error("Lỗi khi tải bình luận sản phẩm");
+            console.error("Lỗi khi tải bình luận sản phẩm");
             throw err;
         }
     },

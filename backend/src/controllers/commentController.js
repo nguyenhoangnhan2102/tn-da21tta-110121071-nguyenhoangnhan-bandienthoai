@@ -13,7 +13,7 @@ const createComment = async (req, res) => {
       INSERT INTO DANHGIA (manguoidung, masanpham, sao, binhluan) 
       VALUES (?, ?, ?, ?)
     `;
-        await db.query(sql, [manguoidung, masanpham, sao, binhluan]);
+        await connection.query(sql, [manguoidung, masanpham, sao, binhluan]);
 
         return res.status(201).json({ message: "Thêm bình luận thành công!" });
     } catch (error) {
@@ -34,7 +34,7 @@ const getCommentsByProduct = async (req, res) => {
       WHERE d.masanpham = ? AND d.trangthai = 0
       ORDER BY d.ngaytao DESC
     `;
-        const [rows] = await db.query(sql, [masanpham]);
+        const [rows] = await connection.query(sql, [masanpham]);
 
         res.json(rows);
     } catch (error) {
@@ -54,7 +54,7 @@ const updateComment = async (req, res) => {
       SET sao = ?, binhluan = ?, ngaytao = NOW() 
       WHERE madanhgia = ?
     `;
-        await db.query(sql, [sao, binhluan, madanhgia]);
+        await connection.query(sql, [sao, binhluan, madanhgia]);
 
         res.json({ message: "Cập nhật bình luận thành công!" });
     } catch (error) {
@@ -71,7 +71,7 @@ const deleteComment = async (req, res) => {
         const sql = `
       UPDATE DANHGIA SET trangthai = 1 WHERE madanhgia = ?
     `;
-        await db.query(sql, [madanhgia]);
+        await connection.query(sql, [madanhgia]);
 
         res.json({ message: "Xóa bình luận thành công!" });
     } catch (error) {

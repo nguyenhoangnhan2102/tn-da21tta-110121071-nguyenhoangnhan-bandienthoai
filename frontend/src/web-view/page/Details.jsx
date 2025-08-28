@@ -6,6 +6,8 @@ import axiosInstance from "../../authentication/axiosInstance";
 import Cookies from "js-cookie";
 import "../style/Details.scss";
 import { useAuth } from "../../authentication/AuthContext";
+import commentService from "../../services/commentService";
+import { Box, Rating } from "@mui/material";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const apiProductUrl = apiUrl + '/product';
@@ -30,6 +32,7 @@ const ProductDetails = () => {
     useEffect(() => {
         fecthProductDetails();
         getUserInfoUser();
+        loadComments(); // load bình luận sản phẩm
     }, [masanpham]);
 
     const getUserInfoUser = () => {
@@ -128,6 +131,48 @@ const ProductDetails = () => {
         }
     };
 
+
+    // 👉 Load comments
+    const loadComments = async () => {
+        try {
+            const data = await commentService.getCommentsByProduct(masanpham);
+            console.log("data", data)
+            setComments(data || []);
+        } catch (err) {
+            console.error("Lỗi load comments", err);
+            setComments([]); // fallback tránh null
+        }
+    };
+
+    // 👉 Gửi bình luận
+    const handleSubmitComment = async () => {
+        if (!isLoggedIn) {
+            navigate("/login", { state: { from: location.pathname } });
+            return;
+        }
+        if (!content || rating <= 0) {
+            toast.warning("Vui lòng nhập đầy đủ thông tin bình luận");
+            return;
+        }
+
+        const newComment = {
+            masanpham,
+            manguoidung: inforUser.manguoidung,
+            binhluan: content,
+            sao: rating,
+        };
+
+        try {
+            await commentService.createComment(newComment);
+            setTitle("");
+            setContent("");
+            setRating(0);
+            loadComments(); // reload lại danh sách
+        } catch (err) {
+            console.error("Lỗi khi gửi bình luận", err);
+        }
+    };
+
     if (!productdetails || Object.keys(productdetails).length === 0) {
         return <div>Loading...</div>;
     }
@@ -173,49 +218,50 @@ const ProductDetails = () => {
                     </div>
                     {/* ================== PHẦN BÌNH LUẬN ================== */}
                     <div className="comment-box mt-5">
-                        <h4 className="mb-3">Đánh giá & Bình luận</h4>
+                        <h4 className="mb-3">Đánh giá</h4>
 
                         {/* Form viết bình luận */}
                         <div className="comment-form mb-4">
-                            <input
-                                type="text"
-                                placeholder="Tiêu đề"
-                                className="comment-input"
-                            />
-                            <div className="rating my-2">
-                                ★★★★☆ (Rating)
-                            </div>
+                            <Box className="my-2 d-flex align-items-center gap-2">
+                                <Rating
+                                    name="rating"
+                                    value={rating}
+                                    onChange={(event, newValue) => setRating(newValue)}
+                                />
+                            </Box>
                             <textarea
                                 placeholder="Nhập nội dung bình luận..."
-                                className="comment-textarea"
+                                className="comment-textarea form-control"
                                 rows="3"
+                                value={content}
+                                onChange={(e) => setContent(e.target.value)}
                             ></textarea>
-                            <button className="btn btn-primary mt-2">
+                            <button
+                                className="btn btn-primary mt-2"
+                                onClick={handleSubmitComment}
+                            >
                                 Gửi bình luận
                             </button>
                         </div>
-
-                        {/* Danh sách bình luận */}
+                        {console.log("comments", comments)}
                         <div className="comment-list">
-                            <div className="comment-item">
-                                <div className="comment-header d-flex justify-content-between">
-                                    <strong>Nguyễn Văn A</strong>
-                                    <span className="rating">★★★★★</span>
-                                </div>
-                                <p className="m-0 fw-bold">Sản phẩm rất tốt</p>
-                                <p>Mình đã dùng được 1 tuần, pin trâu và chạy mượt.</p>
-                            </div>
-
-                            <div className="comment-item">
-                                <div className="comment-header d-flex justify-content-between">
-                                    <strong>Trần Thị B</strong>
-                                    <span className="rating">★★★★☆</span>
-                                </div>
-                                <p className="m-0 fw-bold">Ổn trong tầm giá</p>
-                                <p>Máy đẹp, chụp ảnh ok, nhưng sạc hơi lâu.</p>
-                            </div>
+                            {comments && comments.length > 0 ? (
+                                comments.map((cmt, idx) => (
+                                    <div key={idx} className="comment-item mb-3">
+                                        <strong className="comment-name">{cmt.hoten}</strong>
+                                        <small className="comment-date">
+                                            {new Date(cmt.ngaytao).toLocaleDateString("vi-VN")}
+                                        </small>
+                                        <Rating value={cmt.sao} readOnly size="small" className="comment-rating" />
+                                        <p className="comment-text">{cmt.binhluan}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p>Chưa có bình luận nào.</p>
+                            )}
                         </div>
                     </div>
+
                 </div>
                 <div className="mb-4 col-md-4 product-info" style={{ backgroundColor: '#FFFFFF', borderRadius: '12px' }}>
                     <div className="product-price mb-3">
