@@ -68,6 +68,10 @@ CREATE TABLE DONHANG (
     FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung)
 );
 
+ALTER TABLE DONHANG
+MODIFY COLUMN manguoidung INT NULL;
+
+
 CREATE TABLE CHITIETDONHANG (
     madonhang INT,
     masanpham  INT,

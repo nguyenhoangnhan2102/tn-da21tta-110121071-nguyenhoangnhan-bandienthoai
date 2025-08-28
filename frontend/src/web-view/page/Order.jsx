@@ -24,8 +24,6 @@ const Orders = () => {
     const [openCancelModal, setOpenCancelModal] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [orderToCancel, setOrderToCancel] = useState(null);
-    const [showCommentModal, setShowCommentModal] = useState(false);
-    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const navigate = useNavigate();
 
@@ -56,16 +54,6 @@ const Orders = () => {
         } catch {
             toast.error("Không thể tải danh sách đơn hàng");
         }
-    };
-
-    const handleOpenCommentModal = (product) => {
-        setSelectedProduct(product);
-        setShowCommentModal(true);
-    };
-
-    const handleCloseCommentModal = () => {
-        setSelectedProduct(null);
-        setShowCommentModal(false);
     };
 
     const handleConfirmCancel = async () => {
@@ -202,10 +190,8 @@ const Orders = () => {
                                     <th>Số lượng</th>
                                     <th>Đơn giá</th>
                                     <th>Thành tiền</th>
-                                    <th>Đánh giá</th>
                                 </tr>
                             </thead>
-                            {console.log("selectedOrder", selectedOrder)}
                             <tbody>
                                 {selectedOrder.chitiet?.length > 0 ? (
                                     selectedOrder.chitiet.map((sp, i) => (
@@ -233,14 +219,6 @@ const Orders = () => {
                                                     style: "currency",
                                                     currency: "VND"
                                                 }).format(sp.thanhtien)}
-                                            </td>
-                                            <td>
-                                                <button
-                                                    className="btn btn-sm btn-outline-primary"
-                                                    onClick={() => handleOpenCommentModal(sp)}
-                                                >
-                                                    <i className="fa-regular fa-comment"></i> Đánh giá
-                                                </button>
                                             </td>
                                         </tr>
                                     ))
@@ -285,11 +263,6 @@ const Orders = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
-            <CommentModal
-                open={showCommentModal}
-                handleClose={handleCloseCommentModal}
-                backdropClassName="custom-backdrop"
-            />
         </div>
     );
 };
