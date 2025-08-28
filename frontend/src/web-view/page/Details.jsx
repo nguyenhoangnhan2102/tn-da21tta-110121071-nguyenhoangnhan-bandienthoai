@@ -187,6 +187,9 @@ const ProductDetails = () => {
         ? comments
         : comments.filter(c => c.sao === filterStar);
 
+    const handleSetFilter = (n) => {
+        setFilterStar((prev) => (prev === n ? 0 : n));
+    };
 
     if (!productdetails || Object.keys(productdetails).length === 0) {
         return <div>Loading...</div>;
@@ -255,34 +258,52 @@ const ProductDetails = () => {
 
                     {activeTab === "comments" && (
                         <>
-                            <div className="mb-3 d-flex align-items-center justify-content-between">
-                                <div className="d-flex align-items-center gap-2">
-                                    <Rating value={Number(averageRating)} precision={0.1} readOnly />
-                                    <span>{averageRating} / 5 ({comments.length} đánh giá)</span>
-                                </div>
+                            {/* Thống kê rating & filter */}
+                            <div className="rating-summary p-3 rounded">
+                                <div className="d-flex flex-column flex-md-row align-items-center justify-content-between gap-3">
 
-                                <div>
-                                    <select
-                                        className="form-select"
-                                        style={{ width: "180px" }}
-                                        value={filterStar}
-                                        onChange={(e) => setFilterStar(Number(e.target.value))}
-                                    >
-                                        <option value={0}>Tất cả bình luận</option>
-                                        <option value={5}>5 sao</option>
-                                        <option value={4}>4 sao</option>
-                                        <option value={3}>3 sao</option>
-                                        <option value={2}>2 sao</option>
-                                        <option value={1}>1 sao</option>
-                                    </select>
+                                    {/* Khối trung bình rating */}
+                                    <div className="rating-average text-center text-md-start d-flex flex-column justify-content-center">
+                                        <div className="d-flex align-items-baseline justify-content-center gap-1">
+                                            <span className="rating-number">{averageRating}</span>
+                                            <span className="text-muted">trên 5</span>
+                                        </div>
+                                        <Rating value={Number(averageRating)} precision={0.1} readOnly />
+                                        <div className="text-center small mt-2">
+                                            Tổng {comments.length} đánh giá
+                                        </div>
+                                    </div>
+
+                                    {/* Bộ lọc */}
+                                    <div className="rating-filters d-flex flex-wrap gap-2 justify-content-center">
+                                        <button
+                                            className={`filter-btn ${filterStar === 0 ? "active" : ""}`}
+                                            onClick={() => setFilterStar(0)}
+                                        >
+                                            Tất cả
+                                        </button>
+                                        {[5, 4, 3, 2, 1].map((n) => {
+                                            const count = comments.filter(c => c.sao === n).length;
+                                            return (
+                                                <button
+                                                    key={n}
+                                                    className={`filter-btn ${filterStar === n ? "active" : ""}`}
+                                                    onClick={() => setFilterStar(filterStar === n ? 0 : n)}
+                                                >
+                                                    {n} Sao ({count})
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
+
 
                             <div className="comment-box mt-3">
                                 {/* Danh sách bình luận */}
                                 <div className="comment-list">
-                                    {comments && comments.length > 0 ? (
-                                        comments.map((cmt, idx) => (
+                                    {filteredComments && filteredComments.length > 0 ? (
+                                        filteredComments.map((cmt, idx) => (
                                             <div key={idx} className="comment-item mb-3 p-3 border rounded shadow-sm d-flex">
                                                 <div>
                                                     <img
@@ -302,7 +323,7 @@ const ProductDetails = () => {
                                             </div>
                                         ))
                                     ) : (
-                                        <p>Chưa có bình luận nào.</p>
+                                        <p className="mb-5">Chưa có bình luận nào.</p>
                                     )}
                                 </div>
 
