@@ -22,7 +22,9 @@ const ProductDetails = () => {
     const { isLoggedIn } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-
+    const [activeTab, setActiveTab] = useState("description");
+    const [filterStar, setFilterStar] = useState(0); // 0 = tất cả, 1-5 = theo số sao
+    const [averageRating, setAverageRating] = useState(0);
     // 👉 state cho bình luận
     const [comments, setComments] = useState([]);
     const [title, setTitle] = useState("");
@@ -34,6 +36,15 @@ const ProductDetails = () => {
         getUserInfoUser();
         loadComments(); // load bình luận sản phẩm
     }, [masanpham]);
+
+    useEffect(() => {
+        if (comments.length > 0) {
+            const avg = comments.reduce((sum, c) => sum + c.sao, 0) / comments.length;
+            setAverageRating(avg.toFixed(1)); // giữ 1 số thập phân
+        } else {
+            setAverageRating(0);
+        }
+    }, [comments]);
 
     const getUserInfoUser = () => {
         const accessToken = Cookies.get("accessToken");
@@ -59,7 +70,7 @@ const ProductDetails = () => {
             }
         }
     };
-    console.log("inforUser", inforUser)
+
     const handleAddToCart = async () => {
         if (!isLoggedIn) {
             navigate("/login", { state: { from: location.pathname } });
@@ -136,7 +147,6 @@ const ProductDetails = () => {
     const loadComments = async () => {
         try {
             const data = await commentService.getCommentsByProduct(masanpham);
-            console.log("data", data)
             setComments(data || []);
         } catch (err) {
             console.error("Lỗi load comments", err);
@@ -172,6 +182,11 @@ const ProductDetails = () => {
             console.error("Lỗi khi gửi bình luận", err);
         }
     };
+
+    const filteredComments = filterStar === 0
+        ? comments
+        : comments.filter(c => c.sao === filterStar);
+
 
     if (!productdetails || Object.keys(productdetails).length === 0) {
         return <div>Loading...</div>;
@@ -213,54 +228,114 @@ const ProductDetails = () => {
                             </li>
                         </ul>
                     </div>
-                    <div className="description my-4">
+                    {/* <div className="description my-4">
                         <label>{productdetails.tensanpham}</label> {productdetails.motasanpham}
+                    </div> */}
+                    <div className="tab-buttons d-flex gap-3 my-4">
+                        <button
+                            className={`btn ${activeTab === "description" ? "btn-primary" : "btn-outline-primary"}`}
+                            onClick={() => setActiveTab("description")}
+                        >
+                            Mô tả
+                        </button>
+                        <button
+                            className={`btn ${activeTab === "comments" ? "btn-primary" : "btn-outline-primary"}`}
+                            onClick={() => setActiveTab("comments")}
+                        >
+                            Bình luận ({comments.length})
+                        </button>
                     </div>
-                    {/* ================== PHẦN BÌNH LUẬN ================== */}
-                    <div className="comment-box mt-5">
-                        <h4 className="mb-3">Đánh giá</h4>
 
-                        {/* Form viết bình luận */}
-                        <div className="comment-form mb-4">
-                            <Box className="my-2 d-flex align-items-center gap-2">
-                                <Rating
-                                    name="rating"
-                                    value={rating}
-                                    onChange={(event, newValue) => setRating(newValue)}
-                                />
-                            </Box>
-                            <textarea
-                                placeholder="Nhập nội dung bình luận..."
-                                className="comment-textarea form-control"
-                                rows="3"
-                                value={content}
-                                onChange={(e) => setContent(e.target.value)}
-                            ></textarea>
-                            <button
-                                className="btn btn-primary mt-2"
-                                onClick={handleSubmitComment}
-                            >
-                                Gửi bình luận
-                            </button>
+                    {/* ================== TAB CONTENT ================== */}
+                    {activeTab === "description" && (
+                        <div className="description my-4">
+                            <label>{productdetails.tensanpham}</label> {productdetails.motasanpham}
                         </div>
-                        {console.log("comments", comments)}
-                        <div className="comment-list">
-                            {comments && comments.length > 0 ? (
-                                comments.map((cmt, idx) => (
-                                    <div key={idx} className="comment-item mb-3">
-                                        <strong className="comment-name">{cmt.hoten}</strong>
-                                        <small className="comment-date">
-                                            {new Date(cmt.ngaytao).toLocaleDateString("vi-VN")}
-                                        </small>
-                                        <Rating value={cmt.sao} readOnly size="small" className="comment-rating" />
-                                        <p className="comment-text">{cmt.binhluan}</p>
+                    )}
+
+                    {activeTab === "comments" && (
+                        <>
+                            <div className="mb-3 d-flex align-items-center justify-content-between">
+                                <div className="d-flex align-items-center gap-2">
+                                    <Rating value={Number(averageRating)} precision={0.1} readOnly />
+                                    <span>{averageRating} / 5 ({comments.length} đánh giá)</span>
+                                </div>
+
+                                <div>
+                                    <select
+                                        className="form-select"
+                                        style={{ width: "180px" }}
+                                        value={filterStar}
+                                        onChange={(e) => setFilterStar(Number(e.target.value))}
+                                    >
+                                        <option value={0}>Tất cả bình luận</option>
+                                        <option value={5}>5 sao</option>
+                                        <option value={4}>4 sao</option>
+                                        <option value={3}>3 sao</option>
+                                        <option value={2}>2 sao</option>
+                                        <option value={1}>1 sao</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="comment-box mt-3">
+                                {/* Danh sách bình luận */}
+                                <div className="comment-list">
+                                    {comments && comments.length > 0 ? (
+                                        comments.map((cmt, idx) => (
+                                            <div key={idx} className="comment-item mb-3 p-3 border rounded shadow-sm d-flex">
+                                                <div>
+                                                    <img
+                                                        src="https://www.w3schools.com/howto/img_avatar.png"
+                                                        alt="avatar"
+                                                        className="comment-avatar me-2"
+                                                    />
+                                                </div>
+                                                <div className="d-flex flex-column gap-1">
+                                                    <strong>{cmt.hoten}</strong>
+                                                    <small className="text-muted">
+                                                        {new Date(cmt.ngaytao).toLocaleDateString("vi-VN")}
+                                                    </small>
+                                                    <Rating value={cmt.sao} readOnly size="small" />
+                                                    <p className="m-0">{cmt.binhluan}</p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p>Chưa có bình luận nào.</p>
+                                    )}
+                                </div>
+
+                                {/* Form viết bình luận */}
+                                <h4>Đánh giá</h4>
+                                <div className="comment-form mb-4">
+                                    <Box className="my-2 d-flex align-items-center gap-2">
+                                        <Rating
+                                            name="rating"
+                                            value={rating}
+                                            onChange={(event, newValue) => setRating(newValue)}
+                                        />
+                                    </Box>
+                                    <textarea
+                                        placeholder="Nhập nội dung bình luận..."
+                                        className="comment-textarea form-control"
+                                        rows="3"
+                                        value={content}
+                                        onChange={(e) => setContent(e.target.value)}
+                                    ></textarea>
+                                    <div className="d-flex justify-content-end">
+                                        <button
+                                            className="btn btn-primary mt-2"
+                                            onClick={handleSubmitComment}
+                                            style={{ width: "100px" }}
+                                        >
+                                            Gửi
+                                        </button>
                                     </div>
-                                ))
-                            ) : (
-                                <p>Chưa có bình luận nào.</p>
-                            )}
-                        </div>
-                    </div>
+                                </div>
+                            </div>
+                        </>
+                    )}
 
                 </div>
                 <div className="mb-4 col-md-4 product-info" style={{ backgroundColor: '#FFFFFF', borderRadius: '12px' }}>
