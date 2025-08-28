@@ -21,6 +21,12 @@ const ProductDetails = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
+    // 👉 state cho bình luận
+    const [comments, setComments] = useState([]);
+    const [title, setTitle] = useState("");
+    const [rating, setRating] = useState(0);
+    const [content, setContent] = useState("");
+
     useEffect(() => {
         fecthProductDetails();
         getUserInfoUser();
@@ -164,6 +170,51 @@ const ProductDetails = () => {
                     </div>
                     <div className="description my-4">
                         <label>{productdetails.tensanpham}</label> {productdetails.motasanpham}
+                    </div>
+                    {/* ================== PHẦN BÌNH LUẬN ================== */}
+                    <div className="comment-box mt-5">
+                        <h4 className="mb-3">Đánh giá & Bình luận</h4>
+
+                        {/* Form viết bình luận */}
+                        <div className="comment-form mb-4">
+                            <input
+                                type="text"
+                                placeholder="Tiêu đề"
+                                className="comment-input"
+                            />
+                            <div className="rating my-2">
+                                ★★★★☆ (Rating)
+                            </div>
+                            <textarea
+                                placeholder="Nhập nội dung bình luận..."
+                                className="comment-textarea"
+                                rows="3"
+                            ></textarea>
+                            <button className="btn btn-primary mt-2">
+                                Gửi bình luận
+                            </button>
+                        </div>
+
+                        {/* Danh sách bình luận */}
+                        <div className="comment-list">
+                            <div className="comment-item">
+                                <div className="comment-header d-flex justify-content-between">
+                                    <strong>Nguyễn Văn A</strong>
+                                    <span className="rating">★★★★★</span>
+                                </div>
+                                <p className="m-0 fw-bold">Sản phẩm rất tốt</p>
+                                <p>Mình đã dùng được 1 tuần, pin trâu và chạy mượt.</p>
+                            </div>
+
+                            <div className="comment-item">
+                                <div className="comment-header d-flex justify-content-between">
+                                    <strong>Trần Thị B</strong>
+                                    <span className="rating">★★★★☆</span>
+                                </div>
+                                <p className="m-0 fw-bold">Ổn trong tầm giá</p>
+                                <p>Máy đẹp, chụp ảnh ok, nhưng sạc hơi lâu.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div className="mb-4 col-md-4 product-info" style={{ backgroundColor: '#FFFFFF', borderRadius: '12px' }}>

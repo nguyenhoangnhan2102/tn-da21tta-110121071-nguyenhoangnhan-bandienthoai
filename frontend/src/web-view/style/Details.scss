@@ -200,3 +200,54 @@ h3 {
         color: #2270e6;
     }
 }
+
+.comment-box {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 40px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.comment-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment-input,
+.comment-textarea {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.comment-input:focus,
+.comment-textarea:focus {
+    border-color: #0d6efd;
+    outline: none;
+}
+
+.comment-list {
+    margin-top: 20px;
+}
+
+.comment-item {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.comment-item:last-child {
+    border-bottom: none;
+}
+
+.comment-header {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.rating {
+    color: #f39c12;
+    font-size: 14px;
+}
