@@ -265,14 +265,14 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               disabled={isViewOnly}
               label="Trạng thái"
             >
-              <MenuItem value={1}>Không duyệt</MenuItem>
+              <MenuItem value={1}>Chưa duyệt</MenuItem>
               <MenuItem value={0}>Duyệt</MenuItem>
             </Select>
           </FormControl>
           {/* )} */}
 
           <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
-            {userInfo?.role === 1 && (
+            {userInfo?.role === 1 && form.trangthai === 1 && (
               <button
                 className="btn btn-success admin-btn"
                 onClick={() => {

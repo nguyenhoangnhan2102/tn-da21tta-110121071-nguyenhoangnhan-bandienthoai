@@ -164,9 +164,38 @@ const Top10Products = async (req, res) => {
     }
 };
 
+const OrderStatusSummary = async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                trangthai, 
+                COUNT(*) AS tong_donhang,
+                SUM(tongtien) AS tong_tien
+            FROM DONHANG
+            GROUP BY trangthai;
+        `;
+
+        const [results] = await connection.query(query);
+
+        return res.json({
+            success: true,
+            message: "Thống kê số lượng đơn hàng theo trạng thái",
+            data: results
+        });
+    } catch (error) {
+        console.error("Lỗi lấy thống kê đơn hàng:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy thống kê đơn hàng"
+        });
+    }
+};
+
+
 module.exports = {
     RevenueByDay,
     RevenueByMonth,
     RevenueByYear,
     Top10Products,
+    OrderStatusSummary,
 };

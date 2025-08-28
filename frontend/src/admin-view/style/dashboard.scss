@@ -76,3 +76,19 @@
         }
     }
 }
+
+.order-status-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.order-status-table th,
+.order-status-table td {
+    padding: 8px 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-status-table th {
+    background-color: #f4f4f4;
+}

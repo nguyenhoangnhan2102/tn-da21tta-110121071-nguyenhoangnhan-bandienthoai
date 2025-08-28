@@ -53,6 +53,16 @@ const statisticalService = {
             throw error;
         }
     },
+
+    getOrderStatusSummary: async () => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/status`);
+            return res.data;
+        } catch (error) {
+            console.error("Error getOrderStatusSummary:", error);
+            throw error;
+        }
+    },
 };
 
 export default statisticalService;

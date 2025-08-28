@@ -7,5 +7,6 @@ router.get("/month", statisticalController.RevenueByMonth);
 router.get("/year", statisticalController.RevenueByYear);
 
 router.get("/top10-products", statisticalController.Top10Products);
+router.get("/status", statisticalController.OrderStatusSummary);
 
 module.exports = router;
