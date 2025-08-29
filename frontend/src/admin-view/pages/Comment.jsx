@@ -104,12 +104,24 @@ const Comment = () => {
     const indexOfLast = currentPage * commentsPerPage;
     const indexOfFirst = indexOfLast - commentsPerPage;
 
+    const removeAccents = (str) => {
+        return str
+            .normalize("NFD")        // tách dấu
+            .replace(/[\u0300-\u036f]/g, "") // xóa dấu
+            .replace(/đ/g, "d")
+            .replace(/Đ/g, "D");
+    };
+
     const currentComments = comments
-        .filter(
-            (c) =>
-                c.binhluan &&
-                c.binhluan.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        .filter((c) => {
+            const search = removeAccents(searchTerm.toLowerCase());
+
+            return (
+                (c.binhluan && removeAccents(c.binhluan.toLowerCase()).includes(search)) ||
+                (c.chitiet?.hoten && removeAccents(c.chitiet.hoten.toLowerCase()).includes(search)) ||
+                (c.chitiet?.tensanpham && removeAccents(c.chitiet.tensanpham.toLowerCase()).includes(search))
+            );
+        })
         .slice(indexOfFirst, indexOfLast);
 
     const totalPages = Math.ceil(comments.length / commentsPerPage);
@@ -140,16 +152,16 @@ const Comment = () => {
                 </DialogActions>
             </Dialog>
 
-            <div className="group-header">
+            <div className="group-header mt-3">
                 <h2>Danh sách bình luận</h2>
-                <div className="filterGroup d-flex">
+                <div className="filterGroup d-flex justify-content-end my-2" style={{ position: 'relative' }}>
                     <input
                         type="text"
                         className="form-control"
-                        placeholder="Tìm kiếm nội dung bình luận"
+                        placeholder="Tìm kiếm (user, product,..."
                         value={searchTerm}
                         onChange={handleSearch}
-                        style={{ paddingRight: "30px", position: "relative" }}
+                        style={{ width: "224px" }}
                     />
                     <i
                         className="fa-solid fa-magnifying-glass"

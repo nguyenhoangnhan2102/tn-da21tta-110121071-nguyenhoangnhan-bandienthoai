@@ -152,29 +152,30 @@ const Manufacturer = () => {
                         </div>
                     </DialogActions>
                 </Dialog>
-                <div className="group-header">
+                <div className="group-header mt-3">
                     <h2>Danh sách thương hiệu</h2>
-                    <div className="filterGroup d-flex">
-                        <input
-                            type="text"
-                            className="form-control"
-                            placeholder="Tìm kiếm"
-                            value={searchTerm}
-                            onChange={handleSearch}
-                            style={{ paddingRight: '30px', position: 'relative' }} // Chừa khoảng trống cho icon
-                        />
-                        <i
-                            className="fa-solid fa-magnifying-glass"
-                            style={{
-                                position: 'absolute',
-                                right: '10px',
-                                top: '50%',
-                                transform: 'translateY(-50%)',
-                                pointerEvents: 'none',
-                                color: '#000'
-                            }}
-                        ></i>
-
+                    <div className="filterGroup gap-2 align-items-center d-flex justify-content-end my-3">
+                        <div style={{ position: 'relative' }}>
+                            <input
+                                type="text"
+                                className="form-control"
+                                placeholder="Tìm kiếm"
+                                value={searchTerm}
+                                onChange={handleSearch}
+                                style={{ width: "224px" }}
+                            />
+                            <i
+                                className="fa-solid fa-magnifying-glass"
+                                style={{
+                                    position: 'absolute',
+                                    right: '10px',
+                                    top: '50%',
+                                    transform: 'translateY(-50%)',
+                                    pointerEvents: 'none',
+                                    color: '#000'
+                                }}
+                            ></i>
+                        </div>
                         <div className="btn-header-table">
                             <button className="btn btn-sm btn-success mr-2" onClick={handleCreate}>
                                 <i className="fa-solid fa-plus"></i> Thêm

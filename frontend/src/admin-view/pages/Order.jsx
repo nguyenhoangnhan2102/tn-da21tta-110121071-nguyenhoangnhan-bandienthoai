@@ -143,15 +143,16 @@ const Order = () => {
     return (
         <>
             <div>
-                <div className="group-header">
+                <div className="group-header mt-3">
                     <h2>Danh sách đơn hàng</h2>
-                    <div className="filterGroup" style={{ position: 'relative' }}>
+                    <div className="filterGroup d-flex justify-content-end my-2" style={{ position: 'relative' }}>
                         <input
                             type="text"
                             className="form-control"
                             placeholder="Tìm kiếm"
                             value={searchTerm}
                             onChange={handleSearch}
+                            style={{ position: 'relative', width: "224px" }}
                         />
                         <i
                             className="fa-solid fa-magnifying-glass"
@@ -168,7 +169,7 @@ const Order = () => {
                 </div>
                 <table className="table table-hover">
                     <thead className="thead-dark">
-                        <tr>
+                        <tr className="table-title">
                             <th scope="col">STT</th>
                             <th scope="col">Tên người mua</th>
                             <th scope="col">Số điện thoại</th>

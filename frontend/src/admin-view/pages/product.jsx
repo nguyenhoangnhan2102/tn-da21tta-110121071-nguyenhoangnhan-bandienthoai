@@ -198,7 +198,7 @@ const ProductComponent = () => {
         </Dialog>
         <div className="group-header mt-3">
           <h2>Danh sách sản phẩm</h2>
-          <div className="d-flex gap-2 justify-content-end align-items-center mb-5">
+          <div className="d-flex gap-2 justify-content-end align-items-center my-3">
             <div className="filterGroup" style={{ position: 'relative' }}>
               <input
                 type="text"
