@@ -7,6 +7,7 @@ import ProductComponent from "./pages/product";
 import Manufacturer from "./pages/manufacturer";
 import Order from "./pages/Order";
 import PendingProductComponent from "./pages/pendingProduct";
+import Comment from "./pages/Comment";
 
 const RouterAdmin = () => {
   const element = useRoutes([
@@ -29,6 +30,10 @@ const RouterAdmin = () => {
     {
       path: "/product",
       element: <ProductComponent />,
+    },
+    {
+      path: "/comments",
+      element: <Comment />,
     },
     {
       path: "/product/pending",
