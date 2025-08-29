@@ -9,7 +9,7 @@ const commentService = {
     async createComment(data) {
         try {
             const res = await axiosInstance.post(apiProduct, data);
-            toast.success("Bình luận thành công!");
+            toast.success("Bình luận đã được gửi. Vui lòng chờ duyệt!");
             return res.data;
         } catch (err) {
             toast.error(err.response?.data?.message || "Lỗi khi thêm bình luận");

@@ -5,8 +5,10 @@ import "../../web-view/style/profile.scss";
 import { Button, Modal, Form } from "react-bootstrap";
 import ReduxStateExport from "../../redux/redux-state";
 import userService from "../../services/userAccountService";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setUserInfo } from "../../redux/authSlice";
+import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 export default function Profile() {
   const [show, setShow] = useState(false);
@@ -14,7 +16,7 @@ export default function Profile() {
   const [sodienthoai, setSodienthoai] = useState("");
   const [diachi, setDiachi] = useState("");
   const dispatch = useDispatch();
-  const { userInfo } = ReduxStateExport();
+  const userInfo = useSelector((state) => state.reduxState.userInfo);
 
   const handleClose = () => setShow(false);
   const handleShow = () => {
@@ -23,7 +25,7 @@ export default function Profile() {
     setDiachi(userInfo.diachi || "");
     setShow(true);
   };
-  console.log("userInfo", userInfo)
+
   const handleSubmit = async () => {
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(sodienthoai)) {
@@ -38,16 +40,12 @@ export default function Profile() {
     });
 
     if (result) {
-      // ✅ Update lại Redux store với thông tin mới
-      dispatch(setUserInfo({
-        ...userInfo,
-        hoten,
-        sodienthoai,
-        diachi,
-      }));
-
+      Cookies.set("accessToken", result.accessToken, { expires: 7 });
+      const decoded = jwtDecode(result.accessToken);
+      dispatch(setUserInfo(decoded));
       handleClose();
     }
+
   };
 
 

@@ -2,11 +2,9 @@
 import React, { useEffect, useState } from "react";
 import {
     Box,
-    Button,
     TextField,
     Modal,
     Typography,
-    Input,
     FormControl,
     InputLabel,
     Select,
@@ -19,11 +17,11 @@ const modalStyle = {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: 600,
-    maxHeight: "95vh", // Đặt chiều cao tối đa để tránh vượt quá màn hình
+    maxHeight: "95vh",
     bgcolor: "background.paper",
     boxShadow: 24,
     p: 4,
-    overflowY: "auto", // Thêm thuộc tính này để có thanh cuộn dọc khi cần
+    overflowY: "auto",
 };
 
 const CommentModal = ({ comment, onSave, open, onClose, viewMode }) => {
@@ -36,12 +34,14 @@ const CommentModal = ({ comment, onSave, open, onClose, viewMode }) => {
     useEffect(() => {
         if (comment) {
             setForm({
+                madanhgia: comment.madanhgia,   // thêm dòng này
                 binhluan: comment.binhluan || "",
                 sao: comment.sao || 0,
-                trangthai: comment.trangthai || 0,
+                trangthai: comment.trangthai ?? 0,
             });
         }
     }, [comment]);
+
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -70,6 +70,7 @@ const CommentModal = ({ comment, onSave, open, onClose, viewMode }) => {
                     onChange={handleChange}
                     disabled={viewMode}
                 />
+
                 <TextField
                     fullWidth
                     margin="normal"
@@ -80,6 +81,21 @@ const CommentModal = ({ comment, onSave, open, onClose, viewMode }) => {
                     onChange={handleChange}
                     disabled={viewMode}
                 />
+
+                <FormControl fullWidth margin="normal" disabled={viewMode}>
+                    <InputLabel id="trangthai-label">Trạng thái</InputLabel>
+                    <Select
+                        labelId="trangthai-label"
+                        name="trangthai"
+                        label="Trạng thái"
+                        value={form.trangthai}
+                        onChange={handleChange}
+                    >
+                        <MenuItem value={0}>Chưa duyệt</MenuItem>
+                        <MenuItem value={1}>Đã duyệt</MenuItem>
+                    </Select>
+                </FormControl>
+
                 {!viewMode && (
                     <Box mt={2} display="flex" justifyContent="flex-end" gap="5px">
                         <button className="btn btn-primary" onClick={handleSubmit}>
@@ -95,5 +111,4 @@ const CommentModal = ({ comment, onSave, open, onClose, viewMode }) => {
     );
 };
 
-
-export default CommentModal; 
+export default CommentModal;

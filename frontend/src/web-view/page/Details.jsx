@@ -318,8 +318,9 @@ const ProductDetails = () => {
                                                         className="comment-avatar me-2"
                                                     />
                                                 </div>
+                                                {console.log("first")}
                                                 <div className="d-flex flex-column gap-1">
-                                                    <strong>{cmt.chitit?.hoten}</strong>
+                                                    <strong>{cmt.chitiet?.hoten}</strong>
                                                     <small className="text-muted">
                                                         {new Date(cmt.ngaytao).toLocaleDateString("vi-VN")}
                                                     </small>

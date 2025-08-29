@@ -71,7 +71,7 @@ const updateComment = async (req, res) => {
       SET sao = ?, binhluan = ?, trangthai = ?, ngaytao = NOW()
       WHERE madanhgia = ?
     `;
-        await connection.query(sql, [sao, binhluan, madanhgia, trangthai]);
+        await connection.query(sql, [sao, binhluan, trangthai, madanhgia]);
 
         res.json({ message: "Cập nhật bình luận thành công!" });
     } catch (error) {

@@ -72,6 +72,7 @@ const Comment = () => {
             }
 
             await commentService.updateComment(comment.madanhgia, data);
+            setOpenModal(false);
             getAllCommentsData();
         } catch (error) {
             toast.error("Lỗi khi duyệt bình luận");
@@ -202,7 +203,7 @@ const Comment = () => {
                                 </td>
                                 <td>
                                     {comment.trangthai === 1 ? (
-                                        <span className="text-success">Hiển thị</span>
+                                        <span className="text-success">Đã duyệt</span>
                                     ) : (
                                         <span className="text-warning">Chờ duyệt</span>
                                     )}
@@ -282,7 +283,10 @@ const Comment = () => {
                 comment={editingComment}
                 open={openModal}
                 onClose={handleCloseModal}
-                onSave={handleApprove}
+                onSave={async (form) => {
+                    await handleApprove(form);   // gọi API cập nhật
+                    handleCloseModal();          // đóng modal
+                }}
                 viewMode={isViewMode}
             />
 
