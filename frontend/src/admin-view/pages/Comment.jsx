@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import "../style/dashboard.scss";
 import commentService from "../../services/commentService";
+import CommentModal from "../modal/comment-modal";
 const imgURL = process.env.REACT_APP_IMG_URL;
 const Comment = () => {
     const [comments, setComments] = useState([]);
@@ -19,6 +20,9 @@ const Comment = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [searchTerm, setSearchTerm] = useState("");
     const commentsPerPage = 10;
+    const [openModal, setOpenModal] = useState(false);
+    const [editingComment, setEditingComment] = useState(null);
+    const [isViewMode, setIsViewMode] = useState(false);
 
     useEffect(() => {
         getAllCommentsData();
@@ -78,6 +82,24 @@ const Comment = () => {
         setSearchTerm(e.target.value);
         setCurrentPage(1);
     };
+
+    const handleViewDetails = (comment) => {
+        setEditingComment(comment);
+        setIsViewMode(true);
+        setOpenModal(true);
+    };
+
+    const handleEdit = (comment) => {
+        setEditingComment(comment);
+        setIsViewMode(false);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setEditingComment(null);
+    };
+
 
     const indexOfLast = currentPage * commentsPerPage;
     const indexOfFirst = indexOfLast - commentsPerPage;
@@ -186,19 +208,23 @@ const Comment = () => {
                                     )}
                                 </td>
                                 <td className="d-flex gap-2">
-                                    {comment.trangthai === 0 && (
-                                        <button
-                                            className="btn btn-sm btn-success"
-                                            onClick={() => handleApprove(comment)}
-                                        >
-                                            <i className="fa-solid fa-check"></i> Duyệt
-                                        </button>
-                                    )}
+                                    <button
+                                        className="btn btn-sm btn-secondary"
+                                        onClick={() => handleViewDetails(comment)}
+                                    >
+                                        <i className="fa-regular fa-eye"></i> Xem
+                                    </button>
+                                    <button
+                                        className="btn btn-sm btn-primary"
+                                        onClick={() => handleEdit(comment)}
+                                    >
+                                        <i className="fa-solid fa-pen-to-square"></i> Sửa
+                                    </button>
                                     <button
                                         className="btn btn-sm btn-danger"
                                         onClick={() => openModalDelete(comment)}
                                     >
-                                        <i className="fa-solid fa-ban"></i> Ẩn
+                                        <i className="fa-solid fa-ban"></i> Xóa
                                     </button>
                                 </td>
                             </tr>
@@ -252,6 +278,14 @@ const Comment = () => {
                     </li>
                 </ul>
             </nav>
+            <CommentModal
+                comment={editingComment}
+                open={openModal}
+                onClose={handleCloseModal}
+                onSave={handleApprove}
+                viewMode={isViewMode}
+            />
+
         </>
     );
 };
