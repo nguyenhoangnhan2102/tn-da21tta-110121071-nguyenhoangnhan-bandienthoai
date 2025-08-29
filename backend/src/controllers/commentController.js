@@ -82,22 +82,20 @@ const updateComment = async (req, res) => {
     }
 };
 
-// Xóa (ẩn) bình luận
 const deleteComment = async (req, res) => {
     try {
         const { madanhgia } = req.params;
 
-        const sql = `
-      UPDATE DANHGIA SET trangthai = 1 WHERE madanhgia = ?
-    `;
+        const sql = `DELETE FROM DANHGIA WHERE madanhgia = ?`;
         await connection.query(sql, [madanhgia]);
 
-        res.json({ message: "Xóa bình luận thành công!" });
+        res.json({ message: "Đã xóa bình luận vĩnh viễn!" });
     } catch (error) {
         console.error("deleteComment error:", error);
         res.status(500).json({ message: "Lỗi server", error });
     }
 };
+
 module.exports = {
     getAllComments,
     createComment,

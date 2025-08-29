@@ -54,7 +54,6 @@ const Comment = () => {
     const handleDeleteComment = async () => {
         try {
             await commentService.deleteComment(selectedComment.madanhgia);
-            toast.success("Ẩn bình luận thành công!");
             getAllCommentsData();
             setOpenDelete(false);
         } catch (error) {
@@ -122,7 +121,7 @@ const Comment = () => {
                 <DialogTitle>Xác nhận ẩn bình luận</DialogTitle>
                 <DialogContent>
                     <Typography>
-                        Bạn có chắc chắn muốn ẩn bình luận của "{selectedComment?.hoten}" không?
+                        Bạn có chắc chắn muốn xóa bình luận của "{selectedComment?.chitiet?.hoten}" không?
                     </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -187,6 +186,7 @@ const Comment = () => {
                                 <td>{(currentPage - 1) * commentsPerPage + index + 1}</td>
                                 <td>
                                     {comment?.chitiet?.hoten} <br />
+                                    <small>{comment?.email}</small>
                                 </td>
                                 <td>{comment.binhluan}</td>
                                 <td>{comment?.chitiet?.tensanpham}</td>
