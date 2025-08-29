@@ -14,6 +14,7 @@ import {
   LocalOffer as LocalOfferIcon,
   ShoppingCart as ShoppingCartIcon,
   Inventory as InventoryIcon,
+  Comment as CommentIcon,
   ExpandLess,
   ExpandMore,
 } from "@mui/icons-material";
@@ -56,6 +57,11 @@ const NavBarAdmin = () => {
         label: "Quản lý đơn hàng",
         icon: <ShoppingCartIcon />,
         path: "/admin/orders",
+      },
+      {
+        label: "Quản lý bình luận",        // 👈 thêm mục mới
+        icon: <CommentIcon />,
+        path: "/admin/comments",
       },
     ],
     2: [ // Nhân viên

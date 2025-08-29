@@ -27,6 +27,7 @@ const Comment = () => {
     const getAllCommentsData = async () => {
         try {
             const response = await commentService.getAllComments();
+            console.log("response", response)
             setComments(response);
         } catch (err) {
             console.error("Error fetching comments:", err);

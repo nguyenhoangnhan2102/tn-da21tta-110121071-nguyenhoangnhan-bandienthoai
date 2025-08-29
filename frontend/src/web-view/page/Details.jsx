@@ -27,7 +27,6 @@ const ProductDetails = () => {
     const [averageRating, setAverageRating] = useState(0);
     // 👉 state cho bình luận
     const [comments, setComments] = useState([]);
-    const [title, setTitle] = useState("");
     const [rating, setRating] = useState(0);
     const [content, setContent] = useState("");
 
@@ -147,10 +146,18 @@ const ProductDetails = () => {
     const loadComments = async () => {
         try {
             const data = await commentService.getCommentsByProduct(masanpham);
-            setComments(data || []);
+
+            // Parse chitiet JSON thành object
+            const parsed = (data || []).map(cmt => ({
+                ...cmt,
+                chitiet: cmt.chitiet ? JSON.parse(cmt.chitiet) : null
+            }));
+
+            console.log("parsed comments", parsed);
+            setComments(parsed);
         } catch (err) {
             console.error("Lỗi load comments", err);
-            setComments([]); // fallback tránh null
+            setComments([]);
         }
     };
 
@@ -170,11 +177,15 @@ const ProductDetails = () => {
             manguoidung: inforUser.manguoidung,
             binhluan: content,
             sao: rating,
+            chitiet: JSON.stringify({
+                hoten: inforUser?.hoten,
+                tensanpham: productdetails?.tensanpham,
+                hinhanh: productdetails?.hinhanhchinh
+            })
         };
 
         try {
             await commentService.createComment(newComment);
-            setTitle("");
             setContent("");
             setRating(0);
             loadComments(); // reload lại danh sách
@@ -186,10 +197,6 @@ const ProductDetails = () => {
     const filteredComments = filterStar === 0
         ? comments
         : comments.filter(c => c.sao === filterStar);
-
-    const handleSetFilter = (n) => {
-        setFilterStar((prev) => (prev === n ? 0 : n));
-    };
 
     if (!productdetails || Object.keys(productdetails).length === 0) {
         return <div>Loading...</div>;
@@ -313,7 +320,7 @@ const ProductDetails = () => {
                                                     />
                                                 </div>
                                                 <div className="d-flex flex-column gap-1">
-                                                    <strong>{cmt.hoten}</strong>
+                                                    <strong>{cmt.chitit?.hoten}</strong>
                                                     <small className="text-muted">
                                                         {new Date(cmt.ngaytao).toLocaleDateString("vi-VN")}
                                                     </small>
@@ -442,7 +449,6 @@ const ProductDetails = () => {
                                 <strong>Độ phân giải camera sau:</strong>
                                 <p>{productdetails.camerasau}</p>
                             </div>
-                            {console.log("productdetails", productdetails)}
                             <hr />
                             <div className="feature-list_details">
                                 <strong>Độ phân giải camera trước:</strong>

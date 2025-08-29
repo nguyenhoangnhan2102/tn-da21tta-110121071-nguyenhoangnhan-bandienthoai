@@ -127,8 +127,10 @@ CREATE TABLE DANHGIA (
     sao INT CHECK (sao BETWEEN 1 AND 5),
     binhluan TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     trangthai INT DEFAULT 0,
+    chitiet VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung),
     FOREIGN KEY (masanpham) REFERENCES SANPHAM(masanpham)
 );
+
 

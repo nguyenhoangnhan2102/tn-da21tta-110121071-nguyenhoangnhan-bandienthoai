@@ -20,17 +20,17 @@ const getAllComments = async (req, res) => {
 // Thêm bình luận
 const createComment = async (req, res) => {
     try {
-        const { manguoidung, masanpham, sao, binhluan } = req.body;
+        const { manguoidung, masanpham, sao, binhluan, chitiet } = req.body;
 
         if (!manguoidung || !masanpham || !sao) {
             return res.status(400).json({ message: "Thiếu dữ liệu đầu vào!" });
         }
 
         const sql = `
-      INSERT INTO DANHGIA (manguoidung, masanpham, sao, binhluan) 
-      VALUES (?, ?, ?, ?)
+      INSERT INTO DANHGIA (manguoidung, masanpham, sao, binhluan, chitiet) 
+      VALUES (?, ?, ?, ?, ?)
     `;
-        await connection.query(sql, [manguoidung, masanpham, sao, binhluan]);
+        await connection.query(sql, [manguoidung, masanpham, sao, binhluan, chitiet]);
 
         return res.status(201).json({ message: "Thêm bình luận thành công!" });
     } catch (error) {
