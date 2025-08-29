@@ -1,5 +1,22 @@
 const connection = require("../config/database.js");
 
+const getAllComments = async (req, res) => {
+    try {
+        const sql = `
+            SELECT d.*, n.hoten, n.email, s.tensanpham
+            FROM DANHGIA d
+            JOIN NGUOIDUNG n ON d.manguoidung = n.manguoidung
+            JOIN SANPHAM s ON d.masanpham = s.masanpham
+            ORDER BY d.ngaytao DESC
+        `;
+        const [rows] = await connection.query(sql);
+        res.json(rows);
+    } catch (error) {
+        console.error("getAllComments error:", error);
+        res.status(500).json({ message: "Lỗi server", error });
+    }
+};
+
 // Thêm bình luận
 const createComment = async (req, res) => {
     try {
@@ -80,8 +97,9 @@ const deleteComment = async (req, res) => {
     }
 };
 module.exports = {
+    getAllComments,
     createComment,
     getCommentsByProduct,
     updateComment,
-    deleteComment
+    deleteComment,
 };
