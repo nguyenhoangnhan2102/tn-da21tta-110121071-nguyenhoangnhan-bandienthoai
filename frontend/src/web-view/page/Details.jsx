@@ -153,7 +153,6 @@ const ProductDetails = () => {
                 chitiet: cmt.chitiet ? JSON.parse(cmt.chitiet) : null
             }));
 
-            console.log("parsed comments", parsed);
             setComments(parsed);
         } catch (err) {
             console.error("Lỗi load comments", err);

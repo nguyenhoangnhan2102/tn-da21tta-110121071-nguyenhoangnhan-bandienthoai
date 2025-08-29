@@ -48,7 +48,7 @@ const getCommentsByProduct = async (req, res) => {
       SELECT d.*, n.hoten, n.email 
       FROM DANHGIA d 
       JOIN NGUOIDUNG n ON d.manguoidung = n.manguoidung
-      WHERE d.masanpham = ? AND d.trangthai = 0
+      WHERE d.masanpham = ? AND d.trangthai = 1
       ORDER BY d.ngaytao DESC
     `;
         const [rows] = await connection.query(sql, [masanpham]);
@@ -64,14 +64,14 @@ const getCommentsByProduct = async (req, res) => {
 const updateComment = async (req, res) => {
     try {
         const { madanhgia } = req.params;
-        const { sao, binhluan } = req.body;
+        const { sao, binhluan, trangthai } = req.body;
 
         const sql = `
       UPDATE DANHGIA 
-      SET sao = ?, binhluan = ?, ngaytao = NOW() 
+      SET sao = ?, binhluan = ?, trangthai = ?, ngaytao = NOW()
       WHERE madanhgia = ?
     `;
-        await connection.query(sql, [sao, binhluan, madanhgia]);
+        await connection.query(sql, [sao, binhluan, madanhgia, trangthai]);
 
         res.json({ message: "Cập nhật bình luận thành công!" });
     } catch (error) {

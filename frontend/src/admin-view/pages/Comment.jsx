@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import "../style/dashboard.scss";
 import commentService from "../../services/commentService";
-
+const imgURL = process.env.REACT_APP_IMG_URL;
 const Comment = () => {
     const [comments, setComments] = useState([]);
     const [selectedComment, setSelectedComment] = useState(null);
@@ -27,13 +27,17 @@ const Comment = () => {
     const getAllCommentsData = async () => {
         try {
             const response = await commentService.getAllComments();
-            console.log("response", response)
-            setComments(response);
+            // Parse chitiet JSON thành object
+            const parsed = (response || []).map(cmt => ({
+                ...cmt,
+                chitiet: cmt.chitiet ? JSON.parse(cmt.chitiet) : null
+            }));
+            setComments(parsed);
         } catch (err) {
             console.error("Error fetching comments:", err);
         }
     };
-
+    console.log("comment", comments);
     const openModalDelete = (comment) => {
         setSelectedComment(comment);
         setOpenDelete(true);
@@ -57,8 +61,13 @@ const Comment = () => {
 
     const handleApprove = async (comment) => {
         try {
-            await commentService.updateComment(comment.madanhgia, { trangthai: 1 });
-            toast.success("Duyệt bình luận thành công!");
+            let data = {
+                trangthai: 1,
+                sao: comment.sao,
+                binhluan: comment.binhluan
+            }
+
+            await commentService.updateComment(comment.madanhgia, data);
             getAllCommentsData();
         } catch (error) {
             toast.error("Lỗi khi duyệt bình luận");
@@ -76,8 +85,8 @@ const Comment = () => {
     const currentComments = comments
         .filter(
             (c) =>
-                c.noidung &&
-                c.noidung.toLowerCase().includes(searchTerm.toLowerCase())
+                c.binhluan &&
+                c.binhluan.toLowerCase().includes(searchTerm.toLowerCase())
         )
         .slice(indexOfFirst, indexOfLast);
 
@@ -147,21 +156,21 @@ const Comment = () => {
                         <th scope="col">Hành động</th>
                     </tr>
                 </thead>
+                {console.log("currentComments", currentComments)}
                 <tbody>
                     {currentComments && currentComments.length > 0 ? (
                         currentComments.map((comment, index) => (
                             <tr key={comment.madanhgia}>
                                 <td>{(currentPage - 1) * commentsPerPage + index + 1}</td>
                                 <td>
-                                    {comment.hoten} <br />
-                                    <small>{comment.email}</small>
+                                    {comment?.chitiet?.hoten} <br />
                                 </td>
-                                <td>{comment.noidung}</td>
-                                <td>{comment.tensanpham}</td>
+                                <td>{comment.binhluan}</td>
+                                <td>{comment?.chitiet?.tensanpham}</td>
                                 <td>
-                                    {comment.anhsanpham ? (
+                                    {comment?.chitiet?.hinhanh ? (
                                         <img
-                                            src={comment.anhsanpham}
+                                            src={`${imgURL}${comment?.chitiet?.hinhanh}`}
                                             alt="Ảnh sản phẩm"
                                             style={{ width: "60px", height: "60px", objectFit: "cover" }}
                                         />
