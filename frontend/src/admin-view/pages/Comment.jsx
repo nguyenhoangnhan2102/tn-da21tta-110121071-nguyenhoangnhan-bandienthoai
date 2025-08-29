@@ -66,9 +66,9 @@ const Comment = () => {
     const handleApprove = async (comment) => {
         try {
             let data = {
-                trangthai: 1,
-                sao: comment.sao,
-                binhluan: comment.binhluan
+                trangthai: comment?.trangthai,
+                sao: comment?.sao,
+                binhluan: comment?.binhluan
             }
 
             await commentService.updateComment(comment.madanhgia, data);

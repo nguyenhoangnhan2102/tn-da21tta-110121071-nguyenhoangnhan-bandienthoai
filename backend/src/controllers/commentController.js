@@ -7,7 +7,9 @@ const getAllComments = async (req, res) => {
             FROM DANHGIA d
             JOIN NGUOIDUNG n ON d.manguoidung = n.manguoidung
             JOIN SANPHAM s ON d.masanpham = s.masanpham
-            ORDER BY d.ngaytao DESC
+            ORDER BY
+                d.ngaycapnhat DESC,
+                d.ngaytao DESC;
         `;
         const [rows] = await connection.query(sql);
         res.json(rows);
@@ -68,7 +70,7 @@ const updateComment = async (req, res) => {
 
         const sql = `
       UPDATE DANHGIA 
-      SET sao = ?, binhluan = ?, trangthai = ?, ngaytao = NOW()
+      SET sao = ?, binhluan = ?, trangthai = ?, ngaycapnhat = NOW()
       WHERE madanhgia = ?
     `;
         await connection.query(sql, [sao, binhluan, trangthai, madanhgia]);
