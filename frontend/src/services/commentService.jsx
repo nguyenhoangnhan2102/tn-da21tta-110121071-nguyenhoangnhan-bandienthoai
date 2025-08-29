@@ -17,6 +17,17 @@ const commentService = {
         }
     },
 
+    // Lấy tất cả bình luận (cả trạng thái 0 và 1)
+    async getAllComments() {
+        try {
+            const res = await axiosInstance.get(`${apiProduct}`);
+            return res.data;
+        } catch (err) {
+            toast.error("Lỗi khi tải tất cả bình luận");
+            throw err;
+        }
+    },
+
     // Lấy bình luận theo sản phẩm
     async getCommentsByProduct(masanpham) {
         try {
