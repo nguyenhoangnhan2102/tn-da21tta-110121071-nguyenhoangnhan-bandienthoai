@@ -85,6 +85,28 @@ const statisticalService = {
             throw error;
         }
     },
+
+    // 👤 Tổng số người dùng
+    getTotalUsers: async () => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/total-users`);
+            return res.data;
+        } catch (error) {
+            console.error("Error getTotalUsers:", error);
+            throw error;
+        }
+    },
+
+    // 👥 Thống kê người dùng theo vai trò
+    getUserStatistics: async () => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/total-users-by-role`);
+            return res.data;
+        } catch (error) {
+            console.error("Error getUserStatistics:", error);
+            throw error;
+        }
+    },
 };
 
 export default statisticalService;

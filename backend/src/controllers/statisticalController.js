@@ -242,6 +242,58 @@ const TotalProducts = async (req, res) => {
     }
 };
 
+const TotalUsers = async (req, res) => {
+    try {
+        const query = `
+            SELECT COUNT(*) AS tong_nguoi_dung
+            FROM NGUOIDUNG;
+        `;
+
+        const [results] = await connection.query(query);
+
+        return res.json({
+            success: true,
+            message: "Tổng số người dùng trong hệ thống",
+            data: results[0]
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng số người dùng:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy tổng số người dùng"
+        });
+    }
+};
+
+// Thống kê toàn bộ người dùng
+const UserStatistics = async (req, res) => {
+    try {
+        const query = `
+            SELECT 
+                COUNT(*) AS tong_nguoi_dung,
+                SUM(CASE WHEN role = 0 THEN 1 ELSE 0 END) AS tong_khach_hang,
+                SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS tong_quan_tri,
+                SUM(CASE WHEN role = 2 THEN 1 ELSE 0 END) AS tong_nhan_vien,
+                SUM(CASE WHEN trangthai = 1 THEN 1 ELSE 0 END) AS nguoi_dung_bi_khoa
+            FROM NGUOIDUNG;
+        `;
+
+        const [results] = await connection.query(query);
+
+        return res.json({
+            success: true,
+            message: "Thống kê người dùng trong hệ thống",
+            data: results[0]
+        });
+    } catch (error) {
+        console.error("Lỗi khi thống kê người dùng:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi server khi thống kê người dùng"
+        });
+    }
+};
+
 
 module.exports = {
     RevenueByDay,
@@ -251,4 +303,6 @@ module.exports = {
     OrderStatusSummary,
     TotalRevenue,
     TotalProducts,
+    TotalUsers,
+    UserStatistics,
 };

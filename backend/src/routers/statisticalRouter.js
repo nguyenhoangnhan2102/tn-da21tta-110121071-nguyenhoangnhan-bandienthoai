@@ -10,4 +10,7 @@ router.get("/top10-products", statisticalController.Top10Products);
 router.get("/status", statisticalController.OrderStatusSummary);
 router.get("/total", statisticalController.TotalRevenue);
 router.get("/total-products", statisticalController.TotalProducts);
+router.get("/total-users", statisticalController.TotalUsers);
+router.get("/total-users-by-role", statisticalController.UserStatistics);
+
 module.exports = router;

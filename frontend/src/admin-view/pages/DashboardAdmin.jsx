@@ -26,6 +26,10 @@ const DashboardAdmin = () => {
   const [selectedMonth, setSelectedMonth] = useState(formattedMonth);
   const [selectedYear, setSelectedYear] = useState(formattedYear);
 
+
+  const [totalUsers, setTotalUsers] = useState(0);        // 👤 Tổng số user
+  const [userStatistics, setUserStatistics] = useState([]); // 👥 User theo role
+
   useEffect(() => {
     fetchRevenueData();
     fetchTopProducts();
@@ -66,7 +70,6 @@ const DashboardAdmin = () => {
     }
   };
 
-  // 🔹 Gọi 2 API mới
   const fetchSummaryData = async () => {
     try {
       const resRevenue = await statisticalService.getTotalRevenue();
@@ -74,8 +77,26 @@ const DashboardAdmin = () => {
 
       const resProducts = await statisticalService.getTotalProducts();
       setTotalProducts(resProducts.data?.tong_san_pham_ban || 0);
+
+      const resUsers = await statisticalService.getTotalUsers();
+      setTotalUsers(resUsers.data?.tong_nguoi_dung || 0);
+
+      const resUserStats = await statisticalService.getUserStatistics();
+
+      // 🔹 Convert object -> array (có thêm icon + color)
+      const statsObj = resUserStats.data || {};
+      const statsArray = [
+        { vaitro: "Tổng người dùng", tong_nguoi_dung: statsObj.tong_nguoi_dung || 0, icon: "👥" },
+        { vaitro: "Quản trị", tong_nguoi_dung: statsObj.tong_quan_tri || 0, icon: "🛡️" },
+        { vaitro: "Nhân viên", tong_nguoi_dung: statsObj.tong_nhan_vien || 0, icon: "👔" },
+        { vaitro: "Khách hàng", tong_nguoi_dung: statsObj.tong_khach_hang || 0, icon: "🛒" },
+        { vaitro: "Người dùng bị khóa", tong_nguoi_dung: statsObj.nguoi_dung_bi_khoa || 0, icon: "🔒" },
+      ];
+
+      setUserStatistics(statsArray);
+
     } catch (error) {
-      console.error("Lỗi khi lấy tổng doanh thu / sản phẩm:", error);
+      console.error("Lỗi khi lấy tổng doanh thu / sản phẩm / user:", error);
     }
   };
 
@@ -112,6 +133,7 @@ const DashboardAdmin = () => {
     huy: { label: "Đã hủy", color: "#FF0000" }
   };
 
+
   return (
     <div className="dashboard-container my-5">
       <h2>Thống kê doanh thu</h2>
@@ -126,77 +148,104 @@ const DashboardAdmin = () => {
           <h4>Tổng sản phẩm đã bán</h4>
           <p>{totalProducts}</p>
         </div>
+        <div className="summary-card">
+          <h4>Tổng người dùng</h4>
+          <p>{totalUsers}</p>
+        </div>
       </div>
-
-      {/* Bộ lọc */}
-      <div className="filter-section">
-        <label>
-          Chọn ngày:
-          <input
-            type="date"
-            value={selectedDate}
-            onChange={(e) => setSelectedDate(e.target.value)}
-          />
-        </label>
-
-        <label>
-          Chọn tháng:
-          <select
-            value={selectedMonth}
-            onChange={(e) => setSelectedMonth(e.target.value)}
-          >
-            {[...Array(12)].map((_, i) => {
-              const month = (i + 1).toString().padStart(2, "0");
-              return <option key={month} value={month}>{month}</option>;
-            })}
-          </select>
-        </label>
-
-        <label>
-          Chọn năm:
-          <select
-            value={selectedYear}
-            onChange={(e) => setSelectedYear(e.target.value)}
-          >
-            {[2023, 2024, 2025, 2026].map(year => (
-              <option key={year} value={year}>{year}</option>
+      <div className="chart-card my-4">
+        <h4>Thống kê người dùng theo vai trò</h4>
+        <table className="order-status-table">
+          <thead>
+            <tr>
+              <th>Vai trò</th>
+              <th>Số lượng</th>
+            </tr>
+          </thead>
+          <tbody>
+            {userStatistics.map((item, index) => (
+              <tr key={index}>
+                <td>
+                  {item.icon} {item.vaitro}
+                </td>
+                <td>
+                  {item.tong_nguoi_dung}
+                </td>
+              </tr>
             ))}
-          </select>
-        </label>
+          </tbody>
+        </table>
       </div>
+      <div style={{ borderRadius: "12px" }}>
+        {/* Bộ lọc */}
+        <div className="filter-section">
+          <label>
+            Chọn ngày:
+            <input
+              type="date"
+              value={selectedDate}
+              onChange={(e) => setSelectedDate(e.target.value)}
+            />
+          </label>
 
-      {/* Layout biểu đồ */}
-      <div className="charts-wrapper">
-        <div className="chart-card">
-          <h4>Doanh thu tổng hợp</h4>
-          <Bar data={{
-            labels: ["Ngày", "Tháng", "Năm"],
-            datasets: [
-              {
-                label: `Ngày ${selectedDate}`,
-                data: [dailyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0), 0, 0],
-                backgroundColor: "rgba(75, 192, 192, 0.6)"
-              },
-              {
-                label: `Tháng ${selectedMonth}/${selectedYear}`,
-                data: [0, monthlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0), 0],
-                backgroundColor: "rgba(255, 159, 64, 0.6)"
-              },
-              {
-                label: `Năm ${selectedYear}`,
-                data: [0, 0, yearlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0)],
-                backgroundColor: "rgba(153, 102, 255, 0.6)"
-              }
-            ]
-          }} options={{ responsive: true }} />
+          <label>
+            Chọn tháng:
+            <select
+              value={selectedMonth}
+              onChange={(e) => setSelectedMonth(e.target.value)}
+            >
+              {[...Array(12)].map((_, i) => {
+                const month = (i + 1).toString().padStart(2, "0");
+                return <option key={month} value={month}>{month}</option>;
+              })}
+            </select>
+          </label>
+
+          <label>
+            Chọn năm:
+            <select
+              value={selectedYear}
+              onChange={(e) => setSelectedYear(e.target.value)}
+            >
+              {[2023, 2024, 2025, 2026].map(year => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
-        <div className="chart-card chart-card-small">
-          <h4>Top 10 sản phẩm bán chạy</h4>
-          <Pie data={chartData} />
+        {/* Layout biểu đồ */}
+        <div className="charts-wrapper">
+          <div className="chart-card">
+            <h4>Doanh thu tổng hợp</h4>
+            <Bar data={{
+              labels: ["Ngày", "Tháng", "Năm"],
+              datasets: [
+                {
+                  label: `Ngày ${selectedDate}`,
+                  data: [dailyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0), 0, 0],
+                  backgroundColor: "rgba(75, 192, 192, 0.6)"
+                },
+                {
+                  label: `Tháng ${selectedMonth}/${selectedYear}`,
+                  data: [0, monthlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0), 0],
+                  backgroundColor: "rgba(255, 159, 64, 0.6)"
+                },
+                {
+                  label: `Năm ${selectedYear}`,
+                  data: [0, 0, yearlyRevenue.reduce((sum, item) => sum + parseFloat(item.tong_doanh_thu), 0)],
+                  backgroundColor: "rgba(153, 102, 255, 0.6)"
+                }
+              ]
+            }} options={{ responsive: true }} />
+          </div>
+
+          <div className="chart-card chart-card-small">
+            <h4>Top 10 sản phẩm bán chạy</h4>
+            <Pie data={chartData} />
+          </div>
         </div>
       </div>
-
       {/* Thống kê trạng thái đơn hàng */}
       <div className="chart-card mt-4">
         <h4>Tổng trạng thái đơn hàng hiện tại</h4>
