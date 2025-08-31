@@ -8,5 +8,6 @@ router.get("/year", statisticalController.RevenueByYear);
 
 router.get("/top10-products", statisticalController.Top10Products);
 router.get("/status", statisticalController.OrderStatusSummary);
-
+router.get("/total", statisticalController.TotalRevenue);
+router.get("/total-products", statisticalController.TotalProducts);
 module.exports = router;

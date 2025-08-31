@@ -13,7 +13,9 @@ const DashboardAdmin = () => {
   const [monthlyRevenue, setMonthlyRevenue] = useState([]);
   const [yearlyRevenue, setYearlyRevenue] = useState([]);
   const [topProducts, setTopProducts] = useState([]);
-  const [orderStatus, setOrderStatus] = useState([]); // 🔹 Thêm state mới
+  const [orderStatus, setOrderStatus] = useState([]);
+  const [totalRevenue, setTotalRevenue] = useState(0);      // 💰 Tổng doanh thu
+  const [totalProducts, setTotalProducts] = useState(0);    // 📦 Tổng sp bán
 
   const today = new Date();
   const formattedDate = today.toISOString().slice(0, 10); // YYYY-MM-DD
@@ -27,7 +29,8 @@ const DashboardAdmin = () => {
   useEffect(() => {
     fetchRevenueData();
     fetchTopProducts();
-    fetchOrderStatus(); // 🔹 Gọi API trạng thái đơn hàng
+    fetchOrderStatus();
+    fetchSummaryData(); // 🔹 Gọi thêm API tổng
   }, [selectedDate, selectedMonth, selectedYear]);
 
   const fetchRevenueData = async () => {
@@ -54,13 +57,25 @@ const DashboardAdmin = () => {
     }
   };
 
-  // 🔹 Hàm lấy thống kê đơn hàng theo trạng thái
   const fetchOrderStatus = async () => {
     try {
       const res = await statisticalService.getOrderStatusSummary();
       setOrderStatus(res.data);
     } catch (error) {
       console.error("Lỗi khi lấy thống kê trạng thái đơn hàng:", error);
+    }
+  };
+
+  // 🔹 Gọi 2 API mới
+  const fetchSummaryData = async () => {
+    try {
+      const resRevenue = await statisticalService.getTotalRevenue();
+      setTotalRevenue(resRevenue.data?.tong_doanh_thu || 0);
+
+      const resProducts = await statisticalService.getTotalProducts();
+      setTotalProducts(resProducts.data?.tong_san_pham_ban || 0);
+    } catch (error) {
+      console.error("Lỗi khi lấy tổng doanh thu / sản phẩm:", error);
     }
   };
 
@@ -75,7 +90,7 @@ const DashboardAdmin = () => {
     ],
   };
 
-  // Các chart khác...
+  // Biểu đồ Top sản phẩm
   const chartData = {
     labels: topProducts.map(product => product.tensanpham),
     datasets: [
@@ -91,15 +106,27 @@ const DashboardAdmin = () => {
   };
 
   const orderStatusMap = {
-    choxacnhan: { label: "Chờ xác nhận", color: "#FFA500" },   // cam
-    danggiao: { label: "Đang giao", color: "#36A2EB" },        // xanh dương
-    hoanthanh: { label: "Hoàn thành", color: "#3BEA01" },      // xanh lá
-    huy: { label: "Đã hủy", color: "#FF0000" }                 // đỏ
+    choxacnhan: { label: "Chờ xác nhận", color: "#FFA500" },
+    danggiao: { label: "Đang giao", color: "#36A2EB" },
+    hoanthanh: { label: "Hoàn thành", color: "#3BEA01" },
+    huy: { label: "Đã hủy", color: "#FF0000" }
   };
 
   return (
     <div className="dashboard-container my-5">
       <h2>Thống kê doanh thu</h2>
+
+      {/* 🔹 Thêm các thẻ tổng quan */}
+      <div className="summary-cards">
+        <div className="summary-card">
+          <h4>Tổng doanh thu</h4>
+          <p>{parseFloat(totalRevenue).toLocaleString("vi-VN")} ₫</p>
+        </div>
+        <div className="summary-card">
+          <h4>Tổng sản phẩm đã bán</h4>
+          <p>{totalProducts}</p>
+        </div>
+      </div>
 
       {/* Bộ lọc */}
       <div className="filter-section">
@@ -169,7 +196,8 @@ const DashboardAdmin = () => {
           <Pie data={chartData} />
         </div>
       </div>
-      {/* 🔹 Thống kê trạng thái đơn hàng dạng bảng */}
+
+      {/* Thống kê trạng thái đơn hàng */}
       <div className="chart-card mt-4">
         <h4>Tổng trạng thái đơn hàng hiện tại</h4>
         <table className="order-status-table">

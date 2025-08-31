@@ -191,6 +191,57 @@ const OrderStatusSummary = async (req, res) => {
     }
 };
 
+// API 1: Tổng doanh thu (chỉ tính đơn hàng hoanthanh)
+const TotalRevenue = async (req, res) => {
+    try {
+        const query = `
+            SELECT COALESCE(SUM(tongtien), 0) AS tong_doanh_thu
+            FROM DONHANG
+            WHERE trangthai = 'hoanthanh';
+        `;
+
+        const [results] = await connection.query(query);
+
+        return res.json({
+            success: true,
+            message: "Tổng doanh thu (đơn hàng hoàn thành)",
+            data: results[0]
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng doanh thu:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy tổng doanh thu"
+        });
+    }
+};
+
+// API 2: Tổng sản phẩm đã bán (chỉ tính đơn hàng hoanthanh)
+const TotalProducts = async (req, res) => {
+    try {
+        const query = `
+            SELECT COALESCE(SUM(ctdh.soluong), 0) AS tong_san_pham_ban
+            FROM CHITIETDONHANG ctdh
+            JOIN DONHANG dh ON ctdh.madonhang = dh.madonhang
+            WHERE dh.trangthai = 'hoanthanh';
+        `;
+
+        const [results] = await connection.query(query);
+
+        return res.json({
+            success: true,
+            message: "Tổng số sản phẩm đã bán (đơn hàng hoàn thành)",
+            data: results[0]
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng sản phẩm bán:", error);
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy tổng sản phẩm đã bán"
+        });
+    }
+};
+
 
 module.exports = {
     RevenueByDay,
@@ -198,4 +249,6 @@ module.exports = {
     RevenueByYear,
     Top10Products,
     OrderStatusSummary,
+    TotalRevenue,
+    TotalProducts,
 };

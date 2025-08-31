@@ -63,6 +63,28 @@ const statisticalService = {
             throw error;
         }
     },
+
+    // 💰 Tổng doanh thu (hoàn thành)
+    getTotalRevenue: async () => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/total`);
+            return res.data;
+        } catch (error) {
+            console.error("Error getTotalRevenue:", error);
+            throw error;
+        }
+    },
+
+    // 📦 Tổng sản phẩm đã bán (hoàn thành)
+    getTotalProducts: async () => {
+        try {
+            const res = await axiosInstance.get(`${apiStatistical}/total-products`);
+            return res.data;
+        } catch (error) {
+            console.error("Error getTotalProducts:", error);
+            throw error;
+        }
+    },
 };
 
 export default statisticalService;
