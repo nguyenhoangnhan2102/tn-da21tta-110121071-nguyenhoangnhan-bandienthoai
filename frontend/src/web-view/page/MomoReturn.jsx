@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function MomoReturn() {
     const location = useLocation();
@@ -10,10 +11,10 @@ function MomoReturn() {
         const resultCode = query.get("resultCode");
 
         if (resultCode === "0") {
-            alert("Thanh toán MoMo thành công!");
+            toast.success("Thanh toán MoMo thành công!");
             navigate("/");
         } else {
-            alert("Thanh toán MoMo thất bại hoặc bị hủy!");
+            toast.error("Thanh toán MoMo thất bại hoặc bị hủy!");
             navigate("/checkout");
         }
     }, [location, navigate]);

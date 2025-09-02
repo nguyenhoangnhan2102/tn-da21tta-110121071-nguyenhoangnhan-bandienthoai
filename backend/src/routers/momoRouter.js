@@ -6,36 +6,32 @@ const router = express.Router();
 const partnerCode = "MOMO";
 const accessKey = "F8BBA842ECF85";
 const secretKey = "K951B6PE1waDMi640xX08PD3vg6EkVlz";
-const endpoint = "https://test-payment.momo.vn/gw_payment/transactionProcessor";
+const endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
 const redirectUrl = "http://localhost:3000/momo-return";
-const ipnUrl = "http://localhost:3002/api/momo/ipn"; // callback backend
+const ipnUrl = "http://localhost:3002/api/momo/ipn"; // backend callback
 
-// Tạo URL thanh toán
+// Tạo URL thanh toán MoMo
 router.post("/create_payment_url", async (req, res) => {
     try {
         const { amount, orderId } = req.body;
-        const requestId = orderId + new Date().getTime();
+        const requestId = partnerCode + new Date().getTime();
         const orderInfo = "Thanh toán MoMo cho đơn hàng " + orderId;
-        const requestType = "captureMoMoWallet";
+        const requestType = "payWithMethod";
+        const extraData = "";
+        const momoOrderId = orderId + "_" + Date.now();
 
+        // 🔑 raw signature đúng format MoMo
         const rawSignature =
-            "partnerCode=" +
-            partnerCode +
-            "&accessKey=" +
-            accessKey +
-            "&requestId=" +
-            requestId +
-            "&amount=" +
-            amount +
-            "&orderId=" +
-            orderId +
-            "&orderInfo=" +
-            orderInfo +
-            "&returnUrl=" +
-            redirectUrl +
-            "&notifyUrl=" +
-            ipnUrl +
-            "&extraData=";
+            "accessKey=" + accessKey +
+            "&amount=" + amount +
+            "&extraData=" + extraData +
+            "&ipnUrl=" + ipnUrl +
+            "&orderId=" + momoOrderId +   // 👈 gửi orderId unique cho MoMo
+            "&orderInfo=" + orderInfo +
+            "&partnerCode=" + partnerCode +
+            "&redirectUrl=" + redirectUrl +
+            "&requestId=" + requestId +
+            "&requestType=" + requestType;
 
         const signature = crypto
             .createHmac("sha256", secretKey)
@@ -47,29 +43,60 @@ router.post("/create_payment_url", async (req, res) => {
             accessKey,
             requestId,
             amount,
-            orderId,
+            orderId: momoOrderId,   // 👈 sửa lại ở đây
             orderInfo,
-            returnUrl: redirectUrl,
-            notifyUrl: ipnUrl,
-            extraData: "",
+            redirectUrl,
+            ipnUrl,
+            extraData,
             requestType,
             signature,
+            lang: "en",
         };
 
-        const response = await axios.post(endpoint, requestBody);
+        // Gọi MoMo API
+        const response = await axios.post(endpoint, requestBody, {
+            headers: { "Content-Type": "application/json" },
+        });
 
         return res.json(response.data);
     } catch (error) {
-        console.error("MoMo error:", error);
+        console.error("MoMo error:", error.response?.data || error.message);
         res.status(500).json({ error: "Tạo URL thanh toán MoMo thất bại" });
     }
 });
 
 // IPN callback từ MoMo (server to server)
-router.post("/ipn", (req, res) => {
-    console.log("MoMo IPN:", req.body);
-    // TODO: update trạng thái THANHTOAN thành "dathanhtoan" nếu resultCode === 0
-    res.status(200).json({ message: "IPN received" });
+router.post("/ipn", async (req, res) => {
+    const data = req.body;
+    console.log("MoMo IPN:", data);
+
+    const { orderId, resultCode } = req.body;
+    const madonhang = orderId.split("_")[0];
+
+    try {
+        if (resultCode === 0) {
+            await connection.query(
+                `UPDATE THANHTOAN SET trangthai = 'dathanhtoan', ngaythanhtoan = NOW() WHERE madonhang = ?`,
+                [madonhang]
+            );
+            await connection.query(
+                `UPDATE DONHANG SET trangthai = 'hoanthanh' WHERE madonhang = ?`,
+                [madonhang]
+            );
+            return res.status(200).json({ message: "Cập nhật đơn hàng thành công" });
+        } else {
+            // ❌ Thanh toán thất bại → có thể update đơn hàng thành hủy
+            await connection.query(
+                `UPDATE DONHANG SET trangthai = 'huy', lydohuy = 'Thanh toán MoMo thất bại' WHERE madonhang = ?`,
+                [orderId]
+            );
+            return res.status(200).json({ message: "Cập nhật đơn hàng thất bại" });
+        }
+    } catch (error) {
+        console.error("MoMo IPN error:", error.message);
+        res.status(500).json({ error: "Lỗi xử lý IPN" });
+    }
 });
+
 
 module.exports = router;

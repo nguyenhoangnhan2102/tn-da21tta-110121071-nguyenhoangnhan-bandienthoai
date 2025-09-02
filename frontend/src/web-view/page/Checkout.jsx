@@ -35,32 +35,44 @@ function Checkout() {
         }
 
         try {
-            if (orderInfo.paymentMethod === "momo") {
+            // 1️⃣ Chuẩn bị orderData
+            const orderData = {
+                manguoidung: infoUser?.manguoidung,
+                diachigiaohang: orderInfo.diachi,
+                tongtien: subTotal,
+                ghichu: orderInfo.ghichu,
+                hinhthucthanhtoan: orderInfo.paymentMethod,
+                sanpham: cartItems.map(item => ({
+                    masanpham: item.masanpham,
+                    soluong: item.soluong,
+                    dongia: item.giasaugiam,
+                    hinhanh: item.hinhanhchinh
+                }))
+            };
+
+            // 2️⃣ Lưu đơn hàng xuống DB (trạng thái chuathanhtoan)
+            const orderRes = await axiosInstance.post(`${apiUrl}/orders`, orderData);
+
+            if (!orderRes.data.success) {
+                toast.error("Không thể tạo đơn hàng!");
+                return;
+            }
+
+            const madonhang = orderRes.data.madonhang;
+
+            // 3️⃣ Nếu thanh toán online (MoMo)
+            if (orderInfo.paymentMethod === "online") {
                 const res = await axiosInstance.post(`${apiUrl}/momo/create_payment_url`, {
                     amount: subTotal.toString(),
-                    orderId: new Date().getTime().toString(),
+                    orderId: madonhang.toString(),   // 👈 dùng madonhang thay vì Date.now
                 });
                 if (res.data && res.data.payUrl) {
-                    window.location.href = res.data.payUrl; // chuyển hướng sang MoMo
+                    window.location.href = res.data.payUrl;
                 } else {
-                    toast.error("Không tạo được link MoMo!");
+                    toast.error("Không tạo được link thanh toán online!");
                 }
             } else {
-                // Thanh toán COD
-                const orderData = {
-                    manguoidung: infoUser?.manguoidung,
-                    diachigiaohang: orderInfo.diachi,
-                    tongtien: subTotal,
-                    ghichu: orderInfo.ghichu,
-                    hinhthucthanhtoan: orderInfo.paymentMethod,
-                    sanpham: cartItems.map(item => ({
-                        masanpham: item.masanpham,
-                        soluong: item.soluong,
-                        dongia: item.giasaugiam,
-                        hinhanh: item.hinhanhchinh
-                    }))
-                };
-                await axiosInstance.post(`${apiUrl}/orders`, orderData);
+                // COD
                 toast.success("Đặt hàng thành công!");
                 navigate("/");
             }
@@ -69,7 +81,6 @@ function Checkout() {
             toast.error("Có lỗi xảy ra khi đặt hàng!");
         }
     };
-
 
     if (!cartItems) {
         return <p className="text-center mt-4">Không có dữ liệu đơn hàng.</p>;
@@ -113,7 +124,7 @@ function Checkout() {
                                 onChange={(e) => setOrderInfo({ ...orderInfo, paymentMethod: e.target.value })}
                             >
                                 <FormControlLabel value="home" control={<Radio />} label="Thanh toán khi nhận hàng (COD)" />
-                                <FormControlLabel value="momo" control={<Radio />} label="Ví MoMo" />
+                                <FormControlLabel value="online" control={<Radio />} label="Thanh toán online" />
                             </RadioGroup>
                         </FormControl>
                     </div>

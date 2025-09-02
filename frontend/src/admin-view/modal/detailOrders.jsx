@@ -59,7 +59,8 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
     // Map phương thức thanh toán sang tiếng Việt
     const paymentMethodMap = {
         home: "Tiền mặt",
-        momo: "MoMo"
+        momo: "MoMo",
+        online: "Online"
     };
 
     return (
@@ -145,12 +146,12 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                             onChange={(e) => setPaymentMethod(e.target.value)}
                             label="Hình thức thanh toán"
                             disabled
-                            sx={{ opacity: 0.6 }}
                         >
                             <MenuItem value="home">Tiền mặt</MenuItem>
                             <MenuItem value="momo">MoMo</MenuItem>
                             <MenuItem value="vnpay">VNPay</MenuItem>
                             <MenuItem value="paypal">Paypal</MenuItem>
+                            <MenuItem value="online">Online</MenuItem>
                         </Select>
                     </FormControl>
 

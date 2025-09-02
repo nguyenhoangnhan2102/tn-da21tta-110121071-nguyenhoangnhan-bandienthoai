@@ -114,7 +114,7 @@ CREATE TABLE CHITIETGIOHANG (
 CREATE TABLE THANHTOAN (
     mathanhtoan INT AUTO_INCREMENT PRIMARY KEY,
     madonhang INT,
-    hinhthucthanhtoan ENUM('home', 'vnpay', 'momo', 'paypal') DEFAULT 'home',
+    hinhthucthanhtoan ENUM('home', 'vnpay', 'momo', 'paypal', 'online') DEFAULT 'home',
     trangthai ENUM('chuathanhtoan', 'dathanhtoan') DEFAULT 'chuathanhtoan',
     ngaythanhtoan DATETIME,
     FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang)
