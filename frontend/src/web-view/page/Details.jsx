@@ -111,7 +111,7 @@ const ProductDetails = () => {
 
 
     const handleAddToCart = async () => {
-        if (!isLoggedIn) {
+        if (!inforUser) {
             navigate("/login", { state: { from: location.pathname } });
             return;
         }
