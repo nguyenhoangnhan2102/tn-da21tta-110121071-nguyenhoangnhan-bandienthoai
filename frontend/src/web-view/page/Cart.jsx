@@ -107,15 +107,24 @@ function Cart() {
     };
 
     const handleIncrease = (masanpham) => {
-        const updatedItems = cartItems.map((item) =>
-            item.masanpham === masanpham
-                ? { ...item, soluong: item.soluong + 1 }
-                : item
-        );
+        const updatedItems = cartItems.map((item) => {
+            if (item.masanpham === masanpham) {
+                // Kiểm tra nếu số lượng hiện tại đã đạt tồn kho
+                if (item.soluong >= item.soluongton) {
+                    // Có thể hiện thông báo lỗi hoặc toast
+                    toast.warn(`Không đủ số lượng!`);
+                    return item; // Không tăng số lượng
+                }
+                return { ...item, soluong: item.soluong + 1 };
+            }
+            return item;
+        });
+
         setCartItems(updatedItems);
         calculateSubTotal(updatedItems);
         calculateTotalQuantity(updatedItems);
     };
+
 
     const handleDecrease = (masanpham) => {
         const updatedItems = cartItems.map((item) =>

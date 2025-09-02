@@ -116,11 +116,26 @@ const ProductDetails = () => {
             return;
         }
 
-        const manguoidung = inforUser?.manguoidung; // lấy trực tiếp
+        const manguoidung = inforUser?.manguoidung;
         const masanpham = productdetails?.masanpham;
         const soluong = 1;
 
+        // Lấy giỏ hàng hiện tại từ server hoặc local state
+        // Giả sử bạn có API GET /cart/:manguoidung để lấy giỏ hàng
         try {
+            const cartResponse = await axiosInstance.get(`${apiUrl}/cart/${manguoidung}`);
+            const cartItems = cartResponse.data.DT || [];
+
+            const cartItem = cartItems.find(item => item.masanpham === masanpham);
+            const currentQtyInCart = cartItem ? cartItem.soluong : 0;
+
+            // Kiểm tra tồn kho
+            if (currentQtyInCart + soluong > productdetails.soluong) {
+                toast.warning(`Không đủ số lượng`);
+                return;
+            }
+
+            // Thêm sản phẩm vào giỏ
             const response = await axiosInstance.post(`${apiUrl}/cart`, {
                 manguoidung,
                 masanpham,
@@ -144,6 +159,7 @@ const ProductDetails = () => {
             }
         }
     };
+
 
     // 👉 Load comments
     const loadComments = async () => {

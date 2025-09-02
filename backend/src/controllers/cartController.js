@@ -20,7 +20,8 @@ const getAllCartByCustomer = async (req, res) => {
                 s.tensanpham, 
                 s.hinhanhchinh,
                 s.mau,
-                c.soluong, 
+                c.soluong,
+                s.soluong AS soluongton,
                 s.giaban,
                 s.khuyenmai,
                 (s.giaban - (s.giaban * s.khuyenmai / 100)) AS giasaugiam
