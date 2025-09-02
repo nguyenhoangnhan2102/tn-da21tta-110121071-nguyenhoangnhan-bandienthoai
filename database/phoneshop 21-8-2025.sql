@@ -61,12 +61,13 @@ CREATE TABLE DONHANG (
     diachigiaohang TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     hotenkhachhang VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     sodienthoaikhachhang VARCHAR(15),
-    trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy') DEFAULT 'choxacnhan',
+    trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy', 'hoantien') DEFAULT 'choxacnhan',
     lydohuy TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
     ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
     ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (manguoidung) REFERENCES NGUOIDUNG(manguoidung)
 );
+
 
 ALTER TABLE DONHANG
 MODIFY COLUMN manguoidung INT NULL;
@@ -123,7 +124,7 @@ CREATE TABLE THANHTOAN (
 CREATE TABLE DANHGIA (
     madanhgia INT AUTO_INCREMENT PRIMARY KEY,
     manguoidung INT,
-    masanpham INT,
+    masanpham INT,	
     sao INT CHECK (sao BETWEEN 1 AND 5),
     binhluan TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     trangthai INT DEFAULT 0,

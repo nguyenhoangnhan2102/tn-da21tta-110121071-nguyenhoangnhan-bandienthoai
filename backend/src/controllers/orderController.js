@@ -390,7 +390,7 @@ const updateOrders = async (req, res) => {
     const { trangthai, hinhthucthanhtoan, trangthaithanhtoan } = req.body;
 
     // Các trạng thái đơn hàng hợp lệ
-    const ORDER_STATUSES = ["choxacnhan", "danggiao", "hoanthanh", "huy"];
+    const ORDER_STATUSES = ["choxacnhan", "danggiao", "hoanthanh", "huy", "hoantien"];
     const PAYMENT_METHODS = ["home", "vnpay", "momo", "paypal", "online"];
     const PAYMENT_STATUSES = ["chuathanhtoan", "dathanhtoan"];
 

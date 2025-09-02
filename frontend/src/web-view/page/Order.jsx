@@ -24,6 +24,8 @@ const Orders = () => {
     const [openCancelModal, setOpenCancelModal] = useState(false);
     const [cancelReason, setCancelReason] = useState("");
     const [orderToCancel, setOrderToCancel] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 10;
 
     const navigate = useNavigate();
 
@@ -97,8 +99,16 @@ const Orders = () => {
         danggiao: "Đang giao",
         dagiao: "Đã giao",
         huy: "Đã hủy",
-        hoanthanh: "Hoàn thành"
+        hoanthanh: "Hoàn thành",
+        hoantien: "Hoàn tiền"
     };
+
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentOrders = orders.slice(indexOfFirstItem, indexOfLastItem);
+
+    const totalPages = Math.ceil(orders.length / itemsPerPage);
+
 
     return (
         <div className="order-history container">
@@ -119,26 +129,22 @@ const Orders = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.map((o, idx) => (
+                            {currentOrders.map((o, idx) => (
                                 <tr key={o.madonhang}>
-                                    <td>{idx + 1}</td>
+                                    <td>{indexOfFirstItem + idx + 1}</td>
                                     <td>{moment(o.thoigiandat).format("HH:mm DD/MM/YYYY")}</td>
                                     <td>{o.diachigiaohang}</td>
                                     <td>
                                         {new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(o.tongtien)}
                                     </td>
                                     <td className={`status-${o.trangthai}`}>
-                                        {o.trangthai === "choxacnhan" && "Chờ xác nhận"}
-                                        {o.trangthai === "danggiao" && "Đang giao"}
-                                        {o.trangthai === "dagiao" && "Đã giao"}
-                                        {o.trangthai === "huy" && "Đã hủy"}
-                                        {o.trangthai === "hoanthanh" && "Hoàn thành"}
+                                        {trangThaiMapping[o.trangthai] || o.trangthai}
                                     </td>
                                     <td className="d-flex gap-2">
                                         <button className="btn btn-sm btn-secondary" onClick={() => handleViewDetails(o)}>
                                             <i className="fa-regular fa-eye"></i> Xem
                                         </button>
-                                        {o.trangthai !== "huy" && (
+                                        {o.trangthai !== "huy" && o.trangthai !== "hoantien" && o.trangthai !== "hoanthanh" && (
                                             <button
                                                 className="btn btn-sm btn-danger"
                                                 onClick={() => handleOpenCancelModal(o)}
@@ -151,6 +157,31 @@ const Orders = () => {
                             ))}
                         </tbody>
                     </table>
+                    {totalPages > 1 && (
+                        <nav className="d-flex justify-content-center mt-3">
+                            <ul className="pagination">
+                                <li className={`page-item ${currentPage === 1 ? "disabled" : ""}`}>
+                                    <button className="page-link" onClick={() => setCurrentPage(currentPage - 1)}>
+                                        Trước
+                                    </button>
+                                </li>
+
+                                {Array.from({ length: totalPages }, (_, i) => (
+                                    <li key={i} className={`page-item ${currentPage === i + 1 ? "active" : ""}`}>
+                                        <button className="page-link" onClick={() => setCurrentPage(i + 1)}>
+                                            {i + 1}
+                                        </button>
+                                    </li>
+                                ))}
+
+                                <li className={`page-item ${currentPage === totalPages ? "disabled" : ""}`}>
+                                    <button className="page-link" onClick={() => setCurrentPage(currentPage + 1)}>
+                                        Sau
+                                    </button>
+                                </li>
+                            </ul>
+                        </nav>
+                    )}
                 </div>
             )}
 
@@ -259,7 +290,7 @@ const Orders = () => {
                         onClick={handleConfirmCancel}
                         variant="primary"    // xanh
                     >
-                        Xác nhận hủy
+                        Xác nhận
                     </Button>
                 </DialogActions>
             </Dialog>

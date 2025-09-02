@@ -273,8 +273,7 @@ const UserStatistics = async (req, res) => {
                 COUNT(*) AS tong_nguoi_dung,
                 SUM(CASE WHEN role = 0 THEN 1 ELSE 0 END) AS tong_khach_hang,
                 SUM(CASE WHEN role = 1 THEN 1 ELSE 0 END) AS tong_quan_tri,
-                SUM(CASE WHEN role = 2 THEN 1 ELSE 0 END) AS tong_nhan_vien,
-                SUM(CASE WHEN trangthai = 1 THEN 1 ELSE 0 END) AS nguoi_dung_bi_khoa
+                SUM(CASE WHEN role = 2 THEN 1 ELSE 0 END) AS tong_nhan_vien
             FROM NGUOIDUNG;
         `;
 

@@ -34,7 +34,7 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
     const [paymentMethod, setPaymentMethod] = useState("");
     const [paymentStatus, setPaymentStatus] = useState("");
     const isViewMode = mode === "view"; // true khi chỉ xem
-
+    console.log("order", order)
     useEffect(() => {
         if (order) {
             setStatus(order.trangthai);
@@ -125,6 +125,7 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                             <MenuItem value="danggiao">Đang giao</MenuItem>
                             <MenuItem value="hoanthanh">Hoàn thành</MenuItem>
                             <MenuItem value="huy">Đã hủy</MenuItem>
+                            <MenuItem value="hoantien">Hoàn tiền</MenuItem>
                         </Select>
                     </FormControl>
 

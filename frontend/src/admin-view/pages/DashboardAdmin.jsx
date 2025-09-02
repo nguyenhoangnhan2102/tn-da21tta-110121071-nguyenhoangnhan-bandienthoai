@@ -90,7 +90,6 @@ const DashboardAdmin = () => {
         { vaitro: "Quản trị", tong_nguoi_dung: statsObj.tong_quan_tri || 0, icon: "🛡️" },
         { vaitro: "Nhân viên", tong_nguoi_dung: statsObj.tong_nhan_vien || 0, icon: "👔" },
         { vaitro: "Khách hàng", tong_nguoi_dung: statsObj.tong_khach_hang || 0, icon: "🛒" },
-        { vaitro: "Người dùng bị khóa", tong_nguoi_dung: statsObj.nguoi_dung_bi_khoa || 0, icon: "🔒" },
       ];
 
       setUserStatistics(statsArray);
@@ -130,9 +129,9 @@ const DashboardAdmin = () => {
     choxacnhan: { label: "Chờ xác nhận", color: "#FFA500" },
     danggiao: { label: "Đang giao", color: "#36A2EB" },
     hoanthanh: { label: "Hoàn thành", color: "#3BEA01" },
-    huy: { label: "Đã hủy", color: "#FF0000" }
+    huy: { label: "Đã hủy", color: "#FF0000" },
+    hoantien: { label: "Hoàn tiền", color: "#656565ff" }
   };
-
 
   return (
     <div className="dashboard-container my-5">

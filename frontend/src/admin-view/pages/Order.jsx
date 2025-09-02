@@ -116,6 +116,7 @@ const Order = () => {
     const totalPages = Math.ceil(orders.length / ordersPerPage);
 
     // Map trạng thái đơn hàng sang class, icon và text
+    // Map trạng thái đơn hàng sang class, icon và text
     const statusMap = {
         choxacnhan: {
             className: "status-pending",
@@ -136,10 +137,14 @@ const Order = () => {
             className: "status-cancelled",
             icon: "fa-ban",
             text: "Đã hủy"
+        },
+        hoantien: {
+            className: "status-refunded",   // thêm class css mới
+            icon: "fa-rotate-left",         // icon hoàn tiền
+            text: "Hoàn tiền"
         }
     };
-
-
+    console.log("currentOrders", currentOrders)
     return (
         <>
             <div>
