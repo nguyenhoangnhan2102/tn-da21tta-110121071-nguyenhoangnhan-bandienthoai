@@ -142,50 +142,51 @@ const Home = () => {
         </div>
 
         {viewedProducts.length > 0 && (
-          <div className="viewed-section my-4 p-3 bg-white rounded-xl shadow">
+          <>
             <h4 className="text-lg font-bold mb-3">⭐ Sản phẩm đã xem</h4>
-            <div className="d-flex gap-3">
-              {viewedProducts.map((product) => (
-                <div
-                  key={product.masanpham}
-                  className="viewed-item relative flex items-center border rounded-lg p-2 bg-white shadow-sm"
-                >
-                  {/* nút X */}
-                  <span
-                    onClick={() => removeProduct(product.masanpham)}
-                    className="icon-delete top-1 right-1 bg-gray-200 hover:bg-red-500 hover:text-white rounded-full p-1"
+            <div className="viewed-section my-4 p-3 bg-white rounded-xl shadow">
+              <div className="d-flex gap-3">
+                {viewedProducts.map((product) => (
+                  <div
+                    key={product.masanpham}
+                    className="viewed-item relative flex items-center border rounded-lg p-2 bg-white shadow-sm"
                   >
-                    X
-                  </span>
+                    {/* nút X */}
+                    <span
+                      onClick={() => removeProduct(product.masanpham)}
+                      className="icon-delete top-1 right-1 bg-gray-200 hover:bg-red-500 hover:text-white rounded-full p-1"
+                    >
+                      X
+                    </span>
 
-                  <Link
-                    to={`/product-details/${product.masanpham}`}
-                    className="d-flex gap-2 items-center w-full text-decoration-none"
-                  >
-                    {/* ảnh bên trái */}
-                    <img
-                      src={`${imgURL}${product.hinhanhchinh}`}
-                      alt={product.tensanpham}
-                      className="viewed-thumb"
-                    />
+                    <Link
+                      to={`/product-details/${product.masanpham}`}
+                      className="d-flex gap-2 items-center w-full text-decoration-none"
+                    >
+                      {/* ảnh bên trái */}
+                      <img
+                        src={`${imgURL}${product.hinhanhchinh}`}
+                        alt={product.tensanpham}
+                        className="viewed-thumb"
+                      />
 
-                    {/* nội dung bên phải */}
-                    <div className="viewed-info ml-3 flex flex-col justify-content-between">
-                      <div className="product-seen-info">
-                        <h3 className="product-seen-name">{product.tensanpham}</h3>
-                        <h3 className="product-seen-ram">{product.ram} / {product.dungluong}</h3>
+                      {/* nội dung bên phải */}
+                      <div className="viewed-info ml-3 flex flex-col justify-content-between">
+                        <div className="product-seen-info">
+                          <h3 className="product-seen-name">{product.tensanpham} {product.ram}/{product.dungluong}</h3>
+                        </div>
+                        <span className="product-seen-price">
+                          {product.khuyenmai > 0
+                            ? Number(product.giasaugiam).toLocaleString("vi-VN") + "₫"
+                            : Number(product.giaban).toLocaleString("vi-VN") + "₫"}
+                        </span>
                       </div>
-                      <span className="product-seen-price">
-                        {product.khuyenmai > 0
-                          ? Number(product.giasaugiam).toLocaleString("vi-VN") + "₫"
-                          : Number(product.giaban).toLocaleString("vi-VN") + "₫"}
-                      </span>
-                    </div>
-                  </Link>
-                </div>
-              ))}
+                    </Link>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
+          </>
         )}
 
         <div className="product-list">

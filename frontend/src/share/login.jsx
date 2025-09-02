@@ -40,11 +40,12 @@ const Login = () => {
             dispatch(login({ accessToken, userInfo }));
 
             const isAdmin = await userService.verifyAdmin(accessToken);
-            if (isAdmin) {
-                navigate("/admin");
-            } else {
-                navigate("/");
-            }
+            // if (isAdmin) {
+            //     navigate("/admin");
+            // } else {
+            //     navigate("/");
+            // }
+            navigate("/");
         } catch (err) {
             console.error("Lỗi Google login", err);
             setErrorMessage("Google đăng nhập thất bại");

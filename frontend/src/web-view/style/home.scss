@@ -4,15 +4,41 @@
     padding: 16px;
 
     .viewed-section {
-        white-space: wrap;
+        display: flex;
+        flex-wrap: nowrap; // ❌ bỏ xuống dòng
+        overflow-x: auto; // ✅ thanh cuộn ngang
+        gap: 8px; // khoảng cách giữa các item
         margin: 16px !important;
 
+        // Style cho thanh scrollbar (Chrome, Safari, Edge)
+        &::-webkit-scrollbar {
+            height: 6px; // chiều cao thanh ngang
+        }
+
+        &::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+            background: #bbb;
+            border-radius: 10px;
+        }
+
+        &::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        // Firefox
+        scrollbar-color: #bbb #f1f1f1;
+        scrollbar-width: thin;
+
         .viewed-item {
+            flex: 0 0 auto; // giữ nguyên kích thước, không co giãn
             width: 300px;
             display: flex;
             align-items: center;
             position: relative;
-            white-space: wrap;
             border-radius: 6px;
 
             .viewed-thumb {
@@ -37,7 +63,7 @@
                 .product-seen-info {
                     display: flex;
                     gap: 1px;
-                    white-space: wrap;
+                    white-space: nowrap; // tránh text xuống dòng
 
                     .product-seen-name,
                     .product-seen-ram {
@@ -45,6 +71,7 @@
                         font-weight: 500;
                         line-height: 1.4;
                         color: #222;
+                        white-space: wrap;
                     }
                 }
 
