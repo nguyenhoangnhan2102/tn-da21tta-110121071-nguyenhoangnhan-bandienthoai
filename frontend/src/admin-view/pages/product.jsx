@@ -42,7 +42,7 @@ const ProductComponent = () => {
     try {
       const response = await productService.getAllProducts();
       if (response.EC === 1) {
-        const sortedProducts = response.DT.activeProducts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        const sortedProducts = response.DT.queryActiveAdmin.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
         setProducts(sortedProducts);
       } else {
         console.error("Lỗi tìm kiếm sản phẩm");
@@ -246,6 +246,7 @@ const ProductComponent = () => {
               <th scope="col">STT</th>
               <th scope="col">Tên</th>
               <th scope="col">Thương hiệu</th>
+              <th scope="col">Sale (%)</th>
               <th scope="col">Giá</th>
               <th scope="col">Số lượng</th>
               <th scope="col">Hệ điều hành</th>
@@ -262,8 +263,15 @@ const ProductComponent = () => {
                   <td>{(currentPage - 1) * productsPerPage + index + 1}</td>
                   <td>{product.tensanpham || "Không có tên"}</td>
                   <td>{product.tenthuonghieu || "Không có thể loại"}</td>
-                  <td>{product.giaban ? product.giaban.toLocaleString("vi-VN") : "Không có giá"}đ</td>
-                  <td>{product.soluong || "Không có số lượng"}</td>
+                  <td>{product.khuyenmai || 0}</td>
+                  <td>
+                    {product.giasaugiam
+                      ? Number(product.giasaugiam).toLocaleString("vi-VN", {
+                        minimumFractionDigits: 0,
+                      }) + "đ"
+                      : 0 + "đ"}
+                  </td>
+                  <td>{product.soluong || 0}</td>
                   <td>{product.hedieuhanh || "Không có giá"}</td>
                   <td>{product.trangthai === 0 ? "Đã duyệt" : "Chưa duyệt"}</td>
                   <td>

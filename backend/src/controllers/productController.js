@@ -21,6 +21,24 @@ const getAllProduct = async (req, res) => {
             sp.ngaytao DESC;
         `;
 
+        const queryActiveAdmin = `
+        SELECT
+            sp.*,
+            th.tenthuonghieu,
+            (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam
+        FROM
+            SANPHAM sp
+        LEFT JOIN
+            THUONGHIEU th ON sp.mathuonghieu = th.mathuonghieu
+        WHERE
+            sp.trangthai = 0
+        GROUP BY
+            sp.masanpham
+        ORDER BY
+            sp.ngaycapnhat DESC,
+            sp.ngaytao DESC;
+        `;
+
         const queryInactive = `
         SELECT
             sp.*,
@@ -40,6 +58,7 @@ const getAllProduct = async (req, res) => {
 
         const [activeResults] = await connection.query(queryActive);
         const [inactiveResults] = await connection.query(queryInactive);
+        const [queryActiveAdminResult] = await connection.query(queryActiveAdmin);
 
         return res.status(200).json({
             EM: "Lấy danh sách sản phẩm thành công",
@@ -47,6 +66,7 @@ const getAllProduct = async (req, res) => {
             DT: {
                 activeProducts: activeResults,
                 inactiveProducts: inactiveResults,
+                queryActiveAdmin: queryActiveAdminResult,
             },
         });
 

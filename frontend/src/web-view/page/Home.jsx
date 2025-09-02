@@ -15,7 +15,7 @@ const Home = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedManufacturer, setSelectedManufacturer] = useState("");
   const [selectedPriceRange, setSelectedPriceRange] = useState("");
-  const [visibleCount, setVisibleCount] = useState(8); // Số lượng sản phẩm hiển thị ban đầu
+  const [visibleCount, setVisibleCount] = useState(10); // Số lượng sản phẩm hiển thị ban đầu
   const [viewedProducts, setViewedProducts] = useState([]);
 
 
