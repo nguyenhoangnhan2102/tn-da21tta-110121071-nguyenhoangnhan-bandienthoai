@@ -35,33 +35,41 @@ function Checkout() {
         }
 
         try {
-            const orderData = {
-                manguoidung: infoUser?.manguoidung,
-                diachigiaohang: orderInfo.diachi,
-                tongtien: subTotal,
-                ghichu: orderInfo.ghichu,
-                hinhthucthanhtoan: orderInfo.paymentMethod,
-                sanpham: cartItems.map(item => ({
-                    masanpham: item.masanpham,
-                    soluong: item.soluong,
-                    dongia: item.giasaugiam,
-                    hinhanh: item.hinhanhchinh
-                }))
-            };
-
-            const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
-
-            if (response.data.success) {
-                toast.success("Đặt hàng thành công!");
-                navigate("/"); // quay về trang chủ
+            if (orderInfo.paymentMethod === "momo") {
+                const res = await axiosInstance.post(`${apiUrl}/momo/create_payment_url`, {
+                    amount: subTotal.toString(),
+                    orderId: new Date().getTime().toString(),
+                });
+                if (res.data && res.data.payUrl) {
+                    window.location.href = res.data.payUrl; // chuyển hướng sang MoMo
+                } else {
+                    toast.error("Không tạo được link MoMo!");
+                }
             } else {
-                toast.error(`Đặt hàng thất bại: ${response.data.message}`);
+                // Thanh toán COD
+                const orderData = {
+                    manguoidung: infoUser?.manguoidung,
+                    diachigiaohang: orderInfo.diachi,
+                    tongtien: subTotal,
+                    ghichu: orderInfo.ghichu,
+                    hinhthucthanhtoan: orderInfo.paymentMethod,
+                    sanpham: cartItems.map(item => ({
+                        masanpham: item.masanpham,
+                        soluong: item.soluong,
+                        dongia: item.giasaugiam,
+                        hinhanh: item.hinhanhchinh
+                    }))
+                };
+                await axiosInstance.post(`${apiUrl}/orders`, orderData);
+                toast.success("Đặt hàng thành công!");
+                navigate("/");
             }
         } catch (error) {
-            console.error("Error:", error);
+            console.error(error);
             toast.error("Có lỗi xảy ra khi đặt hàng!");
         }
     };
+
 
     if (!cartItems) {
         return <p className="text-center mt-4">Không có dữ liệu đơn hàng.</p>;

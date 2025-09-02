@@ -7,6 +7,7 @@ import ProductDetails from "./page/Details";
 import Cart from "./page/Cart";
 import Orders from "./page/Order";
 import Checkout from "./page/Checkout";
+import MomoReturn from "./page/MomoReturn";
 
 const RouterView = () => {
   const element = useRoutes([
@@ -33,6 +34,10 @@ const RouterView = () => {
     {
       path: "/checkout",
       element: <Checkout />,
+    },
+    {
+      path: "/momo-return",
+      element: <MomoReturn />,
     },
     {
       path: "*",
