@@ -265,7 +265,7 @@ const ProductComponent = () => {
                   <td>{product.giaban ? product.giaban.toLocaleString("vi-VN") : "Không có giá"}đ</td>
                   <td>{product.soluong || "Không có số lượng"}</td>
                   <td>{product.hedieuhanh || "Không có giá"}</td>
-                  <td>{product.trangthai === 0 ? "Hoạt động" : "Không hoạt động"}</td>
+                  <td>{product.trangthai === 0 ? "Đã duyệt" : "Chưa duyệt"}</td>
                   <td>
                     <img
                       width={`70px`}

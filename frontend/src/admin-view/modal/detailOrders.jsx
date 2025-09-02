@@ -112,6 +112,18 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                         disabled={isViewMode}
                     />
                 </FormControl>
+                {order.lydohuy && (
+                    <FormControl fullWidth margin="normal">
+                        <TextField
+                            value={order.lydohuy}
+                            label="Lý do hủy"
+                            multiline
+                            rows={3}
+                            InputLabelProps={{ shrink: true }}
+                            disabled={isViewMode}
+                        />
+                    </FormControl>
+                )}
                 <div className="d-flex gap-2">
                     <FormControl fullWidth margin="normal">
                         <InputLabel>Trạng thái đơn hàng</InputLabel>

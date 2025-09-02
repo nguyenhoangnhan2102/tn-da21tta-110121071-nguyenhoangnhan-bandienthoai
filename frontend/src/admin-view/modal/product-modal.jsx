@@ -262,7 +262,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
               name="trangthai"
               value={form.trangthai}
               onChange={handleChange}
-              disabled={isViewOnly}
+              disabled={isViewOnly || userInfo?.role === 2} // ✅ chỉ 1 dòng
               label="Trạng thái"
             >
               <MenuItem value={1}>Chưa duyệt</MenuItem>

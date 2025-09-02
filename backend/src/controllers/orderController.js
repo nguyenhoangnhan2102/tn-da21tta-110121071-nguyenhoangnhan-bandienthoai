@@ -117,6 +117,7 @@ const getOrderDetails = async (req, res) => {
                 dh.tongtien,
                 dh.ghichu,
                 dh.diachigiaohang,
+                dh.lydohuy,
                 dh.ngaytao,
                 dh.ngaycapnhat,
                 nd.hoten,
@@ -539,7 +540,7 @@ const getAllOrdersByCustomer = async (req, res) => {
             FROM DONHANG dh
             LEFT JOIN CHITIETDONHANG ctdh ON dh.madonhang = ctdh.madonhang
             WHERE dh.manguoidung = ?
-            ORDER BY dh.thoigiandat DESC, dh.madonhang DESC`,
+            ORDER BY dh.thoigiandat DESC, dh.madonhang DESC, dh.ngaycapnhat DESC`,
             [manguoidung]
         );
 
