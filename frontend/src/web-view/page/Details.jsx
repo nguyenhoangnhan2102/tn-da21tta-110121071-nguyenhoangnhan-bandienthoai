@@ -467,15 +467,15 @@ const ProductDetails = () => {
                             <hr />
                         </div>
                     )}
-                    <div className="btn-buy d-flex gap-2">
+                    <div className="btn-buy d-flex justify-content-end gap-2">
                         <button className="btn btn-secondary button-cart col-6" onClick={() => handleAddToCart()}>
                             <i className="fa-solid fa-cart-shopping"></i>
                             <p>Thêm vào giỏ</p>
                         </button>
 
-                        <button className="btn btn-primary button-buy col-6" onClick={() => handleBuyNow()}>
+                        {/* <button className="btn btn-primary button-buy col-6" onClick={() => handleBuyNow()}>
                             Mua ngay
-                        </button>
+                        </button> */}
                     </div>
                     <div className="contact">
                         Gọi đặt mua <strong>1900 232 460</strong> (8:00 - 21:00)
