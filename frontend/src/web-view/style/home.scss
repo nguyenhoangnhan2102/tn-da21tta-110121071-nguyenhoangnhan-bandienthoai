@@ -2,6 +2,60 @@
     background-color: #fff;
     border-radius: 10px;
     padding: 16px;
+
+    .viewed-section {
+        white-space: wrap;
+        margin: 16px !important;
+
+        .viewed-item {
+            width: 300px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            white-space: wrap;
+            border-radius: 6px;
+
+            .viewed-thumb {
+                width: 60px;
+                height: 60px;
+                object-fit: contain;
+                flex-shrink: 0;
+            }
+
+            .icon-delete {
+                position: absolute;
+                right: 0px;
+                top: 0px;
+                cursor: pointer;
+            }
+
+            .viewed-info {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+
+                .product-seen-info {
+                    display: flex;
+                    gap: 1px;
+                    white-space: wrap;
+
+                    .product-seen-name,
+                    .product-seen-ram {
+                        font-size: 14px;
+                        font-weight: 500;
+                        line-height: 1.4;
+                        color: #222;
+                    }
+                }
+
+                .product-seen-price {
+                    font-size: 15px;
+                    font-weight: bold;
+                    color: #e60000; // đỏ giá khuyến mãi
+                }
+            }
+        }
+    }
 }
 
 .product-list {
@@ -159,6 +213,7 @@
         animation: fadeUp 0.3s ease;
     }
 }
+
 
 @keyframes fadeUp {
     from {

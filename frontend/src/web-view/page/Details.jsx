@@ -45,6 +45,33 @@ const ProductDetails = () => {
         }
     }, [comments]);
 
+    useEffect(() => {
+        if (productdetails && productdetails.masanpham) {
+            const key = inforUser?.manguoidung
+                ? `viewedProducts_${inforUser.manguoidung}`
+                : "viewedProducts_guest";
+
+            const viewed = JSON.parse(localStorage.getItem(key)) || [];
+
+            const exists = viewed.find(p => p.masanpham === productdetails.masanpham);
+            if (!exists) {
+                viewed.unshift({
+                    masanpham: productdetails.masanpham,
+                    tensanpham: productdetails.tensanpham,
+                    hinhanhchinh: productdetails.hinhanhchinh,
+                    giaban: productdetails.giaban,
+                    giasaugiam: productdetails.giasaugiam,
+                    ram: productdetails.ram,
+                    dungluong: productdetails.dungluong,
+                    khuyenmai: productdetails.khuyenmai
+                });
+
+                const limited = viewed.slice(0, 10);
+                localStorage.setItem(key, JSON.stringify(limited));
+            }
+        }
+    }, [productdetails, inforUser]);
+
     const getUserInfoUser = () => {
         const accessToken = Cookies.get("accessToken");
         if (accessToken) {
