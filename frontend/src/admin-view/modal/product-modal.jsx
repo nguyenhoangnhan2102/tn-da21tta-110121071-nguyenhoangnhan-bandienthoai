@@ -9,6 +9,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  InputAdornment,
 } from "@mui/material";
 import { toast } from "react-toastify";
 import ModalManufacturer from "./manufacturer-modal";
@@ -90,7 +91,15 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   // Handle form
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+
+    // Nếu là gianhap hoặc giaban thì chỉ giữ số
+    if (name === "gianhap" || name === "giaban") {
+      // Loại bỏ tất cả ký tự không phải số
+      const numericValue = value.replace(/\D/g, "");
+      setForm((prev) => ({ ...prev, [name]: numericValue }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleFileChange = (e) => {
@@ -219,12 +228,26 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
           <div className="d-flex gap-2">
             <TextField fullWidth margin="normal" label="Màu" name="mau" value={form.mau} onChange={handleChange} disabled={isViewOnly} />
             <TextField fullWidth margin="normal" label="Số lượng" type="number" name="soluong" value={form.soluong} onChange={handleChange} disabled={isViewOnly} />
-            <TextField fullWidth margin="normal" label="Giá nhập" type="number" name="gianhap" value={form.gianhap} onChange={handleChange} disabled={isViewOnly} />
+            <TextField fullWidth margin="normal" label="Giá nhập" type="text" name="gianhap" value={form.gianhap ? Number(form.gianhap).toLocaleString("vi-VN") : ""} onChange={handleChange} disabled={isViewOnly} InputProps={{
+              endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+            }} />
           </div>
 
           <div className="d-flex gap-2">
-            <TextField fullWidth margin="normal" label="Giá bán" type="number" name="giaban" value={form.giaban} onChange={handleChange} disabled={isViewOnly} />
-            <TextField fullWidth margin="normal" label="Giá sau khuyến mãi" type="number" value={finalPrice} InputProps={{ readOnly: true }} />
+            <TextField fullWidth margin="normal" label="Giá bán" type="text" name="giaban" value={form.giaban ? Number(form.giaban).toLocaleString("vi-VN") : ""} onChange={handleChange} disabled={isViewOnly}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+              }} />
+            <TextField
+              fullWidth
+              margin="normal"
+              label="Giá sau khuyến mãi"
+              value={finalPrice.toLocaleString("vi-VN")} // chỉ hiển thị
+              disabled={isViewOnly}
+              InputProps={{
+                endAdornment: <InputAdornment position="end">đ</InputAdornment>,
+              }}
+            />
             <TextField fullWidth margin="normal" label="Khuyến mãi (%)" type="number" name="khuyenmai" value={form.khuyenmai} onChange={handleChange} disabled={isViewOnly} />
           </div>
 
