@@ -8,12 +8,14 @@ import "../style/Details.scss";
 import { useAuth } from "../../authentication/AuthContext";
 import commentService from "../../services/commentService";
 import { Box, Rating } from "@mui/material";
+import ReduxStateExport from "../../redux/redux-state";
 
 const apiUrl = process.env.REACT_APP_API_URL;
 const apiProductUrl = apiUrl + '/product';
 const imgURL = process.env.REACT_APP_IMG_URL;
 
 const ProductDetails = () => {
+    const { userInfo } = ReduxStateExport();
     const [productdetails, setProductDetails] = useState([]);
     const { masanpham } = useParams();
     const [inforUser, setInforUser] = useState({});
@@ -47,8 +49,8 @@ const ProductDetails = () => {
 
     useEffect(() => {
         if (productdetails && productdetails.masanpham) {
-            const key = inforUser?.manguoidung
-                ? `viewedProducts_${inforUser.manguoidung}`
+            const key = userInfo?.manguoidung
+                ? `viewedProducts_${userInfo.manguoidung}`
                 : "viewedProducts_guest";
 
             const viewed = JSON.parse(localStorage.getItem(key)) || [];
@@ -70,7 +72,7 @@ const ProductDetails = () => {
                 localStorage.setItem(key, JSON.stringify(limited));
             }
         }
-    }, [productdetails, inforUser]);
+    }, [productdetails, userInfo]);
 
     const getUserInfoUser = () => {
         const accessToken = Cookies.get("accessToken");
@@ -90,12 +92,23 @@ const ProductDetails = () => {
         if (masanpham) {
             try {
                 const response = await axiosInstance.get(`${apiProductUrl}/${masanpham}`);
-                setProductDetails(response.data.DT);
+                const data = response.data.DT;
+
+                // Nếu không có hoặc số lượng = 0 thì chặn
+                if (!data || data.soluong === 0) {
+                    toast.warning("Sản phẩm hết hàng!")
+                    navigate("/"); // quay lại trang chủ
+                    return;
+                }
+
+                setProductDetails(data);
             } catch (err) {
                 console.error("Error occurred", err);
+                navigate("/"); // tránh đứng trang trắng
             }
         }
     };
+
 
     const handleAddToCart = async () => {
         if (!isLoggedIn) {
@@ -131,43 +144,6 @@ const ProductDetails = () => {
             }
         }
     };
-
-    const handleBuyNow = async () => {
-        if (!isLoggedIn) {
-            navigate("/login", { state: { from: location.pathname } });
-            return;
-        }
-
-        const { manguoidung } = inforUser?.manguoidung;
-        const { masanpham } = productdetails;
-
-        const soluong = 1;
-
-        try {
-            const response = await axiosInstance.post(`${apiUrl}/cart`, {
-                manguoidung,
-                masanpham,
-                soluong,
-            });
-
-            if (response.status === 201) {
-                navigate("/cart");
-            } else {
-                toast.error("Không thể mua sản phẩm");
-            }
-        } catch (error) {
-            if (
-                error.response &&
-                error.response.status === 400 &&
-                error.response.data.message === "Sản phẩm đã tồn tại trong giỏ hàng"
-            ) {
-                toast.warning("Sản phẩm đã tồn tại trong giỏ hàng");
-            } else {
-                toast.error("Lỗi khi thêm sản phẩm vào giỏ hàng");
-            }
-        }
-    };
-
 
     // 👉 Load comments
     const loadComments = async () => {

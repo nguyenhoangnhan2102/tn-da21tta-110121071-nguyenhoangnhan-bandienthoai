@@ -86,11 +86,16 @@ const Home = () => {
   };
 
   const removeProduct = (masanpham) => {
+    const key = userInfo?.manguoidung
+      ? `viewedProducts_${userInfo.manguoidung}`
+      : "viewedProducts_guest";
+
     const updated = viewedProducts.filter(
       (item) => item.masanpham !== masanpham
     );
+
     setViewedProducts(updated);
-    localStorage.setItem("viewedProducts", JSON.stringify(updated));
+    localStorage.setItem(key, JSON.stringify(updated));
   };
 
   return (
