@@ -29,7 +29,7 @@ CREATE TABLE SANPHAM (
     masanpham INT AUTO_INCREMENT PRIMARY KEY,
     mathuonghieu INT,
     tensanpham VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-    hinhanhchinh VARCHAR(255), -- Ảnh chính sản phẩm
+    hinhanh VARCHAR(255), -- Ảnh chính sản phẩm
     mau VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     dungluong VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     ram VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
