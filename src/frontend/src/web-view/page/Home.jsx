@@ -113,8 +113,6 @@ const Home = () => {
               style={{ marginLeft: '18px' }}
             />
           </div> */}
-          {console.log(viewedProducts)}
-
 
           <div className="col-2 mt-4 ms-3">
             <select

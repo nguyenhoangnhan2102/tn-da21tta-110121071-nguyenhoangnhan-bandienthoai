@@ -149,18 +149,24 @@ const Header = () => {
                         {showDropdown && results.length > 0 && (
                             <div className="search-dropdown">
                                 {results.map(product => (
-                                    <div
-                                        key={product.masanpham}
-                                        className="search-item"
-                                        onClick={() => handleSelectProduct(product)}
-                                    >
-                                        <img
-                                            src={`${imgURL}/${product.hinhanh}`}
-                                            alt={product.tensanpham}
-                                            className="search-item-img"
-                                        />
-                                        <span>{product.tensanpham}</span>
-                                    </div>
+                                    <>
+                                        <Link to={`/product-details/${product.masanpham}`} className="text-decoration-none text-dark">
+                                            <div
+                                                key={product.masanpham}
+                                                className="search-item"
+                                                onClick={() => handleSelectProduct(product)}
+                                            >
+
+                                                <img
+                                                    src={`${imgURL}/${product.hinhanh.split(",")[0]}`}
+                                                    alt={product.tensanpham}
+                                                    className="search-item-img"
+                                                />
+                                                <span>{product.tensanpham}</span>
+                                                {console.log("product", product)}
+                                            </div>
+                                        </Link>
+                                    </>
                                 ))}
                             </div>
                         )}

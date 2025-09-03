@@ -54,7 +54,7 @@ const Orders = () => {
             console.log("first", res);
             setOrders(res.data.DT || []);
         } catch {
-            toast.error("Không thể tải danh sách đơn hàng");
+            console.error("Không thể tải danh sách đơn hàng");
         }
     };
 
