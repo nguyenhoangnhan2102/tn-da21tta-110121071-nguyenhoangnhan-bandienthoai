@@ -135,7 +135,7 @@ const Top10Products = async (req, res) => {
             SELECT 
                 sp.masanpham,
                 sp.tensanpham,
-                sp.hinhanhchinh,
+                sp.hinhanh,
                 sp.giaban,
                 sp.khuyenmai,
                 (sp.giaban - (sp.giaban * sp.khuyenmai / 100)) AS giasaugiam,

@@ -148,7 +148,7 @@ const Home = () => {
 
         {viewedProducts.length > 0 && (
           <>
-            <h4 className="text-lg font-bold mb-3">⭐ Sản phẩm đã xem</h4>
+            <h5 className="text-lg font-bold mb-3 px-3">Sản phẩm đã xem</h5>
             <div className="viewed-section my-4 p-3 bg-white rounded-xl shadow">
               <div className="d-flex gap-3">
                 {viewedProducts.map((product) => (
@@ -170,7 +170,7 @@ const Home = () => {
                     >
                       {/* ảnh bên trái */}
                       <img
-                        src={`${imgURL}${product.hinhanhchinh}`}
+                        src={`${imgURL}${product.hinhanh.split(',')[0]}`}
                         alt={product.tensanpham}
                         className="viewed-thumb"
                       />
@@ -193,7 +193,7 @@ const Home = () => {
             </div>
           </>
         )}
-
+        {console.log("filteredProducts", filteredProducts)}
         <div className="product-list">
           {filteredProducts && filteredProducts.length > 0 ? (
             filteredProducts.slice(0, visibleCount).map((product, index) => (
@@ -208,7 +208,7 @@ const Home = () => {
                       <div className="discount-badge">-{product.khuyenmai}%</div>
                     )}
                     <img
-                      src={`${imgURL}${product.hinhanhchinh}`}
+                      src={`${imgURL}${product.hinhanh.split(',')[0]}`}
                       className="product-image"
                       alt={product.tensanpham || "Hình ảnh sản phẩm"}
                     />

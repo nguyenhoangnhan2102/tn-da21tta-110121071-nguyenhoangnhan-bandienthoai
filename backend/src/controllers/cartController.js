@@ -18,7 +18,7 @@ const getAllCartByCustomer = async (req, res) => {
                 g.magiohang, 
                 s.masanpham, 
                 s.tensanpham, 
-                s.hinhanhchinh,
+                s.hinhanh,
                 s.mau,
                 c.soluong,
                 s.soluong AS soluongton,

@@ -44,7 +44,7 @@ const ProductDetailModal = ({ product, open, onClose }) => {
         dophangiaimanhinh: "",
         pin: "",
         motasanpham: "",
-        hinhanhchinh: "",
+        hinhanh: "",
         danhsachmausac: "",
         danhsachmausacsanpham: "",
         danhsachhinhanh: "",
@@ -277,9 +277,9 @@ const ProductDetailModal = ({ product, open, onClose }) => {
                 <div className="d-flex align-items-center mb-3">
                     <p className="col-2">Ảnh chính</p>
                     <div className="d-flex align-items-center justify-content-center col-10">
-                        {form.hinhanhchinh && product?.hinhanhchinh && (
+                        {form.hinhanh && product?.hinhanh && (
                             <img
-                                src={`${imgURL}/${product.hinhanhchinh}`}
+                                src={`${imgURL}/${product.hinhanh}`}
                                 alt={product.tensanpham}
                                 style={{ width: "80px", height: "80px" }}
                             />

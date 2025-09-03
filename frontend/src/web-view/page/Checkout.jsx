@@ -46,7 +46,7 @@ function Checkout() {
                     masanpham: item.masanpham,
                     soluong: item.soluong,
                     dongia: item.giasaugiam,
-                    hinhanh: item.hinhanhchinh
+                    hinhanh: item.hinhanh
                 }))
             };
 
@@ -60,11 +60,17 @@ function Checkout() {
 
             const madonhang = orderRes.data.madonhang;
 
+            // Thêm bước xóa giỏ hàng sau khi đặt hàng thành công
+            const deleteCartRes = await axiosInstance.post(`${apiUrl}/cart/delete`, { manguoidung: infoUser?.manguoidung });
+            if (!deleteCartRes.data.success) {
+                console.error("Lỗi khi xóa giỏ hàng:", deleteCartRes.data.message);
+            }
+
             // 3️⃣ Nếu thanh toán online (MoMo)
             if (orderInfo.paymentMethod === "online") {
                 const res = await axiosInstance.post(`${apiUrl}/momo/create_payment_url`, {
                     amount: subTotal.toString(),
-                    orderId: madonhang.toString(),   // 👈 dùng madonhang thay vì Date.now
+                    orderId: madonhang.toString(),
                 });
                 if (res.data && res.data.payUrl) {
                     window.location.href = res.data.payUrl;
@@ -76,6 +82,7 @@ function Checkout() {
                 toast.success("Đặt hàng thành công!");
                 navigate("/");
             }
+
         } catch (error) {
             console.error(error);
             toast.error("Có lỗi xảy ra khi đặt hàng!");
@@ -99,7 +106,7 @@ function Checkout() {
                             <div key={item.masanpham} className="d-flex justify-content-between align-items-center border-bottom py-2">
                                 <div className="d-flex align-items-center">
                                     <img
-                                        src={`${imgURL}/${item.hinhanhchinh}`}
+                                        src={`${imgURL}/${item.hinhanh.split(',')[0]}`}
                                         alt={item.tensanpham}
                                         style={{ width: "80px", height: "80px", objectFit: "cover", marginRight: "10px" }}
                                     />

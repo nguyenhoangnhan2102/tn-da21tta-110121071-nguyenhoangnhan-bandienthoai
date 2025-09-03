@@ -155,7 +155,7 @@ const Header = () => {
                                         onClick={() => handleSelectProduct(product)}
                                     >
                                         <img
-                                            src={`${imgURL}/${product.hinhanhchinh}`}
+                                            src={`${imgURL}/${product.hinhanh}`}
                                             alt={product.tensanpham}
                                             className="search-item-img"
                                         />

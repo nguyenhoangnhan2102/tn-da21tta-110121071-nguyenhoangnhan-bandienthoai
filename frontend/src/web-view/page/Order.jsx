@@ -223,13 +223,14 @@ const Orders = () => {
                                     <th>Thành tiền</th>
                                 </tr>
                             </thead>
+                            {console.log("selectedOrder", selectedOrder)}
                             <tbody>
                                 {selectedOrder.chitiet?.length > 0 ? (
                                     selectedOrder.chitiet.map((sp, i) => (
                                         <tr key={i}>
                                             <td>
                                                 <img
-                                                    src={`${imgURL}${sp.hinhanh}`}
+                                                    src={`${imgURL}${sp.hinhanh.split(',')[0]}`}
                                                     alt={sp.tensanpham}
                                                     style={{ width: "60px", height: "60px", objectFit: "cover" }}
                                                 />

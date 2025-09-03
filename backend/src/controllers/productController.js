@@ -132,7 +132,7 @@ const createProduct = async (req, res) => {
     const {
         mathuonghieu,
         tensanpham,
-        hinhanhchinh,
+        hinhanh,
         mau,
         dungluong,
         ram,
@@ -157,7 +157,7 @@ const createProduct = async (req, res) => {
             `INSERT INTO SANPHAM (
         mathuonghieu, 
         tensanpham,
-        hinhanhchinh,
+        hinhanh,
         mau,
         dungluong,
         ram,
@@ -179,7 +179,7 @@ const createProduct = async (req, res) => {
             [
                 mathuonghieu,
                 tensanpham,
-                hinhanhchinh,
+                hinhanh,
                 mau,
                 dungluong,
                 ram,
@@ -206,7 +206,7 @@ const createProduct = async (req, res) => {
                 masanpham: result.insertId,
                 mathuonghieu,
                 tensanpham,
-                hinhanhchinh,
+                hinhanh,
                 mau,
                 dungluong,
                 ram,
@@ -239,7 +239,7 @@ const updateProduct = async (req, res) => {
     const {
         mathuonghieu,
         tensanpham,
-        hinhanhchinh,
+        hinhanh,
         mau,
         dungluong,
         ram,
@@ -266,7 +266,7 @@ const updateProduct = async (req, res) => {
                 SET
                     mathuonghieu = ?,
                     tensanpham = ?,
-                    hinhanhchinh = ?,
+                    hinhanh = ?,
                     mau = ?,
                     dungluong = ?,
                     ram = ?,
@@ -289,7 +289,7 @@ const updateProduct = async (req, res) => {
             [
                 mathuonghieu,
                 tensanpham,
-                hinhanhchinh,
+                hinhanh,
                 mau,
                 dungluong,
                 ram,

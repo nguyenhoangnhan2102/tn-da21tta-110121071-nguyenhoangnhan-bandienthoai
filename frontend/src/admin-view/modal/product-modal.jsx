@@ -34,7 +34,7 @@ const imgURL = process.env.REACT_APP_IMG_URL;
 const defaultForm = {
   mathuonghieu: "",
   tensanpham: "",
-  hinhanhchinh: "",
+  hinhanh: "",
   mau: "",
   dungluong: "",
   ram: "",
@@ -76,10 +76,23 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   }, []);
 
   // Reset form khi mở modal
+  // ...
+  // Reset form khi mở modal
   useEffect(() => {
-    setForm(product || defaultForm);
+    // Tạo một bản sao của product hoặc defaultForm
+    const initialForm = { ...(product || defaultForm) };
+
+    // Nếu hinhanh là chuỗi (từ DB), chuyển nó thành mảng
+    if (typeof initialForm.hinhanh === 'string' && initialForm.hinhanh) {
+      initialForm.hinhanh = initialForm.hinhanh.split(',');
+    } else {
+      initialForm.hinhanh = []; // Đảm bảo luôn là mảng rỗng nếu không có
+    }
+
+    setForm(initialForm);
     getAllManufacturerData();
   }, [product, getAllManufacturerData]);
+  // ...
 
   // Tính giá sau khuyến mãi
   useEffect(() => {
@@ -103,8 +116,14 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    setForm((prev) => ({ ...prev, hinhanhchinh: file }));
+    // Lấy toàn bộ danh sách các tệp tin đã chọn
+    const files = e.target.files;
+
+    // Chuyển đổi FileList thành một mảng và cập nhật state 'hinhanh'
+    setForm((prev) => ({
+      ...prev,
+      hinhanh: [...files],
+    }));
   };
 
   const handleSubmit = () => {
@@ -125,12 +144,32 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
     }
   };
 
-  const imageSrc =
-    form.hinhanhchinh instanceof File
-      ? URL.createObjectURL(form.hinhanhchinh)
-      : form.hinhanhchinh
-        ? `${imgURL}${form.hinhanhchinh}`
-        : "";
+  const getImageUrl = (image) => {
+    if (!image) {
+      return "";
+    }
+    // Nếu là một đối tượng File mới được chọn
+    if (image instanceof File) {
+      return URL.createObjectURL(image);
+    }
+    // Nếu là một chuỗi URL từ server
+    if (typeof image === 'string') {
+      return `${imgURL}${image}`;
+    }
+    return "";
+  };
+
+  const imageUrls = (() => {
+    if (typeof form.hinhanh === 'string' && form.hinhanh) {
+      // Nếu là chuỗi, tách ra thành mảng và map
+      return form.hinhanh.split(',').map(name => getImageUrl(name));
+    }
+    if (Array.isArray(form.hinhanh)) {
+      // Nếu là mảng, map như bình thường
+      return form.hinhanh.map(file => getImageUrl(file));
+    }
+    return [];
+  })();
 
   return (
     <>
@@ -150,23 +189,30 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
             onChange={handleChange}
             disabled={isViewOnly}
           />
-
+          {console.log(form)}
           {/* Ảnh sản phẩm */}
-          {imageSrc && (
-            <img
-              src={imageSrc}
-              alt={form.tensanpham}
-              width="100"
-              height="100"
-            />
+          {imageUrls.length > 0 && (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, my: 1 }}>
+              {imageUrls.map((src, index) => (
+                <img
+                  key={index}
+                  src={src}
+                  alt={form.tensanpham}
+                  width="100"
+                  height="100"
+                  style={{ borderRadius: '8px', objectFit: 'cover' }}
+                />
+              ))}
+            </Box>
           )}
           {!isViewOnly && (
             <Box sx={{ my: 1 }}>
               <input
                 type="file"
-                name="hinhanhchinh"
+                name="hinhanh"
                 accept="image/*"
                 onChange={handleFileChange}
+                multiple
                 style={{
                   width: "100%",
                   padding: "16.5px 14px",

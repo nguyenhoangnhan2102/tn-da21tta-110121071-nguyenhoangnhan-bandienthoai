@@ -10,7 +10,7 @@ import {
   DialogActions,
 } from "@mui/material";
 import { toast } from 'react-toastify';
-import { uploadSingleFile } from "../../services/fileService";
+import { uploadMultipleFiles, uploadSingleFile } from "../../services/fileService";
 import ModalProduct from "../modal/product-modal";
 import ProductDetailModal from "../modal/detailProduct-modal";
 import { getAllManufacturer } from "../../services/manufacturerService";
@@ -72,7 +72,7 @@ const ProductComponent = () => {
   };
 
   const handleViewDetails = (product) => {
-    setImgUrl(product.hinhanhchinh);
+    setImgUrl(product.hinhanh);
     setSelectedProduct(product);
     setIsViewOnly(true); // Chế độ nhập dữ liệu
     setOpenModal(true);
@@ -80,40 +80,47 @@ const ProductComponent = () => {
 
   const handleEdit = (product) => {
     console.log("pro", product)
-    setImgUrl(product.hinhanhchinh);
+    setImgUrl(product.hinhanh);
     setSelectedProduct(product);
     setIsViewOnly(false); // Chế độ nhập dữ liệu
     setOpenModal(true);
   };
 
+  // ... (code handleSave đã sửa trước đó)
   const handleSave = async (product) => {
     try {
-      let imageUrl = oldImgUrl;
-      if (product.hinhanhchinh instanceof File) {
-        const uploadResponse = await uploadSingleFile(
-          imageUrl,
-          "image_product",
-          product.hinhanhchinh
-        );
-        imageUrl = uploadResponse.fileName;
+      let imageUrls = Array.isArray(oldImgUrl) ? oldImgUrl : [];
+      let fileToUpload = product.hinhanh;
+
+      if (Array.isArray(fileToUpload) && fileToUpload.every(file => file instanceof File)) {
+        // uploadMultipleFiles bây giờ trả về mảng tên file
+        const newFileNames = await uploadMultipleFiles("image_product", fileToUpload);
+        // Gộp mảng các tên file mới vào mảng các tên file cũ
+        imageUrls = [...imageUrls, ...newFileNames];
       }
+
+      // Chuyển mảng URL thành chuỗi ngăn cách bằng dấu phẩy
+      const hinhanhString = imageUrls.join(",");
+
       const productData = {
         ...product,
-        hinhanhchinh: imageUrl, // Cập nhật đường dẫn ảnh mới
+        hinhanh: hinhanhString,
       };
-      if (selectedProduct) {
-        await productService.updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
-        toast.success("Cập nhật thành công!!!")
 
+      if (selectedProduct) {
+        await productService.updateProduct(selectedProduct.masanpham, productData);
+        toast.success("Cập nhật thành công!!!");
       } else {
-        await productService.createProduct(productData); // Gọi API tạo mới
-        toast.success("Tạo mới thành công!!!")
+        await productService.createProduct(productData);
+        toast.success("Tạo mới thành công!!!");
       }
+
       setSelectedProduct(null);
       setOpenModal(false);
-      getAllProductData(); // Lấy lại danh sách 
+      getAllProductData();
     } catch (error) {
-      console.error("Error saving hotel:", error);
+      console.error("Error saving product:", error);
+      toast.error("Lỗi khi lưu sản phẩm.");
     }
   };
 
@@ -169,7 +176,7 @@ const ProductComponent = () => {
 
 
   const totalPages = Math.ceil(products.length / productsPerPage);
-
+  console.log("currentProducts", currentProducts)
   return (
     <>
       <div>
@@ -275,12 +282,15 @@ const ProductComponent = () => {
                   <td>{product.hedieuhanh || "Không có giá"}</td>
                   <td>{product.trangthai === 0 ? "Đã duyệt" : "Chưa duyệt"}</td>
                   <td>
-                    <img
-                      width={`70px`}
-                      height={`70px`}
-                      src={`${imgURL}${product.hinhanhchinh}`}
-                      alt={product.tensanpham || "Hình ảnh sản phẩm"}
-                    />
+                    {product.hinhanh && (
+                      <img
+                        width="70px"
+                        height="70px"
+                        // Tách chuỗi bằng dấu phẩy và lấy phần tử đầu tiên
+                        src={`${imgURL}${product.hinhanh.split(',')[0]}`}
+                        alt={product.tensanpham || "Hình ảnh sản phẩm"}
+                      />
+                    )}
                   </td>
                   <td className="d-flex align-items-center justify-content-between gap-1 func-button" style={{ border: 'none' }}>
                     <button

@@ -26,6 +26,8 @@ export const uploadSingleFile = async (imageUrl, folderPath, file) => {
 };
 
 // Hàm upload nhiều file
+// Cập nhật hàm uploadMultipleFiles trong file fileService.js hoặc tương tự
+
 export const uploadMultipleFiles = async (folderPath, files) => {
     try {
         const formData = new FormData();
@@ -41,12 +43,14 @@ export const uploadMultipleFiles = async (folderPath, files) => {
             formData,
             {
                 headers: { "Content-Type": "multipart/form-data" },
-                maxContentLength: Infinity, // tránh giới hạn dung lượng
+                maxContentLength: Infinity,
                 maxBodyLength: Infinity
             }
         );
 
-        return response.data;
+        // Trích xuất và trả về mảng chỉ chứa tên file
+        const fileNames = response.data.uploadedFiles.map(file => file.fileName);
+        return fileNames;
     } catch (error) {
         console.error("Upload multiple files error:", error);
         throw error;

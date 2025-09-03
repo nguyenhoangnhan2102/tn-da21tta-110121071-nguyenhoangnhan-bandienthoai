@@ -10,7 +10,7 @@ import {
     DialogActions,
 } from "@mui/material";
 import { toast } from 'react-toastify';
-import { uploadSingleFile } from "../../services/fileService";
+import { uploadMultipleFiles, uploadSingleFile } from "../../services/fileService";
 import ModalProduct from "../modal/product-modal";
 import ProductDetailModal from "../modal/detailProduct-modal";
 import { getAllManufacturer } from "../../services/manufacturerService";
@@ -68,46 +68,59 @@ const PendingProductComponent = () => {
         }
     };
 
+    // ...
     const handleSave = async (product) => {
         try {
-            let imageUrl = oldImgUrl;
-            if (product.hinhanhchinh instanceof File) {
-                const uploadResponse = await uploadSingleFile(
-                    imageUrl,
-                    "image_product",
-                    product.hinhanhchinh
-                );
-                imageUrl = uploadResponse.fileName;
+            // Khởi tạo imageUrls là một mảng, dựa trên oldImgUrl
+            let imageUrls = Array.isArray(oldImgUrl) ? oldImgUrl : [];
+            let fileToUpload = product.hinhanh;
+
+            // Nếu người dùng chọn file mới, upload chúng và gộp với ảnh cũ
+            if (Array.isArray(fileToUpload) && fileToUpload.every(file => file instanceof File)) {
+                const uploadResponse = await uploadMultipleFiles("image_product", fileToUpload);
+                // Gộp mảng các tên file mới vào mảng các tên file cũ
+                imageUrls = [...imageUrls, ...uploadResponse];
             }
+
+            // Chuyển mảng URL thành chuỗi ngăn cách bằng dấu phẩy
+            const hinhanhString = imageUrls.join(",");
+
             const productData = {
                 ...product,
-                hinhanhchinh: imageUrl, // Cập nhật đường dẫn ảnh mới
+                hinhanh: hinhanhString, // Gửi chuỗi lên server
             };
-            if (selectedProduct) {
-                await productService.updateProduct(selectedProduct.masanpham, productData); // Gọi API cập nhật
-                toast.success("Cập nhật thành công!!!")
 
+            if (selectedProduct) {
+                await productService.updateProduct(selectedProduct.masanpham, productData);
+                toast.success("Cập nhật thành công!!!");
             } else {
-                await productService.createProduct(productData); // Gọi API tạo mới
-                toast.success("Tạo mới thành công!!!")
+                await productService.createProduct(productData);
+                toast.success("Tạo mới thành công!!!");
             }
+
             setSelectedProduct(null);
             setOpenModal(false);
-            getAllProductData(); // Lấy lại danh sách 
+            getAllProductData();
         } catch (error) {
-            console.error("Error saving hotel:", error);
+            console.error("Error saving product:", error);
+            toast.error("Lỗi khi lưu sản phẩm.");
         }
     };
 
+    // ...
     const handleViewDetails = (product) => {
-        setImgUrl(product.hinhanhchinh);
+        // Tách chuỗi hinhanh thành một mảng bằng dấu phẩy
+        const imageUrls = product.hinhanh ? product.hinhanh.split(',') : [];
+        setImgUrl(imageUrls);
         setSelectedProduct(product);
         setIsViewOnly(true);
         setOpenModal(true);
     };
 
     const handleEdit = (product) => {
-        setImgUrl(product.hinhanhchinh);
+        // Tách chuỗi hinhanh thành một mảng bằng dấu phẩy
+        const imageUrls = product.hinhanh ? product.hinhanh.split(',') : [];
+        setImgUrl(imageUrls);
         setSelectedProduct(product);
         setIsViewOnly(false);
         setOpenModal(true);
@@ -220,12 +233,16 @@ const PendingProductComponent = () => {
                                 <td>{product.hedieuhanh || "Không có giá"}</td>
                                 <td>{product.trangthai === 1 ? "Chờ duyệt" : "Khác"}</td>
                                 <td>
-                                    <img
-                                        width={`70px`}
-                                        height={`70px`}
-                                        src={`${imgURL}${product.hinhanhchinh}`}
-                                        alt={product.tensanpham || "Hình ảnh sản phẩm"}
-                                    />
+                                    {product.hinhanh && product.hinhanh.split(',').map((imageName, idx) => (
+                                        <img
+                                            key={idx}
+                                            width="70px"
+                                            height="70px"
+                                            src={`${imgURL}${imageName}`}
+                                            alt={product.tensanpham || "Hình ảnh sản phẩm"}
+                                            style={{ marginRight: '5px' }}
+                                        />
+                                    ))}
                                 </td>
                                 <td className="d-flex align-items-center justify-content-between gap-1 func-button" style={{ border: 'none' }}>
                                     <button

@@ -18,6 +18,7 @@ const ProductDetails = () => {
     const { userInfo } = ReduxStateExport();
     const [productdetails, setProductDetails] = useState([]);
     const { masanpham } = useParams();
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
     const [inforUser, setInforUser] = useState({});
     const [showDetails, setShowDetails] = useState(true);
     const [showDetailsCamera, setShowDetailsCamera] = useState(true);
@@ -60,7 +61,7 @@ const ProductDetails = () => {
                 viewed.unshift({
                     masanpham: productdetails.masanpham,
                     tensanpham: productdetails.tensanpham,
-                    hinhanhchinh: productdetails.hinhanhchinh,
+                    hinhanh: productdetails.hinhanh,
                     giaban: productdetails.giaban,
                     giasaugiam: productdetails.giasaugiam,
                     ram: productdetails.ram,
@@ -198,7 +199,7 @@ const ProductDetails = () => {
             chitiet: JSON.stringify({
                 hoten: inforUser?.hoten,
                 tensanpham: productdetails?.tensanpham,
-                hinhanh: productdetails?.hinhanhchinh
+                hinhanh: productdetails?.hinhanh?.split(',')[0]
             })
         };
 
@@ -212,6 +213,16 @@ const ProductDetails = () => {
         }
     };
 
+    const handleNextImage = () => {
+        const images = productdetails.hinhanh.split(',');
+        setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
+    };
+
+    const handlePreviousImage = () => {
+        const images = productdetails.hinhanh.split(',');
+        setCurrentImageIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+    };
+
     const filteredComments = filterStar === 0
         ? comments
         : comments.filter(c => c.sao === filterStar);
@@ -219,7 +230,7 @@ const ProductDetails = () => {
     if (!productdetails || Object.keys(productdetails).length === 0) {
         return <div>Loading...</div>;
     }
-
+    console.log("productdetails", productdetails)
     return (
         <div className="container mt-3 product-details">
             <div className="row d-flex">
@@ -233,12 +244,32 @@ const ProductDetails = () => {
                 </div>
                 <div className="col-md-8">
                     <div className="d-flex justify-content-center main-image">
-                        <img
-                            src={`${imgURL}${productdetails.hinhanhchinh}`}
-                            alt={productdetails.tensanpham}
-                            width="350px"
-                            height="350px"
-                        />
+                        <button className="nav-btn prev-btn" onClick={handlePreviousImage}>
+                            <i className="fa-solid fa-chevron-left"></i>
+                        </button>
+                        {productdetails.hinhanh && (
+                            <img
+                                src={`${imgURL}${productdetails.hinhanh.split(',')[currentImageIndex]}`}
+                                alt={productdetails.tensanpham}
+                                width="350px"
+                                height="350px"
+                            />
+                        )}
+                        <button className="nav-btn next-btn" onClick={handleNextImage}>
+                            <i className="fa-solid fa-chevron-right"></i>
+                        </button>
+                    </div>
+
+                    <div className="thumbnail-gallery d-flex justify-content-center mt-3 gap-2">
+                        {productdetails.hinhanh && productdetails.hinhanh.split(',').map((image, index) => (
+                            <img
+                                key={index}
+                                src={`${imgURL}${image}`}
+                                alt={`${productdetails.tensanpham} thumbnail ${index + 1}`}
+                                className={`thumbnail ${index === currentImageIndex ? 'active' : ''}`}
+                                onClick={() => setCurrentImageIndex(index)}
+                            />
+                        ))}
                     </div>
 
                     <div className="my-4 p-3 commit">
