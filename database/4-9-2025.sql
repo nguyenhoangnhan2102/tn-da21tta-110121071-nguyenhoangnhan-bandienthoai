@@ -61,7 +61,7 @@ CREATE TABLE DONHANG (
     diachigiaohang TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     hotenkhachhang VARCHAR(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
     sodienthoaikhachhang VARCHAR(15),
-    trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy') DEFAULT 'choxacnhan',
+    trangthai ENUM('choxacnhan', 'danggiao', 'hoanthanh', 'huy', 'hoantien') DEFAULT 'choxacnhan',
     lydohuy TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
     ngaytao DATETIME DEFAULT CURRENT_TIMESTAMP,
     ngaycapnhat DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -110,7 +110,7 @@ CREATE TABLE CHITIETGIOHANG (
 CREATE TABLE THANHTOAN (
     mathanhtoan INT AUTO_INCREMENT PRIMARY KEY,
     madonhang INT,
-    hinhthucthanhtoan ENUM('home', 'vnpay', 'momo', 'paypal') DEFAULT 'home',
+    hinhthucthanhtoan ENUM('home', 'vnpay', 'momo', 'paypal', 'online') DEFAULT 'home',
     trangthai ENUM('chuathanhtoan', 'dathanhtoan') DEFAULT 'chuathanhtoan',
     ngaythanhtoan DATETIME,
     FOREIGN KEY (madonhang) REFERENCES DONHANG(madonhang)
