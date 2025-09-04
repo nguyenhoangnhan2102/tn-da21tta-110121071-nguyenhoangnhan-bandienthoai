@@ -110,7 +110,7 @@ const PendingProductComponent = () => {
     // ...
     const handleViewDetails = (product) => {
         // Tách chuỗi hinhanh thành một mảng bằng dấu phẩy
-        const imageUrls = product.hinhanh ? product.hinhanh.split(',') : [];
+        const imageUrls = product.hinhanh ? product?.hinhanh?.split(',') : [];
         setImgUrl(imageUrls);
         setSelectedProduct(product);
         setIsViewOnly(true);
@@ -119,7 +119,7 @@ const PendingProductComponent = () => {
 
     const handleEdit = (product) => {
         // Tách chuỗi hinhanh thành một mảng bằng dấu phẩy
-        const imageUrls = product.hinhanh ? product.hinhanh.split(',') : [];
+        const imageUrls = product.hinhanh ? product?.hinhanh?.split(',') : [];
         setImgUrl(imageUrls);
         setSelectedProduct(product);
         setIsViewOnly(false);
@@ -233,7 +233,7 @@ const PendingProductComponent = () => {
                                 <td>{product.hedieuhanh || "Không có giá"}</td>
                                 <td>{product.trangthai === 1 ? "Chờ duyệt" : "Khác"}</td>
                                 <td>
-                                    {product.hinhanh && product.hinhanh.split(',').map((imageName, idx) => (
+                                    {product?.hinhanh && product?.hinhanh?.split(',').map((imageName, idx) => (
                                         <img
                                             key={idx}
                                             width="70px"

@@ -204,7 +204,7 @@ const OrderDetails = ({ open, onClose, order, reloadOrders, mode }) => {
                                         <img
                                             width="70px"
                                             height="70px"
-                                            src={`${imgURL}${sp.hinhanh.split(',')[0]}`}
+                                            src={`${imgURL}${sp?.hinhanh?.split(',')[0]}`}
                                             alt={sp.tensanpham}
 
                                         />

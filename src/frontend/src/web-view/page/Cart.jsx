@@ -154,7 +154,7 @@ function Cart() {
                                 <div className="row g-0 align-items-center">
                                     <div className="col-md-3 text-center">
                                         <img
-                                            src={`${imgURL}/${item.hinhanh.split(',')[0]}`}
+                                            src={`${imgURL}/${item?.hinhanh?.split(',')[0]}`}
                                             alt={item.tensanpham}
                                             className="img-fluid rounded"
                                         />

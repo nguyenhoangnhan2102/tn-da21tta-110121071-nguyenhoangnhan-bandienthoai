@@ -84,7 +84,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
 
     // Nếu hinhanh là chuỗi (từ DB), chuyển nó thành mảng
     if (typeof initialForm.hinhanh === 'string' && initialForm.hinhanh) {
-      initialForm.hinhanh = initialForm.hinhanh.split(',');
+      initialForm.hinhanh = initialForm?.hinhanh?.split(',');
     } else {
       initialForm.hinhanh = []; // Đảm bảo luôn là mảng rỗng nếu không có
     }
@@ -162,7 +162,7 @@ const ModalProduct = ({ product, onSave, open, onClose, isViewOnly = false }) =>
   const imageUrls = (() => {
     if (typeof form.hinhanh === 'string' && form.hinhanh) {
       // Nếu là chuỗi, tách ra thành mảng và map
-      return form.hinhanh.split(',').map(name => getImageUrl(name));
+      return form?.hinhanh?.split(',').map(name => getImageUrl(name));
     }
     if (Array.isArray(form.hinhanh)) {
       // Nếu là mảng, map như bình thường

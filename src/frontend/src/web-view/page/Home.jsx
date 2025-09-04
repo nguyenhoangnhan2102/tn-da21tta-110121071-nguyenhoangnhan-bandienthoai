@@ -161,14 +161,14 @@ const Home = () => {
                     >
                       X
                     </span>
-
+                    {console.log("product", product)}
                     <Link
                       to={`/product-details/${product.masanpham}`}
                       className="d-flex gap-2 items-center w-full text-decoration-none"
                     >
                       {/* ảnh bên trái */}
                       <img
-                        src={`${imgURL}${product.hinhanh.split(',')[0]}`}
+                        src={`${imgURL}${product?.hinhanh?.split(',')[0]}`}
                         alt={product.tensanpham}
                         className="viewed-thumb"
                       />

@@ -287,7 +287,7 @@ const ProductComponent = () => {
                         width="70px"
                         height="70px"
                         // Tách chuỗi bằng dấu phẩy và lấy phần tử đầu tiên
-                        src={`${imgURL}${product.hinhanh.split(',')[0]}`}
+                        src={`${imgURL}${product?.hinhanh?.split(',')[0]}`}
                         alt={product.tensanpham || "Hình ảnh sản phẩm"}
                       />
                     )}
