@@ -36,7 +36,7 @@ function Cart() {
         try {
             const response = await axiosInstance.get(`${apiUrl}/cart/${manguoidung}`);
             console.log("response", response)
-            if (response.data.EC === 1) {
+            if (response) {
                 const updatedItems = response.data.DT.map((item) => ({
                     ...item,
                     soluong: item.soluong || 1,
@@ -47,48 +47,6 @@ function Cart() {
             }
         } catch (error) {
             console.error("Error fetching cart items:", error);
-        }
-    };
-
-    const handleCheckout = async () => {
-        if (!infoUser.hoten || !infoUser.sodienthoai || !infoUser.diachi) {
-            toast.warning("Vui lòng nhập đầy đủ thông tin!!!");
-            return;
-        }
-        if (cartItems.length === 0) {
-            toast.warning("Giỏ hàng của bạn đang trống.");
-            return;
-        }
-
-        try {
-            const orderData = {
-                manguoidung: infoUser.manguoidung,
-                diachigiaohang: infoUser.diachi,
-                tongtien: subTotal,
-                ghichu: null, // hoặc bạn có thể lấy từ input ghi chú nếu muốn
-                sanpham: cartItems.map(item => ({
-                    masanpham: item.masanpham,
-                    soluong: item.soluong,
-                    dongia: item.giasaugiam,
-                    hinhanh: item.hinhanh,
-                    mau: item.mau,
-                }))
-            };
-
-            const response = await axiosInstance.post(`${apiUrl}/orders`, orderData);
-            console.log(response);
-            if (response.data.success) {
-                await axiosInstance.post(`${apiUrl}/cart/delete`, { manguoidung: infoUser.manguoidung });
-                toast.success("Đặt hàng thành công!");
-                setCartItems([]);
-                setTotalQuantity(0);
-                setSubTotal(0);
-            } else {
-                toast.error(`Đặt hàng thất bại: ${response.data.message}`);
-            }
-        } catch (error) {
-            console.error("Lỗi khi đặt hàng:", error);
-            toast.error("Đã xảy ra lỗi khi đặt hàng. Vui lòng thử lại.");
         }
     };
 

@@ -34,12 +34,13 @@ const getAllCartByCustomer = async (req, res) => {
         const [results] = await connection.query(query, [manguoidung]);
 
         if (results.length === 0) {
-            return res.status(404).json({
-                EM: "Không tìm thấy sản phẩm nào trong giỏ hàng",
+            return res.status(200).json({
+                EM: "Giỏ hàng rỗng",
                 EC: 0,
                 DT: [],
             });
         }
+
 
         return res.status(200).json({
             EM: "Lấy danh sách sản phẩm giỏ hàng thành công",
